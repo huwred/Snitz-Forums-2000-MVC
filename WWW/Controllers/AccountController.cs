@@ -1278,6 +1278,23 @@ namespace WWW.Controllers
         }
 
         [HttpGet]
+        [Authorize]
+        [OutputCache(Location = OutputCacheLocation.None, NoStore = true)]
+        public ActionResult TestEmail(int id)
+        {
+            var toMember = Member.GetById(id);
+            var from = ClassicConfig.ForumEmail; // Member.GetById(WebSecurity.CurrentUserId);
+            var model = new EmailModel
+            {
+                AdminEmail = true,
+                ToEmail = toMember.Email,
+                ToName = toMember.Username,
+                FromName = "Forum Administrator",
+                FromEmail = from
+            };
+            return PartialView("popEmailMember", model);
+        }
+        [HttpGet]
         [OutputCache(Location = OutputCacheLocation.None, NoStore = true)]
         public PartialViewResult EmailAdministrator()
         {
