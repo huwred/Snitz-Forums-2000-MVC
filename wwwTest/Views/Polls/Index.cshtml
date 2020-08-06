@@ -1,0 +1,50 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@using SnitzDataModel.Models
+@model List<SnitzDataModel.Models.Poll>
+
+@{
+    ViewBag.Title = ResourceManager.GetLocalisedString("lblPageTitle","Poll");
+    ViewBag.PageTitle = ResourceManager.GetLocalisedString("lblPolls", "Poll");
+}
+
+<h5>@ViewBag.Title</h5>
+<hr class="title"/>
+<div id="PollPanel" class="row-fluid">
+    @if (Model.Count == 0)
+    {
+        <h5>@ResourceManager.GetLocalisedString("lblNoActive", "Poll")</h5>
+    }
+    @foreach (var poll in Model)
+    {
+        string panel = "panel-info";
+        string offset = "pull-right flip";
+        bool featured = false;
+        bool voted = poll.Votes.Any(v => v.MemberId == SnitzMembership.WebSecurity.CurrentUserId);
+        voted = voted || SnitzCookie.HasVoted(poll.Id);
+
+        if (poll.Id == Convert.ToInt32(ClassicConfig.GetIntValue("INTFEATUREDPOLLID")))
+        {
+            panel = "panel-primary";
+
+            featured = true;
+            offset = "pull-left flip";
+        }
+        if (poll.Active == 0)
+        {
+            panel = "panel-default";
+        }
+        <div class="col-md-3 @offset">
+            @if (voted || poll.Active == 0)
+            {
+                @Html.DisplayFor(m => poll, new {panel, featured})
+            }
+            else
+            {
+                @Html.EditorFor(m => poll, new {panel, featured})
+            }
+        </div>
+    }
+
+</div>
+

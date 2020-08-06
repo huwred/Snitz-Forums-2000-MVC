@@ -1,0 +1,17 @@
+﻿@model Dictionary<string, string>
+@{
+    ViewBag.Title = "PayPal Notify Page";
+    Layout = null;
+}
+
+<h5>@ViewBag.Title</h5>
+<dl class="paypaltest">
+    @foreach (var item in Model)
+    {
+    <dt>@item.Key</dt>
+        
+    <dd>@item.Value</dd>
+        
+    }
+</dl>
+

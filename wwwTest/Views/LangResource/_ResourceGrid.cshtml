@@ -1,0 +1,75 @@
+﻿@using System.Collections.Generic;
+@using System.Linq
+@using LangResources.Models
+@using LangResources.Utility
+@using WWW.ViewModels
+@using WWW.Views.Helpers
+
+@{
+    var _model = new LangResource();
+
+    _model.Resources = ResourceManager.ReadResources();
+    string[] cultures = _model.Resources.First().Select(r => r.Culture).ToArray();
+
+    var rowcount = 0;
+
+}
+<div id="ResourceGrid" tabindex="-1" >
+
+    <a href="#" class="pull-right flip" style="padding: 5px" id="close-grid" title="@ResourceManager.GetLocalisedString("lblClose","labels")" data-toggle="tooltip"><i class="fa fa-close fa-2x"></i></a>
+
+    <table class="table table-bordered table-striped" id="ResourceTable">
+        <thead>
+        <tr>
+            <th>Resource Id</th>
+            <th></th>
+            <th></th>
+            @foreach (var culture in cultures)
+            {
+                <th>
+                    @ResourceManager.GetLocalisedString("lang_" + culture,"SupportedCultures")
+                </th>
+            }
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var group in _model.Resources)
+        {
+            <tr data-row="@rowcount">
+                    
+                <td>@group.Key</td>
+                <td>@String.Join(",",cultures) </td>
+                <td>@group.First().ResourceSet</td>
+                @foreach (var culture in cultures)
+                {
+                    ResourceEntry res = group.SingleOrDefault(c => c.Culture == culture);
+                        
+                    <td>
+                        @if (group.Select(c => c.Culture == culture).Any())
+                        {
+
+                            if (res != null)
+                            {
+                                @res.Value
+                            }
+                        }
+                    </td>
+
+                }
+                    
+                <td><button class="btn btn-primary"><i class="fa fa-edit"></i></button></td>
+            </tr>
+            rowcount += 1;
+        }
+        </tbody>
+    </table>
+
+</div>
+@*@using (Html.BeginScripts())
+{
+    <script>
+        defineTable();
+
+    </script>
+}*@

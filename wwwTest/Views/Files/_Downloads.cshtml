@@ -1,0 +1,17 @@
+﻿@using LangResources.Utility
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+
+@model List<SnitzDataModel.Models.DownloadFile>
+
+
+    <h5>@ResourceManager.GetLocalisedString("sbDownloads", "labels")</h5>
+    <hr class="title" />
+    <ul class="filelist">
+        @foreach (var item in Model)
+        {
+            <li><dl><dt>@item.UploadedDate.Value.ToFormattedString(false)</dt><dd><a href="~/Files/download/?filename=@item.FileName">@(item.Name ?? item.FileName) </a></dd></dl></li>
+        }
+
+    </ul>
+

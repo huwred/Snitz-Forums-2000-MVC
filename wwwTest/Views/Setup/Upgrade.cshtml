@@ -1,0 +1,129 @@
+﻿@using SnitzConfig
+@model WWW.ViewModels.UpdateViewModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title</title>
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    @Styles.Render("~/bundles/sitecss")
+
+    @Styles.Render("~/Content/stylesheet.min.css")
+    @Styles.Render("~" + Config.ThemeFolder() + "/snitz.min.css")
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    @Scripts.Render("~/bundles/oldIEBrowsersSupport")
+    <![endif]-->
+
+    <script src="@Url.Action("Index","JavaScriptSettings")"></script>
+    <script src="@Url.Action("Resources","JavaScriptSettings")"></script>
+    <style type="text/css">
+        body {
+            font-size: large;
+        }
+
+        #statusBorder {
+            position: relative;
+            height: auto;
+            height: 200px;
+            max-height: 200px;
+            overflow: auto;
+            border: solid 1px gray;
+            display: none;
+        }
+
+        #statusFill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            /*background-color:Blue;*/
+            /*height:15px;*/
+        }
+    </style>
+</head>
+<body class="col-sm-10 col-sm-offset-1">
+<div class="container text-center">
+    <h3>@ViewBag.Title</h3>
+</div>
+<div class="container-fluid">
+    <p>@ViewBag.Message</p>
+    <br />
+    <a href="#" class="btn btn-primary" id="startProcess">Update Database</a>
+    @Html.HiddenFor(x => x.DbsFile, new { id = "dbs-file" })
+
+    <div id="status"></div>
+    <div id="statusBorder">
+        <div id="statusFill">
+
+        </div>
+    </div>
+    <div id="forum-link" style="display:none;">
+        <p>@Html.ActionLink("Go to Forum", "Index", "Home", null, new { @class = "btn btn-primary" })</p>
+    </div>
+</div>
+
+        <script>
+        var baseUrl = "@Url.Content("~")";
+        var uniqueId = '@Guid.NewGuid().ToString()';
+
+        </script>
+        @Scripts.Render("~/bundles/corejs")
+
+        <script type="text/javascript">
+
+        function updateMonitor(status) {
+            var html = $("#statusFill").html();
+            $("#statusFill").html(status + html );
+        }
+        function reload() {
+            location.href = location.href = baseUrl + "Setup/Finished";;
+        }
+        $(document).ready(function () {
+            $('#startProcess').on('click', function (e) {
+                        e.preventDefault();
+                                $.post(baseUrl + "Setup/StartProcess", { id: uniqueId, dbsfile: $("#dbs-file").val() }, function() {
+                                        $('#statusBorder').show();
+                                        $("#status").html("Started");
+                                        var intervalId = setInterval(function () {
+
+                                        var url = baseUrl + 'Setup/GetCurrentProgress/' + uniqueId;
+                                        $.post(url, function (progress) {
+                                            if (progress.indexOf("Complete") > -1) {
+                                                updateMonitor(progress);
+                                                clearInterval(intervalId);
+                                                $("#startProcess").hide();
+                                                $("#setup-message").hide();
+                                                if (progress.indexOf("errors") > 0) {
+                                                    $("#status").html("<p>There were errors ...</p>");
+                                                    $("#forum-link").show();
+                                                } else {
+                                                    $("#status").html("<p>Finished running scripts. Please wait ...</p>");
+                                                    $("#forum-link").hide();
+                                                    setTimeout(reload, 1500);
+                                                }
+
+                                            } else {
+                                                updateMonitor(progress);
+
+                                            }
+
+                                        });
+                                    }, 100);
+                                });
+
+                            });
+                    });
+
+        </script>
+
+
+</body>
+</html>

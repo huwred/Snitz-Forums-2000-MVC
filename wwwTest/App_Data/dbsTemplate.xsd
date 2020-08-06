@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Tables">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Create">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Table">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element maxOccurs="unbounded" name="Column">
+                      <xs:complexType>
+                        <xs:attribute name="name" type="xs:string" use="required" />
+                        <xs:attribute name="type" type="xs:string" use="required" />
+                        <xs:attribute name="size" type="xs:integer" use="optional" />
+                        <xs:attribute name="default" type="xs:string" use="optional" />
+                        <xs:attribute name="allownulls" type="xs:boolean" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                  <xs:attribute name="idfield" type="xs:string" use="optional" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Alter">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Table">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element maxOccurs="unbounded" name="Column">
+                      <xs:complexType>
+                        <xs:attribute name="action" use="required">
+                          <xs:simpleType>
+                            <xs:restriction>
+                              <xs:simpleType>
+                                <xs:list>
+                                  <xs:simpleType>
+                                    <xs:restriction base="xs:token">
+                                      <xs:enumeration value="ADD"/>
+                                      <xs:enumeration value="ALTER"/>
+                                      <xs:enumeration value="DROP"/>
+                                    </xs:restriction>
+                                  </xs:simpleType>
+                                </xs:list>
+                              </xs:simpleType>
+                              <xs:minLength value="1"/>
+                            </xs:restriction>
+                          </xs:simpleType>                          
+                        </xs:attribute>
+                        <xs:attribute name="name" type="xs:string" use="required" />
+                        <xs:attribute name="type" type="xs:string" use="optional" />
+                        <xs:attribute name="size" type="xs:integer" use="optional" />
+                        <xs:attribute name="default" type="xs:string" use="optional" />
+                        <xs:attribute name="allownulls" type="xs:string" use="optional" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Insert">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Table">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Column">
+                      <xs:complexType>
+                        <xs:attribute name="name" type="xs:string" use="required" />
+                        <xs:attribute name="value" type="xs:string" use="required" />
+                        <xs:attribute name="type" type="xs:string" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Update">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Table">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Column">
+                      <xs:complexType>
+                        <xs:attribute name="name" type="xs:string" use="required" />
+                        <xs:attribute name="value" type="xs:string" use="required" />
+                        <xs:attribute name="type" type="xs:string" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                  <xs:attribute name="condition" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Delete">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Table">
+                <xs:complexType>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                  <xs:attribute name="condition" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Drop">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Table">
+                <xs:complexType>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Index">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Table">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element maxOccurs="unbounded" name="Index">
+                      <xs:complexType>
+                        <xs:attribute name="name" type="xs:string" use="required" />
+                        <xs:attribute name="columns" type="xs:string" use="required" />
+                        <xs:attribute name="direction" type="xs:string" use="required" />
+                        <xs:attribute name="unique" type="xs:boolean" use="required" />
+                        <xs:attribute name="include" type="xs:string" use="optional" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="title" type="xs:string" use="required" />
+      <xs:attribute name="applied" type="xs:boolean" use="required" />
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

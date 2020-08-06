@@ -1,0 +1,24 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+
+@if (Request.IsAuthenticated) {
+    <text>
+        @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "clearfix" }))
+        {
+            <span class="login-right">
+                <b>@ResourceManager.GetLocalisedString("lblHello", "labels") @Html.ActionLink(SnitzMembership.WebSecurity.CurrentUserName,"UserProfile","Account",new{id= SnitzMembership.WebSecurity.CurrentUserName },null)</b> [<a href="javascript:document.getElementById('logoutForm').submit()" class="navbar-link" rel="nofollow">@ResourceManager.GetLocalisedString("SignOut", "General")</a>]
+            
+            </span>
+        }
+    </text>
+}
+else
+{
+    <span class="login-right">
+        @Html.ActionLink(ResourceManager.GetLocalisedString("SignIn", "General"), "Login", "Account", new { ReturnUrl = Request.QueryString["ReturnUrl"]}, htmlAttributes: new { id = "loginLink", @class = "navbar-link" })&nbsp;
+        @if (!Config.ProhibitNewMembers)
+        {
+            @Html.ActionLink(ResourceManager.GetLocalisedString("Register", "General"), "Register", "Account", new { agreeterms = "false" }, htmlAttributes: new { id = "registerLink", @class = "navbar-link", rel = "nofollow" })
+        }
+    </span>
+}

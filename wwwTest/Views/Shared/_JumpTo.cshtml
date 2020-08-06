@@ -1,0 +1,48 @@
+﻿@using LangResources.Utility
+@using Snitz.Base
+@using SnitzCore.Utility
+@using SnitzDataModel.Database
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@using Category = SnitzDataModel.Models.Category
+@using Forum = SnitzDataModel.Models.Forum
+
+@{
+    List<Category> catList;
+    using (var db = new SnitzDataContext())
+    {
+        catList = db.FetchJumptoList();
+    }
+    
+}
+
+<div class="btn-group pull-right flip">
+    <a class="btn dropdown-toggle" href="#" data-toggle="dropdown">@ResourceManager.GetLocalisedString("JumpTo", "Controls") <span class="caret"></span></a>
+    <ul class="jumpto dropdown-menu">
+
+        @foreach (Category cat in catList)
+        {
+            bool hasMatch = User.AllowedForumIDs().Any(x => cat.Forums.Any(y => y.Id == x));
+            if (hasMatch)
+            {
+                <li>
+                    <a href="@Common.RootFolder/Category/Index/@cat.Id" class="category">@cat.Title</a>
+                    <ul>
+                        @foreach (Forum f in cat.Forums)
+                        {
+                            switch (f.Type)
+                            {
+                                case Enumerators.ForumType.WebLink:
+                                    break;
+                                default:
+                                        @Html.ShowHideForums(f, null, "li")
+                                        break;
+                            }
+                        }
+                    </ul>
+                </li>
+            }
+        }
+    </ul>
+</div>
+

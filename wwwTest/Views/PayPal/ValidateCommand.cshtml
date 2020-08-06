@@ -1,0 +1,90 @@
+﻿@using WWW.Views.Helpers
+@model SiteManage.Models.PayPalModel
+
+
+    @if (!String.IsNullOrWhiteSpace(Model.t3))
+    {
+        /*
+        <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+        <input type="hidden" name="cmd" value="_xclick">
+        <input type="hidden" name="business" value="paypal@reddick.co.uk">
+        <input type="hidden" name="lc" value="GB">
+        <input type="hidden" name="item_name" value="Donate">
+        <input type="hidden" name="amount" value="10.00">
+        <input type="hidden" name="currency_code" value="GBP">
+        <input type="hidden" name="button_subtype" value="services">
+        <input type="hidden" name="no_note" value="0">
+        <input type="hidden" name="cn" value="Add special instructions to the seller:">
+        <input type="hidden" name="no_shipping" value="1">
+        <input type="hidden" name="undefined_quantity" value="1">
+        <input type="hidden" name="bn" value="PP-BuyNowBF:btn_buynowCC_LG.gif:NonHosted">
+        <input type="image" src="https://www.paypalobjects.com/en_US/GB/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal – The safer, easier way to pay online!">
+        <img alt="" border="0" src="https://www.paypalobjects.com/en_GB/i/scr/pixel.gif" width="1" height="1">
+        </form>
+
+         */
+    <form action="@Model.actionURL" method="post" target="_top" id="hiddenform">
+        <input type="hidden" name="cmd" value="@Model.cmd">
+        <input type="hidden" name="business" value="@Model.business">
+        <input type="hidden" name="return" value="@Model.return_url">
+        <input type="hidden" name="lc" value="GB">
+        <input type="hidden" name="no_note" value="0">
+        <input type="hidden" name="no_shipping" value="@Model.no_shipping">
+        @*<input type="hidden" name="src" value="1">*@
+        @Html.HiddenFor(model => model.item_name)
+        <!-- Identify the Member. -->
+        @Html.HiddenFor(model => model.item_number)
+        <input type="hidden" name="a3" value="@Model.amount">
+        <input type="hidden" name="p3" value="@Model.p3">
+        <input type="hidden" name="t3" value="@Model.t3">
+        <input type="hidden" name="currency_code" value="@Model.currency_code">
+        <input type="hidden" name="bn" value="PP-SubscriptionsBF:btn_subscribeCC_LG.gif:NonHosted">
+        <input type="image" src="https://www.paypalobjects.com/en_US/GB/i/btn/btn_subscribeCC_LG.gif" border="0" name="submit" alt="PayPal – The safer, easier way to pay online!" style="display:none;">
+        <img alt="" border="0" src="https://www.paypalobjects.com/en_GB/i/scr/pixel.gif" width="1" height="1" style="display:none;">
+    </form>
+
+    }
+    else
+    {
+    <form action="@Model.actionURL" method="post" target="_top" id="hiddenform">
+        <input type="hidden" name="cmd" value="@Model.cmd">
+        <input type="hidden" name="business" value="@Model.business">
+        <input type="hidden" name="lc" value="GB">
+        @Html.HiddenFor(model => model.item_name)
+        <input type="hidden" name="amount" value="@Model.amount">
+        <input type="hidden" name="currency_code" value="@Model.currency_code">
+        <input type="hidden" name="button_subtype" value="services">
+        <input type="hidden" name="no_note" value="0">
+        <input type="hidden" name="cn" value="Comment:">
+        <input type="hidden" name="no_shipping" value="@Model.no_shipping">
+        <input type="hidden" name="undefined_quantity" value="1">
+        <input type="hidden" name="return" value="@Model.return_url">
+        <input type="hidden" name="bn" value="PP-BuyNowBF:btn_buynowCC_LG.gif:NonHosted">
+        <input type="image" src="https://www.paypalobjects.com/en_US/GB/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal – The safer, easier way to pay online!" style="display:none;">
+        <img alt="" border="0" src="https://www.paypalobjects.com/en_GB/i/scr/pixel.gif" width="1" height="1" style="display:none;">
+    </form>
+    }
+
+    <span style="text-align: center;width:90%;margin:auto;">
+        <h3 >
+            Connecting to Paypal , please wait ...
+        </h3>    
+    
+    </span>
+
+
+@using (Html.BeginScripts())
+{
+<script type="text/javascript" language="javascript">
+    $(this.document).ready(function () {
+        var form = $("#hiddenform");
+        form.submit();
+    });
+</script> 
+}
+
+
+
+
+
+

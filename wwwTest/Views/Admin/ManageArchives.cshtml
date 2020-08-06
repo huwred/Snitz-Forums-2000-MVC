@@ -1,0 +1,87 @@
+﻿@using LangResources.Utility
+@using Snitz.Base
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model WWW.ViewModels.ArchivesViewModel
+@{
+    ViewBag.PageTitle = "Manage Archives";
+    ViewBag.ActivePage = ResourceManager.GetLocalisedString("mnuAdminArchive", "labels");
+    //Layout = "~/Views/Admin/_Layout.cshtml";
+
+    bool isadmin = User.IsAdministrator();
+}
+
+<div class="content">
+    @using (Html.BeginForm("SaveSettings", "Admin"))
+    {
+
+        <table class="table table-condensed">
+            <thead class="bg-category">
+                <tr>
+                    <th class="col-xs-3"></th>
+                    <th class="col-xs-2">Archive posts older than (days)</th>
+                    <th class="col-xs-2">Delete posts older than (days)</th>
+                    <th class="col-xs-2">Last Archived</th>
+                    <th class="col-xs-2">Last Deletion</th>
+                    <th class="col-xs-1">
+                        <input type="checkbox" class="checkbox-inline" id="checkAll" name="checkAll" title="@ResourceManager.GetLocalisedString("tipCheckAll", "Tooltip")" data-toggle="tooltip"/>
+                        <a href="#" title="Archive posts in selected Forums" data-toggle="tooltip" ><i class="fa fa-archive fa-1_5x"></i></a><a href="#" title="Delete posts in selected Forums" data-toggle="tooltip"><i class="fa fa-trash fa-1_5x"></i></a>
+                    </th>
+                </tr>
+            </thead>
+            <tbody class=" table-bordered">
+                @for (int ii = 0; ii < Model.Categories.Count; ii++)
+                {
+
+                    var catlink = "#" + Model.Categories[ii].Id;
+                    <tr class="bg-primary"><td colspan="6" ><label>@Model.Categories[ii].Title</label></td></tr>
+                    <tr ><td colspan="6" class="bg-info padding-none">
+                             @for (int i = 0; i < Model.Categories[ii].Forums.Count; i++)
+                             {
+
+                                 <table class="table table-striped table-condensed" style="width:100%" >
+                                     <tr>
+                                         @switch (Model.Categories[ii].Forums[i].Type)
+                                         {
+                                             case Enumerators.ForumType.WebLink:
+                                                 break;
+                                             default:
+                                                 <td class="col-xs-3"><label class="text-info">@Model.Categories[ii].Forums[i].Subject</label></td>
+                                                            
+                                                <td class="col-xs-1" style="vertical-align: middle">@Html.TextBoxFor(m => Model.Categories[ii].Forums[i].ArchiveSchedule, new {@class = "form-control "})</td>
+                                                 <td class="col-xs-1">&nbsp;</td>
+                                         <td class="col-xs-1" style="vertical-align: middle">@Html.TextBoxFor(m => Model.Categories[ii].Forums[i].DeleteSchedule, new {@class = "form-control "})</td>
+                                         <td class="col-xs-1">&nbsp;</td>        
+                                         <td class="col-xs-2" style="vertical-align: middle">@Html.Raw(Model.Categories[ii].Forums[i].LastArchiveDate.Value.ToFormattedString(false))</td>
+                                                 <td class="col-xs-2" style="vertical-align: middle">@Html.Raw(Model.Categories[ii].Forums[i].LastDeletionDate.Value.ToFormattedString(false))</td>
+                                                 break;
+                                         }
+                                         <td style="vertical-align: middle">
+                                             @Html.ActionLink(" ", "ArchiveForum", "Admin", new {id = Model.Categories[ii].Forums[i].Id}, new { @class = "modal-link fa fa-archive fa-1_5x",title="Archive posts in this forum", data_toggle="tooltip" })
+                                             @Html.ActionLinkConfirm("Delete archived posts in this forum?", "DeleteArchiveForum", "Admin", new {id = Model.Categories[ii].Forums[i].Id}, "fa fa-trash-o fa-1_5x")
+                                             @Html.HiddenFor(m=>Model.Categories[ii].Forums[i].Id)
+                                             <input type="checkbox" class="checkbox-inline" id="check-@Model.Categories[ii].Forums[i].Id" name="check-@Model.Categories[ii].Forums[i].Id"/>
+                                         </td>
+                                     </tr>
+                                 </table>
+
+                             }
+                         </td></tr>
+                }        
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td>@ViewBag.Message</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td colspan="2"><input type="submit" class="btn btn-primary" value="Save Changes"/></td>
+
+                </tr>
+            </tfoot>
+        </table>
+    }
+ 
+</div>
+

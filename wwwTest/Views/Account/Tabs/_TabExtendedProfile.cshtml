@@ -1,0 +1,20 @@
+﻿
+@using LangResources.Utility
+@using WWW.Views.Helpers
+@model WWW.ViewModels.UserProfileViewModel
+<div class="padding-md row-fluid clearfix">
+    <div class="panel-body">
+        <div class="col-xs-12 col-sm-6 form-horizontal">
+            <h5>@ResourceManager.GetLocalisedString("usrAdmin", "ExtProfile")</h5>
+            <hr class="title" />
+            <div id="ExtProfileDiv">
+                @Html.Action("MemberFieldsAll", "MemberFields", new { id = Model.Profile.UserId, exclude = new string[]{"TimeZone"} })
+            </div>
+        </div>
+    </div>
+</div>
+@using (Html.BeginScripts())
+{
+    <script src="@Url.Content("~/Scripts/snitz.extendedprofile.js")"></script>
+
+}

@@ -1,0 +1,216 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@using SnitzDataModel.Extensions
+
+@model WWW.Models.ProfileEditModel
+
+@{
+    ViewBag.Title = ResourceManager.GetLocalisedString("EditProfile", "General");
+}
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { enctype = "multipart/form-data", id = "profileEditForm" }))
+{
+    ViewBag.SubmitButton = ResourceManager.GetLocalisedString("btnSave", "labels");
+    @Html.AntiForgeryToken()
+    <div class="container-fluid">
+        <h4>
+            @if (Model.Profile.PrivateProfile == 0)
+            {
+                <span>@Html.ActionLink(" ", "UserProfilePrivate", "Account", new { id = Model.Profile.UserId }, new { @class = "fa fa-id-badge", title = ResourceManager.GetLocalisedString("PublicProfile", "labels") + " " + ResourceManager.GetLocalisedString("PrivateToggle", "labels"), data_toggle = "tooltip" })</span>
+            }
+            else
+            {
+                <span>@Html.ActionLink(" ", "UserProfilePrivate", "Account", new { id = Model.Profile.UserId }, new { @class = "fa fa-user-secret", title = ResourceManager.GetLocalisedString("PrivateProfile", "labels") + " " + ResourceManager.GetLocalisedString("PrivateToggle", "labels"), data_toggle = "tooltip" })</span>
+            }
+            @ViewBag.Title @Html.Raw(" - ") @Model.Profile.UserName
+        </h4>
+    </div>
+    <div class="container-fluid">
+        <ul class="nav nav-tabs" role="tablist" id="accountTab">
+            <li class="active"><a href="#account" role="tab" data-toggle="tab">@ResourceManager.GetLocalisedString("Personal", "labels")</a></li>
+            <li><a href="#profile" role="tab" data-toggle="tab">@ResourceManager.GetLocalisedString("Profile", "labels")</a></li>
+            @if (ClassicConfig.GetValue("STREXTENDPROFILE") == "1")
+            {
+            <li><a href="#extended-profile" role="tab" data-toggle="tab">@ResourceManager.GetLocalisedString("usrAdmin", "ExtProfile")</a></li>
+            }
+            <li><a href="#options" role="tab" data-toggle="tab">@ResourceManager.GetLocalisedString("Options", "labels")</a></li>
+            @if (User.IsAdministrator())
+            {
+                <li><a href="#admin" role="tab" data-toggle="tab">@ResourceManager.GetLocalisedString("Admin", "labels")</a></li>
+            }
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="account">
+                @{ Html.RenderPartial("Tabs/_TabEditAccount"); }
+            </div>
+            <div class="tab-pane" id="profile">
+                @{ Html.RenderPartial("Tabs/_TabEditProfile"); }
+
+            </div>
+            @if (ClassicConfig.GetValue("STREXTENDPROFILE") == "1")
+            {
+                <div class="tab-pane" id="extended-profile">
+                    @{ Html.RenderPartial("Tabs/_TabEditExtendedProfile"); }
+                </div>
+            }
+            <div class="tab-pane" id="options">
+                @{ Html.RenderPartial("Tabs/_TabEditOptions"); }
+            </div>
+
+            @if (User.IsAdministrator())
+            {
+                <div class="tab-pane" id="admin">
+                    @{ Html.RenderPartial("Tabs/_TabEditAdmin"); }
+                </div>
+            }
+        </div>
+    </div>
+    @Html.ValidationSummary(false)
+    @Html.HiddenFor(model => model.Profile.CreatedDate)
+    @Html.HiddenFor(model => model.Profile.LastVisitDate)
+    @Html.HiddenFor(model => model.Profile.LastPostDate)
+    @Html.HiddenFor(model => model.Profile.LastIp)
+            
+    @Html.HiddenFor(model => model.Profile.Status)
+    @Html.HiddenFor(model => model.Profile.MLev)
+    @Html.HiddenFor(model => model.Profile.DefaultView)
+            
+    @Html.HiddenFor(model => model.Profile.PrivateMessageNotify)
+    @Html.HiddenFor(model => model.Profile.PrivateMessageReceive)
+    @Html.HiddenFor(model => model.Profile.PrivateMessageSentItems)
+}
+
+
+@section Scripts {
+
+    <script type="text/javascript">
+        var userAdmin = '@(User.IsAdministrator() ? "true" : "false")';
+        function daysInMonth(month, year) {
+            return new Date(year, month, 0).getDate();
+        }
+        $(window).on("load", function(){
+            setConditionalValidators();
+            $('.yesno-checkbox').bootstrapSwitch();
+            $("#avatar-remove").bind("click", function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '@Url.Action("RemoveAvatar")',
+                        data: { "id": "@Model.Profile.UserId" },
+                        type: "POST",
+                        cache: false,
+                        success: function (data) {
+                            $("#result").html(data);
+                            $('img.avatar').hide();
+                        }
+                    });
+            });
+            $('#ddMonth').change(function () {
+
+                var month = $(this).val();
+                var year = $('#ddYear').val();
+                var days = daysInMonth(month, year);
+                var select = $("#ddDay");
+                select.empty();
+
+                for (var i = 1; i < days + 1; i++) {
+                    select.append($('<option/>', {
+                        value: i,
+                        text: i
+                    }));
+                }
+
+            });
+            $(".dobdropdown").on("change", function () {
+                var year = $("#ddYear").val();
+                var month = $("#ddMonth").val();
+                var day = $("#ddDay").val();
+                var dob = year + '' + pad(month, 2) + '' + pad(day, 2);
+                if (dob.length === 8) {
+                    $("#Profile_DateOfBirth").val(dob);
+                    $("#Profile_DateOfBirth").change();
+                    /*validate the age here*/
+
+                    var age = getAge(new Date(year, month, day));
+                    var agelimit = $("#MinAge").val();
+                    if (agelimit > 0 && age < agelimit) {
+
+                        var errorArray = {};
+                        errorArray["Profile_DateOfBirth"] = 'You must be at least ' + agelimit + ' years of age';
+                        $('#profileEditForm').validate().showErrors(errorArray);
+                    }
+
+                }
+
+            });
+            $(document).on('change', '.btn-file :file', function () {
+                var input = $(this), numFiles = input.get(0).files ? input.get(0).files.length : 1, label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+                input.trigger('fileselect', [
+                    numFiles,
+                    label
+                ]);
+            });
+            $('.btn-file :file').on('fileselect', function (event, numFiles, label) {
+                var input = $(this).parents('.input-group').find(':text'), log = numFiles > 1 ? numFiles + ' files selected' : label;
+                if (input.length) {
+                    input.val(log);
+                } else {
+                    if (log) {
+                        BootstrapDialog.alert(
+                        {
+                            title: "Log",
+                            message: log
+                        });
+                    }
+                }
+            });
+
+            $('.form-control').val(function (index, value) {
+
+                var $label = $('label[for=' + $(this).attr('id') + ']');
+
+                /*let's add a 'Conditional' placeholder to non required attributes*/
+                if ($(this).data('valConditionalTargetvalue')) {
+                    if ($(this).data('valConditionalTargetvalue') === 'False') {
+                        $(this).attr('placeholder', '@ResourceManager.GetLocalisedString("Optional","General")');
+                    } else {
+                        $label.addClass('required');
+                    }
+                }
+                else if (!$(this).data('valRequired')) {
+                    $(this).attr('placeholder', '@ResourceManager.GetLocalisedString("Optional", "General")');
+                } else if ($(this).data('valRequired')) { }
+                /* The database stores spaces rather than empty strings, so let's trim them*/
+                try {
+                    return value.trim() || "";
+                } catch (e) {
+                    return "";
+                } 
+            });
+
+            var dobRequired = $("#DateOfBirth").data('valConditionalTargetvalue');
+            $(".dobdropdown").attr('data-val-conditional-targetvalue', dobRequired);
+            $('#accountTab').tabCollapse({
+                tabsClass: 'hidden-xs',
+                accordionClass: 'visible-xs'
+            });
+
+        });
+
+        function getAge(dateString) {
+            var today = new Date();
+            var birthDate = new Date(dateString);
+            var age = today.getFullYear() - birthDate.getFullYear();
+            var m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
+        }
+        function pad(num, size) {
+            var s = "000000000" + num;
+            return s.substr(s.length - size);
+        }
+
+
+    </script>
+}

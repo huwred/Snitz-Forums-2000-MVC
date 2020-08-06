@@ -1,0 +1,109 @@
+﻿@using SnitzConfig
+@using LangResources.Utility;
+@using WWW.Models;
+@section styles{
+@Html.Raw(Config.ThemeCss("dbmanager.min.css"))
+}
+
+@{
+    ViewBag.Title = "FileManager Browsing";
+}
+    <div id="file-explorer" class="container-fluid">
+        @using (Html.BeginForm("Index", "WebFileManager", FormMethod.Post, new { id = "filemanager-form" }))
+        {
+            if (Roles.IsUserInRole("Administrator"))
+            {
+                <header>
+                    <INPUT type=hidden name="action">
+                    <div class="row-fluid">
+                        <div class="col-xs-3">
+                            <div class="input-group">
+                                <input type="text" name="path" value="@ViewBag.WebPath" size="35" class="form-control">
+                                <span class="input-group-btn"><input type="submit" value="Go" class="btn btn-default" /></span>
+                                <span class="input-group-btn"><a href="@ViewBag.UpUrl" class="btn btn-default" title="@ResourceManager.GetLocalisedString("upFolder","FileManger")" data-toggle="tooltip"><img src="~/Content/images/icon/folderup.gif" /></a></span>
+                            </div>
+                        </div>
+                        <div class="col-xs-3 pull-right text-right">
+                            <a href="@Url.Action("Index","DbManager")" title="@ResourceManager.GetLocalisedString("openDBManager","FileManger")" data-toggle="tooltip"><i class="fa fa-database fa-2x"></i></a>
+                        </div>
+                    </div>
+
+                </header>
+            } else
+            {
+                <input type="hidden" name="path" value="@ViewBag.WebPath" size="35" class="form-control">
+            }
+
+            <div class="container-fluid body-content">
+                <!-- The table -->
+                <table style="width: 100%; table-layout: fixed" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th width="20" style="text-align:right"><INPUT name="all_files_checkbox" id="checkAll" type="checkbox"></th>
+                            <th width="20"></th>
+                            <th width="*" style="text-align:left"><a href="@FileManager.PageUrl("", "Name")">@ResourceManager.GetLocalisedString("fileName", "FileManger")</a></th>
+                            <th width="80" style="text-align:right"><a href="@FileManager.PageUrl("", "Size")">@ResourceManager.GetLocalisedString("fileSize", "FileManger")</a></th>
+                            <th width="30" style="text-align:left"></th>
+                            <th width="170" style="text-align:right"><a href="@FileManager.PageUrl("", "Created")">@ResourceManager.GetLocalisedString("fileCreated", "FileManger")</a></th>
+                            <th width="170" style="text-align:right"><a href="@FileManager.PageUrl("", "Modified")">@ResourceManager.GetLocalisedString("fileModified", "FileManger")</a></th>
+                            <th width="45" style="text-align:right"><a href="@FileManager.PageUrl("", "Attr")">@ResourceManager.GetLocalisedString("fileAttr", "FileManger")</a></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @Html.Action("WriteFileRows")
+                    </tbody>
+                    <tfoot>
+
+                    </tfoot>
+                </table>
+            </div>
+            <footer>
+                <a id="bottom"></a>
+                <div class="row-fluid clearfix">
+                    <div class="col-xs-12">
+                        @if (Roles.IsUserInRole("Administrator"))
+                        {
+                            <div class="input-group col-sm-8 col-md-3">
+                                <span class="input-group-addon"><img src="~/Content/images/file/folder.gif" /></span>
+                                <input type="text" name="targetfolder" id="targetfolder" class="form-control" placeholder="Target Folder">
+                                <span class="input-group-btn">
+                                    <a href="javascript:newfolder();" class="btn btn-default" title="New folder (uses target folder)" data-toggle="tooltip"><img src="~/Content/images/icon/newfolder.gif" /></a>
+                                    <a href="javascript:confirmfiles('copy');" class="btn btn-default" title="Copy to target folder" data-toggle="tooltip"><img src="~/Content/images/icon/copy.gif" /></a>
+                                    <a href="javascript:confirmfiles('move');" class="btn btn-default" title="Move to target folder" data-toggle="tooltip"><img src="~/Content/images/icon/move.gif" /></a>
+                                </span>
+                            </div>
+
+                        }
+                        <div class="input-group col-xs-1">
+                            <span class="input-group-btn">
+                                <a href="javascript:confirmfiles('delete');" class="btn btn-default" title="@ResourceManager.GetLocalisedString("fileDelete","FileManger")" data-toggle="tooltip"><img src="~/Content/images/icon/delete.gif" /></a>
+                                <a href="javascript:confirmfiles('rename');" class="btn btn-default" title="@ResourceManager.GetLocalisedString("fileRename","FileManger")" data-toggle="tooltip"><img src="~/Content/images/icon/rename.png" /></a>
+                                <a href="javascript:confirmfiles('zip');" class="btn btn-default" title="@ResourceManager.GetLocalisedString("fileZip","FileManger")" data-toggle="tooltip"><img src="~/Content/images/icon/zip.gif" /></a>
+                            </span>
+                        </div>
+                        @if (Roles.IsUserInRole("Administrator"))
+                        {
+                            <div class="input-group col-sm-5 col-md-3">
+                                <label class="input-group-btn">
+                                    <span class="btn btn-default">
+                                        Browse&hellip; <input name="files" type="file" style="display: none;" multiple>
+                                    </span>
+                                </label>
+                                <input type="text" class="form-control" readonly>
+                                <span class="input-group-btn"><a href="javascript:upload();" class="btn btn-default" title="Upload a file" data-toggle="tooltip"><img src="~/Content/images/icon/upload.gif" /></a></span>
+                            </div>
+                        }
+
+
+                    </div>
+
+                </div>
+
+            </footer>
+        }
+    </div>
+ 
+@section scripts{
+<script src="@Url.Content("~/Scripts/snitz.sitemanage.min.js")" type="text/javascript"></script>
+
+}

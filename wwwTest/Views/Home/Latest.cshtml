@@ -1,0 +1,96 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@using SnitzCore.Utility
+
+@using WWW.Views.Helpers
+
+@model  WWW.ViewModels.HomeViewModel
+@{
+    ViewBag.Title = ResourceManager.GetLocalisedString("mnuForumActive", "Menu") + " | " + Config.ForumTitle;
+    bool isRighToLeft = SessionData.Get<bool>("isRighToLeft");
+}
+
+@{
+    ViewBag.Title = Config.ForumTitle ?? ClassicConfig.ForumTitle;
+}
+
+@section pageMeta
+{
+    <meta name="description" content="Support forum for Snitz Forums Mvc">
+    <meta name="author" content="@ViewBag.Title">
+}
+@if (ClassicConfig.GetValue("STRSHOWANNOUNCE") == "1")
+{
+    @section featured {
+        <section class="featured">
+            <h3 class="text-warning">@ResourceManager.GetLocalisedString("lblAnnounce", "labels")</h3>
+            @Html.FormatBbCode(ClassicConfig.GetValue("STRANNOUNCE"))
+        </section>
+    }
+}
+<div class="container-fluid">
+
+    <div class="row-fluid row-sm-padding">
+        <h5>&nbsp;@ResourceManager.GetLocalisedString("lblRecentTopics", "labels") <span class="small">@ViewBag.Title</span> </h5><hr class="title" />
+    </div>
+    <div id="recent-topics" class="container text-center">
+        @Html.Action("RefreshRecentTopics")
+    </div>
+    <div class="row-fluid clearfix">
+        <small class="pull-right flip">@Html.ActionLink(ResourceManager.GetLocalisedString("lnkActiveTopics", "labels"), "Active", "Topic", new { pagenum = 1 }, new { title = "View all active topics since your last visit", data_toggle = "tooltip" })</small>
+    </div>
+    <div class="row-fluid hidden-md hidden-lg clearfix">
+        @Html.Partial("_JumpTo")
+    </div>
+    <div class="row-fluid">
+        @Html.Partial("_IconGlossary")
+    </div>
+    @if (ClassicConfig.GetValue("STRSHOWSTATISTICS") == "1")
+    {
+        @Html.Partial("_ForumStats", Model.ForumStats)
+    }
+
+    @Html.Action("OnlineUsers")
+</div>
+
+
+@if (User.Identity.IsAuthenticated)
+{
+    @section topicsearchbox{
+        @* search box for small screens, replaces sidebox search so search appears at top of page *@
+        @if (ClassicConfig.GetIntValue("intSideBanner") == 1)
+        {
+            <div id="banner-ad-side">@{ Html.RenderAction("SideBanner", "Ad"); }</div>
+        }
+        <div class="side-box">
+            @{ Html.RenderPartial("_SearchForums"); }
+        </div>
+    }
+}
+@*  Banner Ads  *@
+@if (ClassicConfig.GetIntValue("intSideBanner") == 1)
+{
+    @section sideBanner{
+        <div id="banner-ad-side" class="hidden-xs">@{ Html.RenderAction("SideBanner", "Ad"); }</div>
+    }
+}
+@if (ClassicConfig.GetIntValue("intTopBanner") == 1)
+{
+    @section topBanner{
+        <div id="banner-ad-top" class="hidden-xs">@{ Html.RenderAction("TopBanner", "Ad"); }</div>
+    }
+}
+@section sidebox{
+    <div class="panel-group" style="padding-bottom: 12px;">
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="side-box hidden-xs hidden-sm">
+                @{ Html.RenderPartial("_SearchForums"); }
+            </div>
+        }
+        @Html.Partial("_RightColumn", new ViewDataDictionary(this.ViewData) { { "show", new List<string>() { "calendar", "poll", "photo", "catlist" } } })
+
+    </div>
+
+}
+

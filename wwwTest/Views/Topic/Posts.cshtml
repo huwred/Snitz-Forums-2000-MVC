@@ -1,0 +1,428 @@
+﻿@using BbCodeFormatter
+@using LangResources.Utility
+@using Snitz.Base
+@using SnitzConfig
+@using SnitzCore.Utility
+@using SnitzDataModel.Extensions
+@using SnitzDataModel.Models
+@using WWW.Helpers
+@using WWW.Views.Helpers
+@model WWW.ViewModels.TopicViewModel
+@{
+    ViewBag.Title = Html.FormatBbCodeTitle(WebUtility.HtmlDecode(Model.Topic.Subject), false) + " | " + (Config.ForumTitle ?? ClassicConfig.ForumTitle);
+    ViewBag.Topic = Model.Topic;
+    ViewBag.hasForumSubscription = User.ForumSubscriptions().Contains(Model.ForumId);
+    ViewBag.ForumSubscription = Enumerators.Subscription.None;
+    ViewBag.bg = "bg1";
+    if (Model.Forum != null)
+    {
+        ViewBag.ForumSubscription = Model.Forum.Subscription;
+    }
+    string[] terms = ViewBag.SearchTerms;
+    string termstring = "";
+    if (terms != null)
+    {
+        termstring = String.Join(",", terms.Select(i => "'" + i + "'"));
+    }
+    if (ClassicConfig.GetIntValue("STRTHANKS") == 1)
+    {
+        ViewData["allowThanks"] = CustomAssemblyResolver.ExecuteMethod("Snitz.PostThanks", "PostThanks.Helpers.Methods", "Allowed", new object[] { Model.Topic.ForumId });
+    }
+    var newlayout = ClassicConfig.GetIntValue("INTNEWLAYOUT", 0) == 1;
+
+}
+@section pageMeta
+{
+
+    <meta name="description" content="@BbCodeProcessor.StripTags(Model.Topic.Message).TruncateLongString(360)">
+    <meta name="author" content="@Model.Topic.Author.Username">
+    <meta name="distribution" content="global">
+    <meta name="copyright" content="@Html.Raw(String.Format(ClassicConfig.Copyright, DateTime.UtcNow.Year)) - @Model.Topic.Author.Username">
+    <meta name="robots" content="index,nofollow">
+    <meta name="rating" content="14 years">
+
+}
+@section styles
+{
+    <link rel="alternate" type="application/rss+xml" title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipForumRss", "Tooltip") @LangResources.Utility.ResourceManager.GetLocalisedString("lblTopic", "labels") - @Html.FormatBbCode(WebUtility.HtmlDecode(Model.Topic.Subject),false)" href="@Url.Action("Topic","RSSFeed", new {id=Model.Id})" />
+    @Html.Raw(Config.ThemeCss("star-rating.min.css"))
+    @Html.Raw(Config.ThemeCss("highlight.min.css"))
+    @if (ViewBag.RequireAuth)
+    {
+        <style>
+            .modal-backdrop.in {
+                opacity: 1.0;
+            }
+        </style>
+
+    }
+}
+
+@section breadcrumb
+{
+    @Html.BuildBreadcrumbNavigation()
+
+}
+@section topicsearchbox
+{
+    <!-- search box for small screens, replaces sidebox search so search appears at top of page -->
+    <h5>@LangResources.Utility.ResourceManager.GetLocalisedString("sbSearchTopic", "labels")</h5>
+    @{ Html.RenderPartial("_Search", new SearchModel() { TopicId = Model.Id }); }
+}
+@section sidebox
+{
+    <div class="panel-group">
+        <div class="side-box">
+            <h5>@LangResources.Utility.ResourceManager.GetLocalisedString("sbSearchTopic", "labels")</h5>
+            @{ Html.RenderPartial("_Search", new SearchModel() { TopicId = Model.Id }); }
+        </div>
+
+        @Html.Partial("_RightColumn", new ViewDataDictionary(this.ViewData) { { "show", new List<string>() { "catlist" } } })
+    </div>
+
+}
+<div class="container-fluid col-lg-11 padding-none" id="wrap-body">
+
+    @if (!ViewBag.RequireAuth)
+    {
+        if (newlayout)
+        {
+            <div class="btn-toolbar-topics padding-sm">
+                <div class="chunk">
+                    <div id="subhead-title">
+                        @{ Html.RenderPartial("_TopicPageButtons", Model); }
+                    </div>
+                    <div class="search-box col-xs-6 pull-right flip" style="margin-top: 3px; margin-bottom: 3px;">
+                        @if (ClassicConfig.GetIntValue("STRSOCIALSHARE", 1) == 1)
+                        {
+                            <div class="pull-right flip text-right">
+                                @{ Html.RenderPartial("_SocialMedia"); }
+                            </div>
+
+                        }
+                    </div>
+                </div>
+                @if (Model.Forum.ReplyAuth != Enumerators.PostAuthType.Anyone)
+                {
+                    <div class="chunk">
+                        <h5 class="inline"><label>Restricted posting:  </label></h5>
+                        <ul class="inline list-inline">
+                            @{
+                                switch (Model.Forum.ReplyAuth)
+                                {
+                                    case Enumerators.PostAuthType.Admins:
+                                        <li>Only Administrators can reply to Topics</li>
+                                        break;
+                                    case Enumerators.PostAuthType.Moderators:
+                                        <li>Only Administrators or Moderators can reply to Topics</li>
+                                        break;
+                                    default:
+                                        <li>Anyone can reply to Topics</li>
+                                        break;
+                                }
+                            }
+                        </ul>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="btn-toolbar-topics padding-sm">
+                @{
+                    Html.RenderPartial("_TopicPageButtons", Model);
+                }
+            </div>
+            <hr class="title" />
+        }
+
+
+        if (ClassicConfig.GetIntValue("STRSHOWTOPICNAV") == 1)
+        {
+            Html.RenderAction("TopicNav", new { id = Model.Topic.ForumId, Model.Topic.LastPostDate });
+        }
+        if (Convert.ToInt32(Model.Page) <= 1 || ClassicConfig.GetIntValue("INTTOPICDISPLAY") == 1)
+        {
+            if (newlayout)
+            {
+
+                <div class="chunk-main">
+                    @{ Html.RenderPartial("_TopicNew", Model.Topic, this.ViewData); }
+                </div>
+
+            }
+            else
+            {
+                Html.RenderPartial("_Topic", Model.Topic, this.ViewData);
+            }
+            if (Model.Topic.AllowRating == 1 && ClassicConfig.GetIntValue("INTTOPICRATING", 0) == 1 && !Model.Topic.HasVoted(WebSecurity.CurrentUserId) && Model.Topic.AuthorId != WebSecurity.CurrentUserId)
+            {
+                using (Ajax.BeginForm("SaveRating", "Topic", null, new AjaxOptions()
+                {
+                    OnSuccess = "OnSuccessRefresh",
+                    OnFailure = "OnFailure",
+                    HttpMethod = "POST",
+                    UpdateTargetId = "topic_rating",
+                    LoadingElementId = "loading"
+                }))
+                {
+                    <div class="padding-md" dir="ltr" id="topic_rating" style="margin-left: 40px;">
+                        @Html.Hidden("TopicId", Model.Id)
+                        @Html.Hidden("MemberId", WebSecurity.CurrentUserId)
+                        <span class="text-muted small">@ResourceManager.GetLocalisedString("lblRateMe", "BlogPages")</span>
+                        <div class="input-group col-xs-3">
+                            <input id="PostRating" name="PostRating" value="0" type="number" class="rate-me" min=0 max=5 step=0.5 data-size="sm" title="@ResourceManager.GetLocalisedString("lblStarRating", "BlogPages")" rel="tooltip" />
+                            <div class="input-group-addon topic_rating"><button type="submit" class="btn btn-link fa fa-check" title="@ResourceManager.GetLocalisedString("lblRateMe", "BlogPages")" /></div>
+                        </div>
+
+                    </div>
+                }
+
+            }
+        }
+
+        if (Model.Replies.Any())
+        {
+            <div class="chunk-main">
+                <h5 class="clearfix">
+                    @LangResources.Utility.ResourceManager.GetLocalisedString("lblReplies", "labels")
+                    <span class="input-group-btn pull-right flip">
+                        <select title="@ResourceManager.GetLocalisedString("selSortDir", "Controls")" data-toggle="tooltip" name="SortDir" id="sd" class="form-control "><option @if (ViewBag.SortDir == "ASC") { @Html.Raw("selected='selected'") } value="ASC">@ResourceManager.GetLocalisedString("optAsc", "Controls")</option><option @if (ViewBag.SortDir == "DESC") { @Html.Raw("selected='selected'") } value="DESC">@ResourceManager.GetLocalisedString("optDesc", "Controls")</option></select>
+                    </span>
+                </h5>
+                <hr class="title" />
+                @*onchange="$(this).closest('form').submit();"*@
+            </div>
+            <div class="chunk-main row-fluid clearfix">
+                <div class="nopadding pull-left flip">
+                    @{ Html.RenderPartial("_Pager", Model); }
+                </div>
+                @if (Convert.ToInt32(Model.PageCount) > 1)
+                {
+                    <div class="pull-right flip padding-xs">
+                        @{ Html.RenderPartial("_PageSize"); }
+                    </div>
+                }
+
+            </div>
+        }
+        foreach (var item in Model.Replies)
+        {
+
+
+            if (Model.Forum != null)
+            {
+                item.ForumStatus = Model.Forum.Status;
+            }
+            if (item.topic == null)
+            {
+                item.topic = Model.Topic;
+            }
+            if (newlayout)
+            {
+                <div class="chunk-main">
+                    @{
+                        Html.RenderPartial("_ReplyNew", item, this.ViewData);
+                    }
+                </div>
+            }
+            else
+            {
+                Html.RenderPartial("_Reply", item, this.ViewData);
+            }
+            ViewBag.bg = ViewBag.bg == "bg1" ? "bg2" : "bg1";
+        }
+        if (ClassicConfig.GetIntValue("STRSHOWTOPICNAV") == 1)
+        {
+            Html.RenderAction("TopicNav", new { id = Model.Topic.ForumId, Model.Topic.LastPostDate });
+
+        }
+
+        <div class="chunk-main row-fluid clearfix">
+            <div class="pull-left flip">
+                @{ Html.RenderPartial("_Pager", Model); }
+            </div>
+            @if (Convert.ToInt32(Model.PageCount) > 1)
+            {
+                <div class="pull-right flip padding-xs">
+                    @{ Html.RenderPartial("_PageSize"); }
+                </div>
+            }
+        </div>
+
+        <div class="chunk-main btn-toolbar-topics">
+            @{
+                Html.RenderPartial("_TopicPageButtons", Model);
+            }
+
+        </div>
+        if (Model.Forum != null && Model.Forum.Status == Enumerators.PostStatus.Open && ((Model.Forum.ReplyAuth == Enumerators.PostAuthType.Anyone || (Model.Forum.ReplyAuth == Enumerators.PostAuthType.Moderators && User.IsForumModerator(Model.Forum.Id)) || User.IsAdministrator())))
+        {
+            if (!Config.DisablePosting && Model.Topic.Archived != 1)
+            {
+                if (User.Identity.IsAuthenticated && ClassicConfig.ShowQuickReply && Model.Topic.PostStatus == Enumerators.PostStatus.Open)
+                {
+                    if (newlayout)
+                    {
+                        <div class="chunk-main">
+                            <div class="post">
+                                @{
+                                    Html.RenderPartial("_QuickReply", ViewData["quickreply"]);
+                                }
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row-fluid">
+                            @{
+                                Html.RenderPartial("_QuickReply", ViewData["quickreply"]);
+                            }
+                        </div>
+                    }
+
+                }
+            }
+        }
+        if (newlayout)
+        {
+            <div class="chunk-main">
+                <p class="jumpbox-return"><a class="left-box arrow-left" accesskey="r" href="@Url.Action("Posts", "Forum", new {id = Model.Forum.Id, pagenum = 1})">@ResourceManager.GetLocalisedString("returnTo", "labels") @Model.Forum.Subject</a></p>
+            </div>
+        }
+
+    }
+
+</div>
+
+@{
+    Html.RenderPartial("_ModalPopups");
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/dropzonejs")
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
+    @Scripts.Render("~/Scripts/cshtml-razor.min.js")
+    @Scripts.Render("~/Scripts/star-rating.min.js")
+
+    <script type="text/javascript">
+            var OnSuccessRefresh = function (response) {
+
+                $("#PostRating").rating({ language: window.SnitzVars.forumlang, 'showClear': true, 'showCaption': false, rtl: false });
+                $('#star-rating-demo').rating('update', response.responseText);
+            }
+            hljs.registerLanguage('cshtml-razor', window.hljsDefineCshtmlRazor);
+            hljs.initHighlightingOnLoad();
+            
+            $('input[type="submit"]').on('click', function (event) {
+                    event.preventDefault();
+                    $(this).attr('disabled', 'disabled');
+
+                    var serializedForm = $("#quickpostForm").serialize();
+                    
+                    $("#loading").show();
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("PostMessage", "Reply")',
+                        data: serializedForm,
+                        dataType: "json",
+                        success: function (data) {
+                            var arr = data.responseText.split('|');
+
+                            window.location.href = arr[1];
+                            window.location.hash = arr[2];
+                            window.location.reload(true);
+                            return false;
+
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            //debugger;
+                            var decoded = JSON.parse(xhr.responseText);
+                            $("#loading").hide();
+                            BootstrapDialog.alert(
+                                {
+                                    title: "Error ",
+                                    message: decoded
+                                });
+                        }
+                    });
+
+                });
+
+            $(window).on("load", function() {
+                var margin = $(".col-md-2").outerWidth() + 2;
+                var width = $(".postbody").outerWidth() - 2;
+                if ('@Session["isRighToLeft"]' === 'False') {
+                    $('.message-footer').css('left', margin);
+                    $('.message-footer').css('width', width);
+
+                } else {
+                    $('.message-footer').css('right', margin);
+                    $('.message-footer').css('width', width);
+
+                }
+
+                var termsArray = [@Html.Raw(termstring)];
+                for (var i = 0; i < termsArray.length; i++) {
+                    $('div.message').highlight(termsArray[i]);
+                }
+                if ('@ViewBag.RequireAuth' === 'True') {
+                    window.passwordDialog('@Url.Action("Posts", "Topic", new { id = Model.Topic.Id, pagenum = 1 })', '@Model.Topic.ForumId', '@Model.Topic.Id');
+                }
+
+                try {
+                    Dropzone.autoDiscover = false;
+                } catch (e) {
+                    console.log('Dropzone not loaded');
+                }
+                $(".bbc-codecontent").each(function () {
+                    var test = $(this).html().replace(/&nbsp;/g, ' ').replace(/<br.*?>/g, '&#13;&#10;');
+                    $(this).html(test);
+                });
+                $('.modal').on('hidden.bs.modal', function () {
+                    $(this).removeData('bs.modal');
+                });
+
+
+                setRequiredFields();
+
+                $('#approve-btn').on('click', function () {
+                    $('#modal-container').modal('hide');
+                });
+                $('input[type="submit"]').prop('disabled', true);
+                $('textarea').on('keyup', function () {
+                    var textareaValue = $(this).val();
+                    $(this).css('background-color', '#ffffff');
+                    if (textareaValue !== '') {
+                        $('input[type="submit"]').attr('disabled', false);
+                    } else {
+                        $('input[type="submit"]').attr('disabled', true);
+                    }
+                });
+                $(".emote").on('mouseup', function () {
+                    $('input[type="submit"]').attr('disabled', false);
+                    $('textarea').css('background-color', '#ffffff');
+                });
+                $(".btn").on('mouseup', function () {
+                    $('input[type="submit"]').attr('disabled', false);
+                });
+
+
+                //QuickReply POST
+                
+                if (window.location.hash) {
+
+                    // smooth scroll to the anchor id
+                    if (window.location.hash !== '#0') {
+                        $('html, body').animate({
+                            scrollTop: ($(window.location.hash).offset().top - 50) + 'px'
+                        }, 500, 'swing');
+
+                    }
+                }
+                setConditionalValidators();
+            });
+    </script>
+}

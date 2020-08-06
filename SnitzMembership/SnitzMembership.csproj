@@ -33,37 +33,17 @@
     <Reference Include="AegisImplicitMail, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\AIM.1.0.3\lib\AegisImplicitMail.dll</HintPath>
     </Reference>
-    <Reference Include="BouncyCastle.Crypto, Version=1.8.6.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
-      <HintPath>..\packages\BouncyCastle.1.8.6.1\lib\BouncyCastle.Crypto.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Protobuf, Version=3.12.4.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Protobuf.3.12.4\lib\net45\Google.Protobuf.dll</HintPath>
-    </Reference>
-    <Reference Include="K4os.Compression.LZ4, Version=1.1.11.0, Culture=neutral, PublicKeyToken=2186fa9121ef231d, processorArchitecture=MSIL">
-      <HintPath>..\packages\K4os.Compression.LZ4.1.1.11\lib\net46\K4os.Compression.LZ4.dll</HintPath>
-    </Reference>
-    <Reference Include="K4os.Compression.LZ4.Streams, Version=1.1.11.0, Culture=neutral, PublicKeyToken=2186fa9121ef231d, processorArchitecture=MSIL">
-      <HintPath>..\packages\K4os.Compression.LZ4.Streams.1.1.11\lib\net46\K4os.Compression.LZ4.Streams.dll</HintPath>
-    </Reference>
-    <Reference Include="K4os.Hash.xxHash, Version=1.0.6.0, Culture=neutral, PublicKeyToken=32cd54395057cec3, processorArchitecture=MSIL">
-      <HintPath>..\packages\K4os.Hash.xxHash.1.0.6\lib\net46\K4os.Hash.xxHash.dll</HintPath>
-    </Reference>
-    <Reference Include="MySql.Data, Version=8.0.21.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <HintPath>..\packages\MySql.Data.8.0.21\lib\net452\MySql.Data.dll</HintPath>
+    <Reference Include="MySql.Data, Version=6.10.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.6.10.9\lib\net452\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data.Entity.EF6, Version=6.10.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>..\packages\MySql.Data.Entity.6.10.9\lib\net452\MySql.Data.Entity.EF6.dll</HintPath>
-    </Reference>
-    <Reference Include="MySql.Web, Version=8.0.21.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <HintPath>..\packages\MySql.Web.8.0.21\lib\net452\MySql.Web.dll</HintPath>
-    </Reference>
-    <Reference Include="Renci.SshNet, Version=2016.1.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
-      <HintPath>..\packages\SSH.NET.2016.1.0\lib\net40\Renci.SshNet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
     </Reference>
+    <Reference Include="System.ComponentModel" />
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
     </Reference>
@@ -126,9 +106,6 @@
     <Reference Include="RazorEngine">
       <HintPath>..\packages\RazorEngine.3.10.0\lib\net45\RazorEngine.dll</HintPath>
     </Reference>
-    <Reference Include="Ubiety.Dns.Core, Version=2.2.1.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <HintPath>..\packages\MySql.Data.8.0.21\lib\net452\Ubiety.Dns.Core.dll</HintPath>
-    </Reference>
     <Reference Include="WebMatrix.Data">
       <HintPath>..\packages\Microsoft.AspNet.WebPages.Data.3.2.7\lib\net45\WebMatrix.Data.dll</HintPath>
     </Reference>
@@ -146,9 +123,6 @@
     </Reference>
     <Reference Include="Westwind.Web.Mvc">
       <HintPath>..\packages\Westwind.Web.Mvc.2.80.0\lib\net45\Westwind.Web.Mvc.dll</HintPath>
-    </Reference>
-    <Reference Include="Zstandard.Net, Version=1.1.7.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <HintPath>..\packages\MySql.Data.8.0.21\lib\net452\Zstandard.Net.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -194,6 +168,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

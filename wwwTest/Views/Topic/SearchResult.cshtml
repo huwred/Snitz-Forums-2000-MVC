@@ -1,0 +1,195 @@
+﻿
+@using System.Linq
+@using BbCodeFormatter
+@using LangResources.Utility
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel
+@using SnitzDataModel.Extensions
+@using SnitzDataModel.Models
+@using SnitzMembership
+@using WWW.Views.Helpers
+@using Reply = SnitzDataModel.Models.Reply
+@using Topic = SnitzDataModel.Models.Topic
+@using WebSecurity = WebMatrix.WebData.WebSecurity
+
+@model SnitzDataModel.Models.SearchResult
+@{
+    ViewBag.Title = ResourceManager.GetLocalisedString("sbSearchTopic", "labels");
+    string searchin = "";
+    Topic topic = Model.Topics.First();
+    searchin = BbCodeProcessor.Format(Model.Forum == null ? topic.Subject : Model.Forum.Subject, false);
+}
+@section breadcrumb
+{
+    @Html.BuildBreadcrumbNavigation()
+}
+
+@section sidebox{
+    @Html.Partial("_RightColumn", new ViewDataDictionary(this.ViewData) { { "show", new List<string>() { "catlist" } } })
+}
+
+
+@if (ClassicConfig.GetIntValue("INTNEWLAYOUT", 0) == 1 && (Model.Forum != null || Model.Category != null))
+{
+    <div id="wrap-body">
+        @{ Html.RenderPartial("~/Views/Forum/_SearchResult.cshtml"); }
+    </div>
+}
+else
+{
+    <h4>@ViewBag.Title @searchin<small> @ResourceManager.GetLocalisedString("lblFor", "labels") "@Model.Params.Term"</small></h4>
+}
+@if (Model.Forum == null && Model.Category == null)
+{
+    if (ClassicConfig.GetIntValue("INTNEWLAYOUT", 0) == 1)
+    {
+        <div id="wrap-id" class="chunk-main">
+        @foreach (Reply item in Model.Replies)
+        {
+            <div class="post has-profile bg2" id="reply_@item.Id">
+                <div class="inner equal" id="@item.Id">
+                    <dl class="postprofile col-xs-2" id="profile_@item.AuthorId">
+                        <dt class="profile-rank has-avatar">
+                            @{
+                                string cssonline = OnlineUsersInstance.OnlineUsers.IsOnline(item.Author.Username) ? "online" : "";
+                                string cssusername = "member";
+                                if (Roles.IsUserInRole(item.Author.Username, "Administrator"))
+                                {
+                                    cssusername = "administrator";
+                                }
+                                else if (Roles.IsUserInRole(item.Author.Username, "Moderator"))
+                                {
+                                    cssusername = "moderator";
+                                }
+                            }
+                            <div class="avatar-container @cssonline">
+                                @if (WebSecurity.IsAuthenticated)
+                                {
+                                    <a href="@Url.Action("UserProfile", "Account", new {id = item.Author.Username})" data-toggle="tooltip" title="">
+                                        @Html.Avatar(item.Author.Username, item.Author.PhotoUrl, "avatar img-circle").If(Config.ShowAvatar)
+                                    </a>
+                                    @Html.ActionLink(item.Author.Username, "UserProfile", "Account", new { id = item.Author.Username }, new { data_toggle = "tooltip" }).If(!Config.ShowAvatar)
+                                }
+                                else
+                                {
+                                    @Html.Avatar(item.Author.Username, item.Author.PhotoUrl, "avatar img-circle").If(Config.ShowAvatar)
+                                    if (!Config.ShowAvatar)
+                                    {
+                                        @Html.Raw(item.Author.Username)
+                                    }
+                                }
+                            </div>
+                            <a class="@cssusername" href="@Url.Action("UserProfile", "Account", new {id = item.Author.Username})">@item.Author.Username</a>
+                        </dt>
+                        <dd class="profile-country">
+                                @item.Author.Country
+                        </dd>
+                        <dd class="profile-posts"><span class="badge center-block numbers" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipPostCount", "Tooltip") @item.Author.PostCount">@item.Author.PostCount</span></dd>
+                        <dd class="profile-joined"><strong>Joined: </strong>@Html.Timeago(item.Author.CreatedDate)</dd>
+                    </dl>
+
+                    <div class="postbody col-xs-10">
+                        <div id="post_content_@item.Id">
+                            <p class="author">
+                                <a href="@Url.Action("Posts", "Topic", new {id = item.Id, pagenum = 1, archived = Model.Archived})" class="topic-title">@Html.Timeago(item.Date)</a>
+                            </p>
+                            <div class="content message clearfix">
+                                @Html.FormatBbCode(item.Message)
+                                <br />
+                                <br />
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="message-footer">
+                        @if (item.LastEditDate.HasValue && ClassicConfig.ShowEditedBy)
+                        {
+                            <span class="text-danger text-right">@ResourceManager.GetLocalisedString("lblEditedBy", "labels") @Html.Raw(item.EditedBy) @Html.Timeago(item.LastEditDate.Value)</span>
+                        }
+                        @if (ClassicConfig.GetValue("STRSIGNATURES") == "1" && ClassicConfig.GetValue("STRDSIGNATURES") == "1" && item.ShowSig == 1 && !String.IsNullOrEmpty(item.Author.Signature))
+                        {
+                            if (!String.IsNullOrEmpty(item.Author.Signature.Trim()))
+                            {
+                                <div class="signature">
+                                    @Html.FormatBbCode(item.Author.Signature)
+                                </div>
+                            }
+
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+        </div>
+    }
+    else
+    {
+        foreach (Reply item in Model.Replies)
+        {
+            string cssusername = "member";
+            if (Roles.IsUserInRole(item.Author.Username, "Administrator"))
+            {
+                cssusername = "administrator";
+            }
+            else if (Roles.IsUserInRole(item.Author.Username, "Moderator"))
+            {
+                cssusername = "moderator";
+            }
+            <div class="row row-eq-height topic-recent row-sm-padding">
+                <div class="col-xs-2 col-md-1 padding-md">
+                    <div class="avatarsmall">
+                        @Html.Avatar(item.PostAuthorName, item.AuthorAvatar, "avatarsmall img-circle").If(Config.ShowAvatar)
+                    </div>
+                </div>
+                <div class="col-xs-10 col-md-11">
+
+                    @if (topic.LastPostReplyId > 0)
+                    {
+                        <span><a href="@Url.Action("Posts", "Topic", new {id = item.TopicId, pagenum = -1})#@item.Id" title="Jump to reply">reply</a> by</span>
+                        @Html.ActionLink(" " + item.Author.Username, "UserProfile", "Account", new { id = item.Author.Username }, new { @class=cssusername, title = ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip") })
+                        @Html.Raw("&nbsp;")@Html.Timeago(item.Date)
+                        <span class="panel panel-info center-block padding-md">@Html.FormatBbCode(item.Message)</span>
+                    }
+                </div>
+
+            </div>
+
+        }
+
+    }
+
+    <p><a href="javascript:void(0);" onclick="history.go(-1);">@ResourceManager.GetLocalisedString("lblBackToTopic", "labels")</a></p>
+}
+else
+{
+
+    if (ClassicConfig.GetIntValue("INTNEWLAYOUT", 0) == 1)
+    {
+
+        <div class="chunk-main">
+            <div class="inner">
+                <ul class="topiclist topics">
+                    @for (int i = 0; i < Model.Topics.Count; i++)
+                    {
+                        @Html.DisplayFor(x => x.Topics[i], "TopicNew")
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+    else
+    {
+        @Html.DisplayFor(m => m.Topics)
+    }
+    <p><a href="javascript:void(0);" onclick="history.go(-1);">@ResourceManager.GetLocalisedString("lblBackToForum", "labels")</a></p>
+}
+
+@section scripts
+{
+    <script type="text/javascript">
+        var terms = '@Model.Params.Term';
+        $('.panel').highlight(terms);
+    </script>
+}

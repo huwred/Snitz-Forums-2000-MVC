@@ -1,0 +1,13 @@
+﻿googlebot
+bingbot
+slurp
+duckduckbot
+baiduspider
+yandexbot
+sogou
+exabot
+facebot
+facebook
+ia_archiver
+semrush
+msnbot

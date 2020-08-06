@@ -1,0 +1,30 @@
+﻿@using System.Configuration
+@using BbCodeFormatter
+@using LangResources.Utility
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model List<SnitzDataModel.Question>
+
+@foreach (var q in Model)
+{
+    <dl class="faq" id="@q.Id">
+        <dt>
+            <strong>@q.Description</strong>
+            <span class="pull-right flip">
+                @if (User.IsAdministrator() || User.IsUserInRole("FaqModerator"))
+                {
+                    <a href="@Url.Action("Edit", "Help", new {id = q.Id, category = q.CategoryId})" class="pop-open modal-link" title="@ResourceManager.GetLocalisedString("tipEditFAQ", "Tooltip")" data-target="tooltip"><i class="fa fa-edit"></i></a>
+                    @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("lblDelFAQ", "labels"), "Delete", "Help", new { id = q.Id }, "fa fa-trash")
+                }
+                <a href="#overall-wrap" title="Go to top" data-toggle="tooltip"><i class="fa fa-chevron-up"></i></a>
+            </span>
+        </dt>
+        <dd>
+            @Html.Raw(BbCodeProcessor.Format(q.Answer))
+        </dd>
+    </dl>
+    <hr class="dashed" />
+}

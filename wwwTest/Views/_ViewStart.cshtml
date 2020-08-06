@@ -1,0 +1,39 @@
+﻿@using SnitzCore.Extensions
+
+
+@using SnitzConfig
+@{
+    var qlayout = HttpContext.Current.Request.QueryString;
+    string embedded = "Embedded";
+    foreach (var key in qlayout.AllKeys)
+    {
+        if (Equals(key, embedded))
+        {
+        ClassicConfig.ConfigDictionary.CreateNewOrUpdateExisting("INTEMBEDED", "1");
+            break;
+        }
+    }
+    string ControllerName = Convert.ToString(HttpContext.Current.Request.RequestContext.RouteData.Values["Controller"]);
+
+    switch (ControllerName)
+    {
+        case "Admin"://Admin layout
+            Layout = "~/Views/Admin/_Layout.cshtml"; //ClassicConfig.GetIntValue("INTNEWLAYOUT", 0) == 1 ? "~/Views/Shared/_LayoutNew.cshtml" : "~/Views/Shared/_Layout.cshtml";
+
+            if (ClassicConfig.GetIntValue("INTEMBEDED", 0) == 1)
+            {
+                Layout = "~/Views/Admin/_LayoutEmbedded.cshtml";
+            }
+            break;
+            case "Setup":
+                break;
+        default:
+            Layout = ClassicConfig.GetIntValue("INTNEWLAYOUT", 0) == 1 ? "~/Views/Shared/_LayoutNew.cshtml" : "~/Views/Shared/_Layout.cshtml";
+            if (ClassicConfig.GetIntValue("INTEMBEDED", 0) == 1)
+            {
+                Layout = "~/Views/Shared/_LayoutEmbeded.cshtml";
+            }
+            break;
+    }
+
+}

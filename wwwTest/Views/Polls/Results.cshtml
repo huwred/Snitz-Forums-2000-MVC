@@ -1,0 +1,15 @@
+﻿@using System.Web.UI.WebControls
+@using SnitzConfig
+@model WWW.ViewModels.PollViewModel
+
+@{
+    Layout = null;
+    bool featured = false;
+    string panel = "panel-info";
+    if (Model.Poll.Id == Convert.ToInt32(ClassicConfig.GetIntValue("INTFEATUREDPOLLID")))
+    {
+        panel = "panel-primary";
+        featured = true;
+    }
+}
+@Html.DisplayFor(m=>m.Poll,new{panel,featured})

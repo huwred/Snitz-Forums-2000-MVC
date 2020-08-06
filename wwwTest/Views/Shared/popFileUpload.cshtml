@@ -1,0 +1,129 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@using WWW.Views.Helpers
+
+@{
+    string controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+<div id="uploadFileForm">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
+        <h4 class="modal-title" id="myModalLabel">@ResourceManager.GetLocalisedString("lblFileUpload", "labels")</h4>
+    </div>
+    <div class="modal-body clearfix">
+        <p>
+            @String.Format(ResourceManager.GetLocalisedString("maxFileSize", "labels"), ClassicConfig.GetIntValue("INTMAXFILESIZE"))
+            <br />
+            @String.Format(ResourceManager.GetLocalisedString("allowedFiles", "labels"), ClassicConfig.GetValue("STRFILETYPES"))
+        </p>
+        @using (Html.BeginForm("Upload", controllerName, FormMethod.Post, new { @id = "frmUploadFile", @enctype = "multipart/form-data", @class = "form-horizontal", role = "form" }))
+        {
+            <div class="dropzone" id="dzAttach">
+                <div class="fallback">
+                    <div class="input-group">
+                        <label class="input-group-btn">
+                            <span class="btn btn-primary">
+                                @ResourceManager.GetLocalisedString("btnBrowse", "labels") <input style="display: none;" type="file" name="fileInput" id="fileInput">
+                            </span>
+                        </label>
+                        <input class="form-control" type="text" readonly="" id="Attached">
+                    </div>
+                    <p>&nbsp;</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <p class="pull-right flip padding-md">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">@ResourceManager.GetLocalisedString("btnCancel", "labels")</button>
+                    <input name="submitUpload" type="button" id="submitUpload" value="@ResourceManager.GetLocalisedString("btnUpload", "labels")" class="btn btn-primary" />
+                </p>
+            </div>
+        }
+
+    </div>
+</div>
+
+    <script type="text/javascript">
+        $(function() {
+            $(document).on('change',
+                ':file',
+                function() {
+                    var input = $(this),
+                        numFiles = input.get(0).files ? input.get(0).files.length : 1,
+                        label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+
+                    $("#Attached").val(label);
+                });
+            // Now that the DOM is fully loaded, create the dropzone, and setup the
+            // event listeners
+            var myDropzone = new Dropzone("#dzAttach",
+                {
+                    url: window.SnitzVars.baseUrl + '@controllerName/Upload',
+                    addRemoveLinks: true,
+                    maxFilesize: window.SnitzVars.MaxFileSize,
+                    acceptedFiles: "@ClassicConfig.GetValue("STRFILETYPES")",
+                    paramName: "fileInput",
+                    init: function() {
+
+                        var submitButton = document.querySelector("#submitUpload");
+                        var wrapperThis = this;
+
+                        submitButton.addEventListener("click",
+                            function(e) {
+                                $.validator.unobtrusive.parse($("#frmUploadFile"));
+
+                                if ($("#frmUploadFile").valid()) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+
+                                    wrapperThis.processQueue();
+                                }
+                            });
+                        this.on("uploadprogress",
+                            function(file, progress) {
+                                
+                                return file.previewElement.classList.add("dz-success");
+                            });
+                    },
+                    dictDefaultMessage: "@ResourceManager.GetLocalisedString("UploadFile", "Dropzone")" //"Drop File here to upload"
+                });
+
+            myDropzone.on("complete",
+                function (data) {
+
+                    var res = JSON.parse(data.xhr.responseText);
+
+                    if (res.success) {
+                        var arr = res.responseText.split('|');
+                        $('#modal-container').modal('hide');
+                        var filesize = "";
+                        if (arr.length === 3) {
+                            filesize = arr[2].replace('"', '');
+                        }
+                        if ($("#pm-editorDiv").length > 0 && $("#pm-editorDiv").is(':visible')) {
+                            var pDiv = $("#pm-editorDiv");
+                            var tId = pDiv.find(".bbc-code-editor")[0].id;
+                            $("#" + tId).insertAtCaret("[file" + filesize + "]" + arr[0].replace('"', '') + "[/file]");
+
+                        } else if ($("#editorDiv").length > 0) {
+                            var parentDiv = $("#editorDiv");
+                            var textId = parentDiv.find(".bbc-code-editor")[0].id;
+                            if (arr[1].indexOf("pdf") >= 0) {
+                                $("#" + textId).insertAtCaret("[pdf]" + arr[0].replace('"', '') + "[/pdf]");
+                            } else if (arr[1].indexOf("image") >= 0) {
+                                $("#" + textId).insertAtCaret("[img]" + arr[0].replace('"', '') + "[/img]");
+                            } else {
+
+
+                                $("#" + textId)
+                                    .insertAtCaret("[file " + filesize + "]" + arr[0].replace('"', '') + "[/file]");
+                            }
+                        } else {
+                            location.reload();
+                        }
+                    } else {
+                        BootstrapDialog.warning(res.responseText);
+                    }
+                });
+        });
+
+    </script>

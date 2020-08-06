@@ -1,0 +1,7 @@
+﻿@using BbCodeFormatter
+@model System.ServiceModel.Syndication.SyndicationItem
+
+<li class="news-item">
+    <a href='@Model.Links[0].Uri.OriginalString'><b> @Model.Title.Text</b></a><br />
+    @Html.Raw(BbCodeProcessor.RemoveHtmlTags(Model.Summary.Text))
+</li>

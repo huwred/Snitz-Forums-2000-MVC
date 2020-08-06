@@ -1,0 +1,56 @@
+﻿@using LangResources.Utility
+@model WWW.ViewModels.LangUpdateViewModel
+
+<div id="resourceEditor">
+
+    @using (Ajax.BeginForm("Update", "LangResource", null,
+        new AjaxOptions
+        {
+            HttpMethod = "POST",
+            LoadingElementId = "loading",
+            //UpdateTargetId = "resGrid",
+        }, new { id = "frmResEditor", @class = "form-horizontal" }))
+    {
+        <div class="container-fluid">
+            <div class="form-group">
+                <label class="col-xs-3">Resource Set</label>
+                <div class="col-xs-5"><input dir="ltr" class="form-control" type="text" name="ResourceSet" id="ResourceSet" value="@Model.ResourceSet" readonly></div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-3">Resource Id</label>
+                <div class="col-xs-8"><input dir="ltr" class="form-control" type="text" name="ResourceId" value="@Model.ResourceId" readonly ></div>
+            </div>
+            @{
+                int x = 0;
+            }
+            @foreach (var resource in Model.ResourceTranslations)
+            {
+                var readonlystring = "";
+                var directionstring = "ltr";
+                if (resource.Key == "en")
+                {
+                    readonlystring = "readonly";
+                }
+                if (resource.Key == "fa")
+                {
+                    directionstring = "rtl";
+                }
+                <div class="form-group">
+                    <label class="col-xs-3">@ResourceManager.GetLocalisedString("lang_" + resource.Key, "SupportedCultures")<input type="hidden" name="@String.Format("ResourceTranslations[{0}].Key", x)" value="@resource.Key" /></label>
+                    <div class="col-xs-8"><textarea class="form-control" dir="@directionstring" name="@String.Format("ResourceTranslations[{0}].Value", x)" @readonlystring rows="3">@resource.Value</textarea></div>
+                </div>
+                x++;
+            }
+            <input type="hidden" name="rownum" value="@Model.rownum" />
+
+            <p>&nbsp;</p>
+            <p class="pull-right flip">
+                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-times"></i> @ResourceManager.GetLocalisedString("btnCancel", "labels")</button>
+                <button type="button" class="btn btn-success" id="submitResUpdate"><i class="fa fa-check"></i> @ResourceManager.GetLocalisedString("btnSave", "labels")</button>
+
+            </p>
+        </div>
+
+
+    }
+</div>

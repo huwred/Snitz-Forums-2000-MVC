@@ -1,0 +1,40 @@
+﻿
+@using WWW.Views.Helpers
+@model LangResources.Models.ResourceEntry
+@{
+    Layout = null;
+    bool isRighToLeft = Model.Culture == "fa";
+}
+    @using (Ajax.BeginForm("SaveResource", "LangResource", null,
+        new AjaxOptions
+        {
+            OnSuccess = "SaveResourceSuccess('Opertaion was successful')",
+            OnFailure = "SaveResourceFailure",
+            UpdateTargetId = "resource-container",
+            HttpMethod = "POST",
+        }, new {@id = "frmResItem", @class = "form-horizontal padding-md"}))
+    {
+        <div class="form-group">
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon1">@Model.Culture</span>
+                <textarea id="res-@Model.Id" class="form-control resource-edit" placeholder="Resource string" aria-describedby="basic-addon1" rows="6" name="Value" data-lang="@Model.Culture" dir="@(isRighToLeft ?  "rtl" : "ltr" )">@Model.Value</textarea>
+                <span class="input-group-btn">
+                    <span class="btn-group-vertical">
+                        <button class="btn btn-default save-res" title="Save resource string" disabled><i class="fa fa-check"></i></button>
+                        @if (Model.Culture != "en")
+                        {
+                            <button class="btn btn-default" title="Delete resource string"><i class="fa fa-trash"></i></button>
+                            <button href="@Url.Action("Translate", "LangResource", new {id = Model.Id, name = Model.Name, lang = Model.Culture})" class="btn btn-default" data-target="#modal-container" data-toggle="modal" type="button" title="Translate resource string"><i class="fa fa-flag-o"></i></button>
+                        }
+                    </span>
+                </span>
+            </div>
+        </div>
+        @Html.HiddenFor(m=>m.Id)
+        @Html.HiddenFor(m=>m.Name)
+        @Html.HiddenFor(m=>m.Culture)
+        @Html.HiddenFor(m=>m.ResourceSet)
+        @Html.HiddenFor(m=>m.Type)
+    }
+
+

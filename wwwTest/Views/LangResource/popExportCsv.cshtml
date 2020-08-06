@@ -1,0 +1,64 @@
+﻿@using System.Globalization
+@using LangResources.Utility
+@using SnitzConfig
+@using SnitzCore.Utility
+@model List<string>
+@{
+    CultureInfo ci = SessionData.Get<CultureInfo>("Culture"); ;
+    string clang = ci.Name;
+    string[] supportedCultures = ResourceManager.SupportLanguages();
+
+}
+
+<div id="uploadFileForm">
+
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
+        <h4 class="modal-title" id="myModalLabel">@ResourceManager.GetLocalisedString("resExport", "ResEditor")</h4>
+    </div>
+    <div class="modal-body clearfix">
+
+        @using (Html.BeginForm("Export", "LangResource", FormMethod.Post, new { @id = "frmExportCSV", @class = "form-horizontal", role = "form" }))
+        {
+            <div class="form-group">
+                <label class="col-xs-3">@ResourceManager.GetLocalisedString("resCulture", "ResEditor")</label>
+                <div class="col-xs-3">
+                    <select class="form-control" name="culture" id="culture">
+                        @foreach (string culture in supportedCultures)
+                        {
+                            <option value="@culture" @if(culture=="en"){@Html.Raw("selected")}>@culture</option>
+                        }
+                        
+                    </select>
+                    @*<input type="text" name="culture" id="culture" value="en" class="form-control"/>*@
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-3">ResourceSet</label>
+                <div class="col-xs-6">
+                    <select class="form-control" id="resource-set" name="resource-set">
+                        <option value="">@ResourceManager.GetLocalisedString("resExportAll", "ResEditor")</option>
+                        @foreach (var res in Model)
+                        {
+                            <option value="@res">@res</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <p class="pull-right flip padding-md">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">@ResourceManager.GetLocalisedString("btnCancel", "labels")</button>
+                    <input name="submitUpload" type="submit" id="submitUpload" value="@ResourceManager.GetLocalisedString("btnExport", "labels")" class="btn btn-primary" />
+                </p>
+            </div>
+        }
+
+    </div>
+</div>
+
+<script>
+    $("#frmExportCSV").submit(function (e) {
+        $('input[type="submit"]').attr('disabled', 'disabled');
+        $('#modal-container').modal('hide');
+    });
+</script>

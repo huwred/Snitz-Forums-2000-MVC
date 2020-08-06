@@ -1,0 +1,426 @@
+﻿@using LangResources.Utility
+@using Snitz.Base
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel.Database
+@using SnitzDataModel.Extensions
+@using SnitzDataModel.Models
+@using SnitzMembership
+@using WWW.Helpers
+@using WWW.Views.Helpers
+@using WebSecurity = WebMatrix.WebData.WebSecurity
+
+@model Topic
+@{
+
+    ViewBag.RatingSum = Model.GetTopicRating();
+    bool allowrating = Model.Forum != null ? Model.Forum.AllowTopicRating : Model.ForumAllowRating==1;
+    allowrating = allowrating && Model.AllowRating == 1 && ClassicConfig.GetIntValue("INTTOPICRATING", 0) == 1;
+    //Model.ForumStatus = Model.Forum.Status;
+    bool hasVoted = false;
+    if (Model.IsPoll == 1)
+    { hasVoted = new PollsRepository().HasVoted(Model.TopicPoll.Id, SnitzMembership.WebSecurity.CurrentUserId); }
+    hasVoted = hasVoted || SnitzCookie.HasVoted(Model.Id);
+    bool isOnline = OnlineUsersInstance.OnlineUsers.IsOnline(Model.Author.Username);
+    string cssonline = "";
+    if (isOnline)
+    {
+        cssonline = "online";
+    }
+    string postsclass = "ico_topic_read";
+    string unmoderatedClass = "";
+
+    switch (Model.PostStatus)
+    {
+        case Enumerators.PostStatus.UnModerated:
+            unmoderatedClass = "topic-unmoderated";
+            break;
+        case Enumerators.PostStatus.OnHold:
+            unmoderatedClass = "topic-onhold";
+            break;
+        case Enumerators.PostStatus.Draft:
+            unmoderatedClass = "topic-draft";
+            break;
+        case Enumerators.PostStatus.Closed:
+            postsclass = "ico_topic_read_locked";
+            break;
+    }
+    var tracked = SnitzCookie.Tracked(Model.Id.ToString());
+    bool newPosts = false;
+    if (tracked != null)
+    {
+        var today = DateTime.UtcNow.ToString("yyyyMM");
+        newPosts = (today + tracked).ToDateTime() < Model.LastPostDate;
+    }
+    else
+    {
+        newPosts = (DateTime)ViewData["LastVisitDateTime"] < Model.LastPostDate;
+    }
+    if (newPosts)
+    {
+        postsclass = "ico_topic_unread";
+
+    }
+    if (User.IsAdministrator() || User.IsForumModerator(Model.ForumId))
+    {
+        if (Model.UnmoderatedReplyCount.GetValueOrDefault(0) > 0)
+        {
+            unmoderatedClass = "topic-unmoderated";
+        }
+    }
+
+
+    if (Model.IsSticky == 1)
+    {
+        postsclass = postsclass.Replace("_topic", "_sticky");
+    }
+    if (Model.LastPostAuthorId == WebSecurity.CurrentUserId)
+    {
+        postsclass += "_mine";
+    }
+
+    string cssusername = "member";
+    if (Roles.IsUserInRole(Model.Author.Username, "Administrator"))
+    {
+        cssusername = "administrator";
+    }
+    else if (Roles.IsUserInRole(Model.Author.Username, "Moderator"))
+    {
+        cssusername = "moderator";
+    }
+}
+@if (Model.PostStatus == Enumerators.PostStatus.Draft)
+{
+    if (SnitzMembership.WebSecurity.CurrentUserId == Model.AuthorId)
+    {
+        <div class="post has-profile bg2 topic-draft" id="@String.Format("p{0}",Model.Id)">
+            <div class="inner equal">
+                <dl class="postprofile @unmoderatedClass hidden-xs hidden-sm col-md-2" id="profile_@Model.AuthorId">
+                    <dt class="profile-rank has-avatar">
+                        @{
+                            Dictionary<int, Ranking> ranking = ViewBag.Ranking;
+                            bool isAuthor = Model.Author.Id == SnitzMembership.WebSecurity.CurrentUserId;
+                        }
+                        <div class="avatar-container @cssonline hidden-xs hidden-sm">
+                            @if (WebSecurity.IsAuthenticated)
+                            {
+                                <a href="@Url.Action("UserProfile", "Account", new {id = Model.Author.Username})" data-toggle="tooltip" title="">
+                                    @Html.Avatar(Model.Author.Username, Model.Author.PhotoUrl, "avatar img-circle").If(Config.ShowAvatar)
+                                </a>
+                                @Html.ActionLink(Model.Author.Username, "UserProfile", "Account", new { id = Model.Author.Username }, new { data_toggle = "tooltip" }).If(!Config.ShowAvatar)
+                            }
+                            else
+                            {
+                                @Html.Avatar(Model.Author.Username, Model.Author.PhotoUrl, "avatar img-circle").If(Config.ShowAvatar)
+                                if (!Config.ShowAvatar)
+                                { @Html.Raw(Model.Author.Username)}
+                        }
+                        </div>
+                        <a class="@cssusername" href="@Url.Action("UserProfile", "Account", new {id = Model.Author.Username})">@Model.Author.Username</a>
+                    </dt>
+                    <dd class="profile-rank">
+                        @Html.MemberRankTitleStars(Model.Author, ranking)
+                    </dd>
+                    <dd class="profile-country">
+                        @Model.Author.Country
+                    </dd>
+                    <dd class="profile-posts"><span class="badge center-block numbers" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipPostCount", "Tooltip") @Model.Author.PostCount">@Model.Author.PostCount</span></dd>
+                    <dd class="profile-joined"><strong>Joined: </strong>@Html.Timeago(Model.Author.CreatedDate)</dd>
+                    <dd class="">
+                        <ul class="list-unstyled list-inline padding-none profile-list" style="margin-bottom: 0px;">
+                            @{
+                                bool disabled = SnitzMembership.WebSecurity.IsUserInRole(Model.Author.Username, "Disabled") || Model.Author.Username == "zapped" || Model.Author.Username == "n/a";
+                            }
+                            @if (!disabled)
+                            {
+                                if (WebSecurity.IsAuthenticated && ClassicConfig.AllowEmail && Model.Author.ReceiveEmails == 1)
+                                {
+                                    if (!isAuthor)
+                                    {
+                                        <li class="padding-xs">
+                                            <div title="@ResourceManager.GetLocalisedString("tipAuthorEmail", "Tooltip")" data-toggle="tooltip" class="send-email fa fa-2x fa-envelope" data-url="@Model.Id" data-id="@Model.AuthorId" style="cursor: pointer">
+                                            </div>
+                                        </li>
+                                    }
+                                }
+                                if (WebSecurity.IsAuthenticated && ClassicConfig.GetValue("STRPMSTATUS") == "1" && ((Model.Author.PrivateMessageReceive == 1 && !isAuthor)) || (User.IsAdministrator() && !isAuthor))
+                                {
+                                    <li class="padding-xs">
+                                        <div title="@ResourceManager.GetLocalisedString("tipAuthorPM", "Tooltip")" data-toggle="tooltip" class="sendpm-link fa fa-2x fa-comments" data-url="@Model.Id" data-id="@Model.Author.Username" style="cursor: pointer">
+                                        </div>
+                                    </li>
+                                }
+                                if (WebSecurity.IsAuthenticated && !String.IsNullOrWhiteSpace(Model.Author.Homepage))
+                                {
+                                    <li class="padding-xs">
+                                        <a href="@Model.Author.Homepage" data-toggle="tooltip" class="topic-link" title="@ResourceManager.GetLocalisedString("tipAuthorHomePage", "Tooltip")" target="_new">
+                                            <i class="fa fa-2x fa-home"></i>
+                                        </a>
+                                        <div></div>
+                                    </li>
+                                }
+
+                            }
+                            @if (ViewBag.IsAdministrator)
+                            {
+                                if (ClassicConfig.GetValue("STRIPLOGGING") == "1")
+                                {
+                                    <li class="padding-xs">
+                                        <div class="showIPAddress fa fa-2x fa-sitemap" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipAuthorIP", "Tooltip")" data-id="@Model.PosterIp" style="cursor: pointer">
+                                        </div>
+                                    </li>
+                                }
+                                if (disabled)
+                                {
+                                    <li class="padding-xs">
+                                        @Html.ActionLink(" ", "UnLockUser", "Account", new { user = Model.Author.Id }, new { @class = "fa fa-2x fa-unlock-alt", title = ResourceManager.GetLocalisedString("tipAuthorUnlock", "Tooltip"), data_toggle = "tooltip" })
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="padding-xs">
+                                        @Html.ActionLink(" ", "LockUser", "Account", new { user = Model.Author.Id }, new { @class = "fa fa-2x fa-lock", title = ResourceManager.GetLocalisedString("tipAuthorLock", "Tooltip"), data_toggle = "tooltip" })
+                                    </li>
+                                }
+                            }
+                        </ul>
+
+                    </dd>
+                </dl>
+                <div class="col-xs-12 hidden-sm hidden-md hidden-lg padding-xs"><span><a class="@cssusername" href="@Url.Action("UserProfile", "Account", new {id = Model.Author.Username})">@Model.Author.Username</a></span> <span class="badge center-block numbers" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipPostCount", "Tooltip") @Model.Author.PostCount">@Model.Author.PostCount</span></div>
+
+                <div class="postbody col-xs-12 col-md-10" >
+                    <div id="post_content_@Model.Id">
+
+                        <h3 class="first">
+                            <a href="@String.Format("#p{0}",Model.Id)">@Html.FormatBbCode(Model.Subject)</a>
+
+                            @Html.Partial("_MessageButtons", Model, new ViewDataDictionary(this.ViewData) { { "buttonsOnly", true } })
+                        </h3>
+
+                        <p class="author">
+                            <a href="@Url.Action("Posts", "Topic", new {id = Model.Id, pagenum = 1, archived = Model.Archived})" class="topic-title">@Html.Timeago(Model.Date)</a>
+                        </p>
+                        <div class="content">
+                            @Html.FormatBbCode(Model.Message)
+                        </div>
+
+                    </div>
+
+                </div>
+                @if (Model.LastEditDate.HasValue && ClassicConfig.ShowEditedBy)
+                {
+                    <span class="text-danger">@Html.Raw(ResourceManager.GetLocalisedString("lblEditedBy", "labels") + " " + Model.EditedBy + " ")@Html.Timeago(Model.LastEditDate.Value)</span>
+                }
+                @if (ClassicConfig.GetValue("STRSIGNATURES") == "1" && ClassicConfig.GetValue("STRDSIGNATURES") == "1" && Model.ShowSig == 1 && !String.IsNullOrEmpty(Model.Author.Signature))
+                {
+                    if (!String.IsNullOrEmpty(Model.Author.Signature.Trim()))
+                    {
+                        <div class="message-footer">
+                            @Html.FormatBbCode(Model.Author.Signature)
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+    }
+}
+else
+{
+    <div class="post has-profile bg2 topic" id="@String.Format("p{0}",Model.Id)">
+        <div class="inner equal">
+            <dl class="postprofile @unmoderatedClass hidden-xs hidden-sm col-md-2 " id="profile_@Model.AuthorId">
+                <dt class="profile-rank has-avatar">
+                    @{
+                        Dictionary<int, Ranking> ranking = ViewBag.Ranking;
+                        //Member author = Model.Author;
+                        bool isAuthor = Model.Author.Id == SnitzMembership.WebSecurity.CurrentUserId;
+                    }
+                    <div class="avatar-container @cssonline">
+                        @if (WebSecurity.IsAuthenticated)
+                        {
+                            <a href="@Url.Action("UserProfile", "Account", new {id = Model.Author.Username})" data-toggle="tooltip" title="">
+                                @Html.Avatar(Model.Author.Username, Model.Author.PhotoUrl, "avatar img-circle").If(Config.ShowAvatar)
+                            </a>
+                            @Html.ActionLink(Model.Author.Username, "UserProfile", "Account", new { id = Model.Author.Username }, new { data_toggle = "tooltip" }).If(!Config.ShowAvatar)
+                        }
+                        else
+                        {
+                            @Html.Avatar(Model.Author.Username, Model.Author.PhotoUrl, "avatar img-circle").If(Config.ShowAvatar)
+                            if (!Config.ShowAvatar)
+                            { @Html.Raw(Model.Author.Username)}
+                        }
+                    </div>
+                    <a class="@cssusername" href="@Url.Action("UserProfile", "Account", new {id = Model.Author.Username})">@Model.Author.Username</a>
+                </dt>
+                <dd class="profile-rank">
+                    @Html.MemberRankTitleStars(Model.Author, ranking)
+                </dd>
+                <dd class="profile-country">
+                    @Model.Author.Country
+                </dd>
+                <dd class="profile-posts"><span class="badge center-block numbers" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipPostCount", "Tooltip") @Model.Author.PostCount">@Model.Author.PostCount</span></dd>
+                <dd class="profile-joined"><strong>Joined: </strong>@Html.Timeago(Model.Author.CreatedDate)</dd>
+                <dd class="">
+                    <ul class="list-unstyled list-inline padding-none profile-list" style="margin-bottom: 0px;">
+                        @{
+                            bool disabled = SnitzMembership.WebSecurity.IsUserInRole(Model.Author.Username, "Disabled") || Model.Author.Username == "zapped" || Model.Author.Username == "n/a";
+                        }
+                        @if (!disabled)
+                        {
+                            if ((WebSecurity.IsAuthenticated && ClassicConfig.AllowEmail && Model.Author.ReceiveEmails == 1) || (User.IsAdministrator() || User.IsForumModerator(Model.ForumId)))
+                            {
+                                if (!isAuthor)
+                                {
+                                    <li class="padding-xs">
+                                        <div title="@ResourceManager.GetLocalisedString("tipAuthorEmail", "Tooltip")" data-toggle="tooltip" class="send-email fa fa-2x fa-envelope" data-url="@Model.Id" data-id="@Model.AuthorId" style="cursor: pointer">
+                                        </div>
+                                    </li>
+                                }
+                            }
+                            if (WebSecurity.IsAuthenticated && ClassicConfig.GetValue("STRPMSTATUS") == "1" && ((Model.Author.PrivateMessageReceive == 1 && !isAuthor)) || (User.IsAdministrator() && !isAuthor))
+                            {
+                                <li class="padding-xs">
+                                    <div title="@ResourceManager.GetLocalisedString("tipAuthorPM", "Tooltip")" data-toggle="tooltip" class="sendpm-link fa fa-2x fa-comments" data-url="@Model.Id" data-id="@Model.Author.Username" style="cursor: pointer">
+                                    </div>
+                                </li>
+                            }
+                            if (WebSecurity.IsAuthenticated && !String.IsNullOrWhiteSpace(Model.Author.Homepage))
+                            {
+                                <li class="padding-xs">
+                                    <a href="@Model.Author.Homepage" data-toggle="tooltip" class="topic-link" title="@ResourceManager.GetLocalisedString("tipAuthorHomePage", "Tooltip")" target="_new">
+                                        <i class="fa fa-2x fa-home"></i>
+                                    </a>
+                                    <div></div>
+                                </li>
+                            }
+
+                        }
+                        @if (ViewBag.IsAdministrator)
+                        {
+                            if (ClassicConfig.GetValue("STRIPLOGGING") == "1")
+                            {
+                                <li class="padding-xs">
+                                    <div class="showIPAddress fa fa-2x fa-sitemap" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipAuthorIP", "Tooltip")" data-id="@Model.PosterIp" style="cursor: pointer">
+                                    </div>
+                                </li>
+                            }
+                            if (disabled)
+                            {
+                                <li class="padding-xs">
+                                    @Html.ActionLink(" ", "UnLockUser", "Account", new { user = Model.Author.Id }, new { @class = "fa fa-2x fa-unlock-alt", title = ResourceManager.GetLocalisedString("tipAuthorUnlock", "Tooltip"), data_toggle = "tooltip" })
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="padding-xs">
+                                    @Html.ActionLink(" ", "LockUser", "Account", new { user = Model.Author.Id }, new { @class = "fa fa-2x fa-lock", title = ResourceManager.GetLocalisedString("tipAuthorLock", "Tooltip"), data_toggle = "tooltip" })
+                                </li>
+                            }
+                        }
+                    </ul>
+
+                </dd>
+            </dl>
+            <div class="col-xs-12 hidden-sm hidden-md hidden-lg padding-xs bg1">
+                @* Event Calendar code*@
+                @if (ClassicConfig.GetIntValue("INTCALEVENTS") == 1)
+                {
+                    Html.RenderAction("EventIcon", "Calendar", new { id = Model.Id });
+                }
+                @* Featured Poll code*@
+                @if (Model.IsPoll == 1)
+                {
+                    <i class="fa fa-bar-chart" title="@ResourceManager.GetLocalisedString("lblContainsPoll", "Poll")"></i>
+                }
+            <h5>
+                @Html.FormatBbCode(Model.Subject) @ResourceManager.GetLocalisedString("lblPostedBy", "labels")
+                <span><a class="@cssusername" href="@Url.Action("UserProfile", "Account", new {id = Model.Author.Username})">@Model.Author.Username</a> <a href="@Url.Action("Posts", "Topic", new {id = Model.Id, pagenum = 1, archived = Model.Archived})" class="topic-title">@Html.Timeago(Model.Date)</a></span>
+            </h5>
+            </div>
+            <div class="postbody col-xs-12 col-md-10">
+                <div id="post_content_@Model.Id">
+
+                    <h3 class="first hidden-xs clearfix">
+                        @* Event Calendar code*@
+                        @if (ClassicConfig.GetIntValue("INTCALEVENTS") == 1)
+                        {
+                            Html.RenderAction("EventIcon", "Calendar", new { id = Model.Id });
+                        }
+                        @* Featured Poll code*@
+                        @if (Model.IsPoll == 1)
+                        {
+                            <i class="fa fa-bar-chart" title="@ResourceManager.GetLocalisedString("lblContainsPoll", "Poll")"></i>
+                        }
+                        <span class="pull-left flip"><a href="@String.Format("#p{0}", Model.Id)">@Html.FormatBbCode(Model.Subject)</a></span>
+                        
+                        <span class="hidden-xs">@Html.Partial("_MessageButtons", Model, new ViewDataDictionary(this.ViewData) { { "buttonsOnly", true } })</span>
+                        <span class="col-xs-3 pull-right">
+                            @if (allowrating)
+                            {
+                                <input id="star-rating-demo" value="@ViewBag.RatingSum" type="number" class="rating" min=0 max=5 step=0.1 data-size="xs" />
+                            }
+                        </span>
+                    </h3>
+
+                    <p class="author hidden-xs">
+                        <a href="@Url.Action("Posts", "Topic", new {id = Model.Id, pagenum = 1, archived = Model.Archived})" class="topic-title">@Html.Timeago(Model.Date)</a>
+                    </p>
+                    <div class="content message">
+                        @if (ClassicConfig.GetIntValue("INTCALEVENTS") == 1)
+                        {
+                            Html.RenderAction("EventInfoTag", "Calendar", new { id = Model.Id });
+                        }
+                        @*@Html.FormatBbCode(HttpUtility.HtmlDecode(Model.Message))*@
+                        @Html.FormatBbCode(Model.Message)
+                        @if (Model.IsPoll == 1 && ClassicConfig.GetIntValue("INTPOLLS") == 1)
+                        {
+
+                            <div id="PollPanel">
+                                @if (Model.Forum.PollsAuth == Enumerators.PollAuth.Disallow)
+                                {
+                                    @: <i class="fa fa-bar-chart fa-3x"></i> @ResourceManager.GetLocalisedString("lblDisabled", "Poll")
+                                }
+                                else if (hasVoted || Model.TopicPoll.Active == 0)
+                                {
+                                    @Html.DisplayFor(m => m.TopicPoll, new { panel = "panel-info", featured = false })
+                                }
+                                else
+                                {
+                                    @Html.EditorFor(m => m.TopicPoll, new { panel = "panel-default", featured = false })
+                                }
+                            </div>
+                        }
+                        <br />
+                        <br />
+                    </div>
+
+                </div>
+
+            </div>
+            @if (Model.ShowSig == 1 && !String.IsNullOrEmpty(Model.Author.Signature) || (Model.LastEditDate.HasValue && ClassicConfig.ShowEditedBy))
+            {
+                <div class="message-footer">
+                    @if (Model.LastEditDate.HasValue && ClassicConfig.ShowEditedBy)
+                    {
+                        <span class="text-danger text-right">@Html.Raw(ResourceManager.GetLocalisedString("lblEditedBy", "labels") + " " + Model.EditedBy + " ")@Html.Timeago(Model.LastEditDate.Value)</span>
+                    }
+                    @if (ClassicConfig.GetValue("STRSIGNATURES") == "1" && ClassicConfig.GetValue("STRDSIGNATURES") == "1" && Model.ShowSig == 1 && !String.IsNullOrEmpty(Model.Author.Signature))
+                    {
+                        if (!String.IsNullOrEmpty(Model.Author.Signature.Trim()))
+                        {
+                            <div class="signature">
+                                @Html.FormatBbCode(Model.Author.Signature)
+                            </div>
+                        }
+                    }
+                </div>
+            }
+
+        </div>
+        <div class="col-xs-12 hidden-sm hidden-md hidden-lg bg1" style="margin-bottom: 10px;">
+            @Html.Partial("_MessageButtons", Model, new ViewDataDictionary(this.ViewData) { { "buttonsOnly", true } })
+        </div>
+    </div>
+}

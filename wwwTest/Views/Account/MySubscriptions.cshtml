@@ -1,0 +1,47 @@
+﻿@using LangResources.Utility
+@using SnitzDataModel.Models
+@using WWW.Views.Helpers
+    <div class="padding-lg row-fluid clearfix">
+        @if (ViewData["CatSubs"] != null && ((IEnumerable<Subscriptions>)ViewData["CatSubs"]).Any())
+        {
+            <h5>@ResourceManager.GetLocalisedString("SubscriptionLevel_Category", "EnumDescriptions")</h5>
+            <hr class="title" />
+            foreach (var item in (IEnumerable<Subscriptions>)ViewData["CatSubs"])
+            {
+                @Html.ActionLink(" ", "UnSubscribe", new { id = 0, forumid = 0, catid = item.CatId, userid = WebSecurity.CurrentUserName }, new { @class = "fa fa-1_5x fa-trash-o", title = "Remove Category subscription" })
+                <a href="~/Category/Index/@item.CatId?pagenum=1">@item.Category</a>
+                <br />
+            }
+            <br />
+        }
+        @if (ViewData["ForumSubs"] != null && ((IEnumerable<Subscriptions>)ViewData["ForumSubs"]).Any())
+        {
+            <h5>@ResourceManager.GetLocalisedString("SubscriptionLevel_Forum", "EnumDescriptions")</h5>
+            <hr class="title" />
+            foreach (Subscriptions item in (IEnumerable<Subscriptions>)ViewData["ForumSubs"])
+            {
+                @Html.ActionLink(" ", "UnSubscribe", new { id = 0, forumid = item.ForumId, catid = item.CatId, userid = WebSecurity.CurrentUserName }, new { @class = "fa fa-1_5x fa-trash-o", title = "Remove Forum subscription" })
+                <a href="~/Forum/Posts/@item.ForumId?pagenum=1">@item.Forum</a>
+                <span>in Category </span>
+                <a href="~/Category/Index/@item.CatId?pagenum=1">@item.Category</a>
+                <br />
+            }
+            <br />
+        }
+        @if (ViewData["TopicSubs"] != null && ((IEnumerable<Subscriptions>)ViewData["TopicSubs"]).Any())
+        {
+            <h5>@ResourceManager.GetLocalisedString("SubscriptionLevel_Topic", "EnumDescriptions")</h5>
+            <hr class="title" />
+            foreach (Subscriptions item in (IEnumerable<Subscriptions>)ViewData["TopicSubs"])
+            {
+                @Html.ActionLink(" ", "UnSubscribe", new { id = item.TopicId, forumid = item.ForumId, catid = item.CatId, userid = WebSecurity.CurrentUserName }, new { @class = "fa fa-1_5x fa-trash-o", title = "Remove Topic subscription" })
+                <a href="~/Topic/Posts/@item.TopicId?pagenum=1" data-toggle="tooltip" data-html="true" data-placement="auto" title='@Html.FormatBbCodeTooltip(item.TopicMessage,true)'>@Html.FormatBbCode(item.Topic)</a>
+                <span>in Forum </span>
+                <a href="~/Forum/Posts/@item.ForumId?pagenum=1">@item.Forum</a>
+                <span>, Category </span>
+                <a href="~/Category/Index/@item.CatId?pagenum=1">@item.Category</a>
+                <br />
+            }
+            <br />
+        }
+    </div>

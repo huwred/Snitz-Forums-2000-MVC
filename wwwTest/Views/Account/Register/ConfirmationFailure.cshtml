@@ -1,0 +1,11 @@
+﻿@using LangResources.Utility
+@{
+    ViewBag.Title = ResourceManager.GetLocalisedString("errTitle", "Registration"); 
+}
+
+<div class="container-fluid small col-md-6 col-md-offset-3">
+    <h5>@ResourceManager.GetLocalisedString("errTitle", "Registration")</h5>
+    <hr class="title" />
+
+    <p>@Html.Raw(ResourceManager.GetLocalisedString("errMessage", "Registration"))</p>
+</div>

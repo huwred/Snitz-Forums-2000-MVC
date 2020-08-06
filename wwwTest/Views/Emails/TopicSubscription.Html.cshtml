@@ -1,0 +1,17 @@
+﻿@using SnitzConfig
+Content-Type: text/html; charset=utf-8
+
+<html>
+    <body>
+        <p>Hello @Model.UserName,</p>
+        <p>
+            @Model.Author has posted a new Topic in the @Model.PostedIn @Model.PostedInName <br/>
+            You are receiving this email because you requested notifications.
+        </p>
+        <p><a href='@Model.Topiclink' title='link to new post'>Read the topic here</a></p>
+        <hr/>
+        <p>Sent from @Raw(Config.ForumTitle)</p>
+        <p style='font-size:small;color:darkslategray;'>If you no longer wish to receive these notifications, You can use the <a href='@Model.Unsubscribe' title='un-subscribe'>Un-subscribe</a> link</p>
+
+    </body>
+</html>

@@ -1,0 +1,85 @@
+﻿@using LangResources.Utility
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model System.Collections.Generic.IEnumerable<SnitzDataModel.Models.NameFilter>
+@{
+    ViewBag.PageTitle = "Username Filter";
+    ViewBag.ActivePage = ResourceManager.GetLocalisedString("mnuAdminNameFilter", "labels");
+    //Layout = "~/Views/Admin/_Layout.cshtml";
+}
+<form id="userfilter-form">
+
+    <div class="panel panel-primary panel-body clearfix">
+        <div class="form-group padding-lg">
+            <div class="panel panel-info panel-body text-muted">
+                <p>Names entered below will not be allowed as usernames.</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <table class="table table-responsive pagination-lg">
+                <thead>
+                    <tr class="bg-primary">
+                        <th class="col-xs-10">
+                            Username
+                        </th>
+                        <th class="col-xs-2"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>              
+                            <td><input type="text" class="form-control" name="username_@item.Id" value="@item.Name"/></td>
+                            <td>
+                                @Html.ActionLink(" ", "SaveNameFilter", "Admin", new {id = item.Id}, new { @class = "fa fa-1_5x fa-save", title = "Save changes", data_val=item.Id})
+                                @Html.ActionLinkConfirm("Delete Username Filter?", "RemoveNameFilter", "Admin", new {id = item.Id}, "fa fa-trash-o fa-1_5x")
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>          
+
+        </div>
+        <div class="form-actions">
+            @Html.ActionLink("Add ", "AddNameFilter", "Admin", null, new { @class = "modal-link btn btn-success" })
+
+        </div>
+        <input type="hidden" id="posted-id" name="posted-id" value="-1"/>
+    </div>
+</form>
+
+
+
+@section scripts{
+    <script src="@Url.Content("~/Scripts/snitz.editor.min.js")" type="text/javascript"></script>
+    <script>
+        $(document).ready(function () {
+            $('.fa-save').hide();
+            $('.form-control').on('change', function() {
+                $(this).closest('td').next('td').find('a.fa-save').show();
+
+            });
+            $('.fa-save').on('click', function () {
+                $("#posted-id").val($(this).attr('data-val'));
+
+                $.ajax({
+                    url: this.href,
+                    type: 'POST',
+                    data: $("#userfilter-form").serialize(),
+                    success: function (result) {
+                        $('.fa-save').hide();
+                    },
+                    error: function (error) {
+                        BootstrapDialog.alert(
+                        {
+                            title: "Error ",
+                            message: error.responseText
+                        });
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+}

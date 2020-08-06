@@ -1,0 +1,106 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@{
+    string controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+<div id="uploadFileForm">
+
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
+            <h4 class="modal-title" id="myModalLabel">@ViewBag.Title</h4>
+        </div>
+        <div class="modal-body clearfix">
+
+    @using (Html.BeginForm("UploadCSV", controllerName, FormMethod.Post, new { id = "frmUploadCSV", enctype = "multipart/form-data", @class = "form-horizontal", role = "form" }))
+    {
+        <div class="form-group padding-lg">
+            @if (controllerName == "LangResource")
+            {
+            <div class="checkbox"><label> <input type="checkbox" id="UpdateExisting" name="UpdateExisting" class="" />@ResourceManager.GetLocalisedString("resExisting", "ResEditor")</label> </div>
+            }
+            else
+            { <input type="hidden" id="UpdateExisting" name="UpdateExisting" value="true" />}
+            
+        </div>
+            <div class="dropzone" id="dzAttach">
+                <div class="fallback">
+                    <div class="input-group">
+                        <label class="input-group-btn">
+                            <span class="btn btn-primary">
+                                @ResourceManager.GetLocalisedString("btnBrowse", "labels") <input style="display: none;" type="file" name="fileInput" id="fileInput">
+                            </span>
+                        </label>
+                        <input class="form-control" type="text" readonly="" id="Attached">
+                    </div>
+                    <p>&nbsp;</p>
+                </div><p>@ResourceManager.GetLocalisedString("lblCSVOnly", "labels")</p>@Html.Raw(ViewBag.Hint)
+            </div>
+
+            <div class="form-group">
+                <p class="pull-right flip padding-md">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">@ResourceManager.GetLocalisedString("btnCancel", "labels")</button>
+                    <input name="submitUpload" type="button" id="submitUpload" value="@ResourceManager.GetLocalisedString("btnUpload", "labels")" class="btn btn-primary" />
+                </p>
+            </div>
+            }
+
+        </div>
+</div>
+
+<script type="text/javascript">
+        $(function() {
+            // Now that the DOM is fully loaded, create the dropzone, and setup the
+            // event listeners
+            $(document).on('change', ':file', function() {
+                var input = $(this),
+                    numFiles = input.get(0).files ? input.get(0).files.length : 1,
+                    label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+
+                $("#Attached").val(label);
+            });
+            var myDropzone = new Dropzone("#dzAttach",
+            {
+                url: SnitzVars.baseUrl + '@controllerName' + '/UploadCSV',
+                addRemoveLinks: true,
+                maxFilesize: SnitzVars.MaxFileSize,
+                acceptedFiles: ".csv",
+                paramName: "fileInput",
+                dictDefaultMessage: "@ResourceManager.GetLocalisedString("UploadCSV","Dropzone")", //"Drop CSV file here to upload"
+                init: function() {
+
+                    var submitButton = document.querySelector("#submitUpload");
+                    var wrapperThis = this;
+
+                    submitButton.addEventListener("click", function(e) {
+                        $.validator.unobtrusive.parse($("#frmUploadCSV"));
+
+                        if ($("#frmUploadCSV").valid()) {
+                            e.preventDefault();
+                            e.stopPropagation();
+
+                            wrapperThis.processQueue();
+                        }
+                    });
+                    this.on("sending", function (data, xhr, formData) {
+                        formData.append("UpdateExisting", $("#UpdateExisting").is(':checked'));
+
+                    });
+                    this.on("uploadprogress",
+                        function(file, progress) {
+                            return file.previewElement.classList.add("dz-success");
+                        });
+                    this.on("complete", function(data) {
+                        //File Upload response from the server
+                        var arr = data.xhr.responseText.split('|');
+                        if (arr[0].replace('"', '') === 'Error') {
+                            BootstrapDialog.warning(arr[1]);
+                        } else {
+                            $('#modal-container').modal('hide');
+                            location.reload();
+                        }
+                    });
+                }
+            });
+        });
+
+</script>

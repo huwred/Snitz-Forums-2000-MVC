@@ -1,0 +1,18 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@using WWW.Views.Helpers
+
+<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
+        <h4 class="modal-title" id="myModalLabel">About Snitz Forums Mvc</h4>
+    </div>
+    <div class="modal-body">
+        <p>Ver: @typeof(WWW.Global).Assembly.GetName().Version by Huw Reddick</p>
+        <p>With the contribution of users sharing ideas and competences.</p>
+        <p>Translations provided by<ul><li>Torborg - Norwegian</li><li>Sadra - Persian</li><li>PhilsBBS - Romanian</li></ul></p>
+        <hr class="title">
+        <p>Snitz Forums Mvc is a .Net port of the popular classic ASP Snitz&trade; Forums 2000, it is free software developed on top of other open source tools: bootstrap, jquery, timeago, fullcalendar and Cyotek BbCodeFormatter.</p>
+        <p>Snitz Forums and the Snitz Forums logo are properties of Snitz&trade; Forums 2000.</p>
+    </div>
+</div>

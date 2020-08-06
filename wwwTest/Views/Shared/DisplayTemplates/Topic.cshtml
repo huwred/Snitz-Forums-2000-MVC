@@ -1,0 +1,137 @@
+﻿@using LangResources.Utility
+@using Snitz.Base
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model SnitzDataModel.Models.Topic
+
+@{
+    string forumsubject = Model.Forum != null ? Model.Forum.Subject : Model.ForumSubject;
+    string unmoderatedClass = "";
+    int replies = Model.ReplyCount;
+    var searchterms = ViewData["Terms"];
+    int pagesize = Config.TopicPageSize;
+    string membercss = "member";
+    if (!String.IsNullOrWhiteSpace(Model.LastPostAuthorName))
+    {
+        membercss = Roles.IsUserInRole(Model.LastPostAuthorName, "Administrator") ? "administrator" : "member";
+    }
+    switch (Model.PostStatus)
+    {
+        case Enumerators.PostStatus.UnModerated:
+            unmoderatedClass = "topic-unmoderated";
+            break;
+        case Enumerators.PostStatus.OnHold:
+            unmoderatedClass = "topic-onhold";
+            break;
+        case Enumerators.PostStatus.Draft:
+            unmoderatedClass = "topic-draft";
+            break;
+    }
+    if (User.IsAdministrator() || User.IsForumModerator(Model.ForumId))
+    {
+        replies += Model.UnmoderatedReplyCount.GetValueOrDefault(0);
+        if (Model.UnmoderatedReplyCount.GetValueOrDefault(0) > 0)
+        {
+            unmoderatedClass = "topic-unmoderated";
+        }
+    }
+
+    if (Context.Request.Cookies.AllKeys.Contains("topic-pagesize") && ClassicConfig.GetValue("STRTOPICPAGESIZES", Config.DefaultPageSize.ToString()).Split(',').Count() > 1)
+    {
+        var pagesizeCookie = Context.Request.Cookies["topic-pagesize"];
+        if (pagesizeCookie != null)
+        {
+            pagesize = Convert.ToInt32(pagesizeCookie.Value);
+        }
+    }
+}
+@if (Model.PostStatus != Enumerators.PostStatus.Draft || (Model.PostStatus == Enumerators.PostStatus.Draft && Model.AuthorId == SnitzMembership.WebSecurity.CurrentUserId))
+{
+    <div class="row row-eq-height topic-recent flip text-left row-sm-padding @unmoderatedClass @String.Format("F{0}", Model.ForumId) " data-val="@Model.ForumSubject">
+        <div @(!Config.ShowAvatar ? Html.Raw("class='col-xs-9'") : Html.Raw("class='col-xs-11 col-sm-8'"))>
+            <div class="topic-folder text-center hidden-phone pull-left flip">
+                @Html.Avatar(Model.PostAuthorName, Model.AuthorAvatar, "avatarsmall img-circle").If(Config.ShowAvatar)
+            </div>
+
+            <div class="topic-strap">
+                <span class="icon-overlay-small">@Html.OverlaySticky(Model, "icon-overlay-small")</span>
+                <span class="hidden-xs subject">
+                    @* Event Calendar code*@
+                    @if (ClassicConfig.GetIntValue("INTCALEVENTS") == 1)
+                    {
+                        Html.RenderAction("EventIcon", "Calendar", new { id = Model.Id });
+                    }
+                    @* Featured Poll code*@
+                    @if (Model.IsPoll == 1)
+                    {
+                        <i class="fa fa-bar-chart" title="@ResourceManager.GetLocalisedString("lblContainsPoll", "Poll")"></i>
+                    }
+                    <a href="@Url.Action("Posts", "Topic", new {id = Model.Id, pagenum = 1, archived = Model.Archived, terms = searchterms})" data-toggle="tooltip" class="topic-link" data-html="true" data-placement="auto" title='@Html.FormatBbCodeTooltip(Model.Message, true)'>@Html.FormatBbCode(Model.Subject, false)</a>
+                    @if (replies > 0)
+                    {
+                        <span title="@ResourceManager.GetLocalisedString("tipReplies", "Tooltip")" data-toggle="tooltip" class="numbers">@Html.Raw("(")@replies@Html.Raw(")")</span>
+                    }
+                </span>
+                <span class="hidden-sm hidden-md hidden-lg subject">
+                    <a href="@Url.Action("Posts", "Topic", new {id = Model.Id, pagenum = 1, archived = Model.Archived, terms = searchterms})" data-toggle="tooltip" class="topic-link" data-html="true" data-placement="auto" title='@Html.FormatBbCode(Model.Subject, false)'>@Html.FormatBbCode(Model.Subject, false)</a>
+                    @if (replies > 0)
+                    {
+                        <span title="@ResourceManager.GetLocalisedString("tipReplies", "Tooltip")" data-toggle="tooltip">@Html.Raw("(")@replies@Html.Raw(")")</span>
+                    }
+                </span>
+                <span class="icon-overlay-small">@Html.Overlay(Model, "icon-overlay-small")</span>
+                <br />
+                <span class="text-muted">@ResourceManager.GetLocalisedString("lblPostedBy", "labels") </span>@Html.ActionLink(" " + Model.PostAuthorName, "UserProfile", "Account", new { id = Model.PostAuthorName }, new { title = ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip"), data_toggle = "tooltip", @class = membercss })
+                @if (Model.ForumSubject != null || Model.Forum != null)
+                {
+                    <span class="text-muted forum-strap">@ResourceManager.GetLocalisedString("lblin", "labels") @Html.ActionLink(forumsubject, "Posts", "Forum", new { id = Model.ForumId, pagenum = 1, archived = Model.Archived }, new { title = ResourceManager.GetLocalisedString("tipViewForum", "Tooltip"), data_toggle = "tooltip" }) </span>
+                }
+                @if (ClassicConfig.GetIntValue("STRSHOWPAGING") == 1 && Model.ReplyCount > pagesize)
+                {
+                    <span class="quick-paging hidden-xs">
+                        @Html.TopicPaging(Model.ReplyCount, Model.Id)
+                    </span>
+                }
+                @if (Model.LastPostReplyId > 0)
+                {
+                    <br />
+                    <span>
+                        @if (ClassicConfig.GetValue("STRJUMPLASTPOST") == "1")
+                        {
+                            <a href="@Url.Action("Posts", "Topic", new {id = Model.Id, pagenum = -1, archived = Model.Archived})#@Model.LastPostReplyId" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipLastPost", "Tooltip")">@ResourceManager.GetLocalisedString("lblLastPost", "labels")</a>
+                        }
+                        else
+                        {
+                            @ResourceManager.GetLocalisedString("lblLastPost", "labels")
+                        }
+                    </span>
+                    <span class="text-muted">@ResourceManager.GetLocalisedString("lblPostedBy", "labels")&nbsp;</span>@Html.ActionLink(Model.LastPostAuthorName, "UserProfile", "Account", new { id = Model.LastPostAuthorName }, new { title = ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip"), data_toggle = "tooltip", @class = membercss })
+                    @Html.Timeago(Model.LastPostDate)
+                    if (ClassicConfig.GetValue("STRJUMPLASTPOST") == "1")
+                    {
+                        <a href="@Url.Action("Posts", "Topic", new {id = Model.Id, pagenum = -1, archived = Model.Archived})#@Model.LastPostReplyId" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipLastPost", "Tooltip")" class="last-post-link"><i class="fa fa-1_5x fa-arrow-right"></i></a>
+                    }
+                }
+                else
+                {
+                    @Html.Timeago(Model.LastPostDate)
+                    if (ClassicConfig.GetValue("STRJUMPLASTPOST") == "1")
+                    {
+                        <a href="@Url.Action("Posts", "Topic", new {id = Model.Id, pagenum = -1, archived = Model.Archived})" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipLastPost", "Tooltip")" class="last-post-link"><i class="fa fa-1_5x fa-arrow-right"></i></a>
+                    }
+                }
+            </div>
+        </div>
+        <div @(!Config.ShowAvatar ? Html.Raw("class='col-xs-3'") : Html.Raw("class='col-xs-2 col-sm-4'"))>
+            @{
+                Html.RenderPartial("_TopicButtons", Model, this.ViewData);
+            }
+            <div class="row-fluid hidden-xs topic-strap">
+                <span class="pull-right flip">@Html.DisplayViewCounts(replies, Model.ViewCount.GetValueOrDefault(0), true)</span>
+            </div>
+        </div>
+    </div>
+
+}

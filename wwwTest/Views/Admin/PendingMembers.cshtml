@@ -1,0 +1,141 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+
+@model WWW.ViewModels.PendingMemberViewModel
+@{
+    ViewBag.PageTitle = "Pending Members";
+    ViewBag.ActivePage = ResourceManager.GetLocalisedString("mnuAdminPending", "labels");
+    //Layout = "~/Views/Admin/_Layout.cshtml";
+}
+
+<div class="content">
+    <table class="table table-condensed">
+        <tr class="bg-primary">
+            <th class="col-sm-1">
+                @Html.DisplayNameFor(model => model.Pending.First().UserName)
+            </th>
+            <th class="col-sm-3">
+                @Html.DisplayNameFor(model => model.Pending.First().Email)
+            </th>
+            @if (ClassicConfig.GetValue("STRIPLOGGING") == "1")
+            {
+                <th class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Pending.First().IpAddress)
+                </th>     
+            }
+            <th class="col-sm-2">
+                Registered
+            </th>
+            <th class="col-sm-1">
+                Approved
+            </th>
+            <th class="col-sm-3"><input type="checkbox" id="checkAll" title="@ResourceManager.GetLocalisedString("tipCheckAll", "Tooltip")"/>
+                <a href="#" id="delete-selected" title="Delete Selected" data-toggle="tooltip"><i class="fa fa-1_5x fa-trash"></i></a>
+                <a href="#" title="Approve Selected" data-toggle="tooltip" id="approve-selected"><i class="fa fa-1_5x fa-check-square"></i></a>
+            </th>
+        </tr>
+        @if (Model.Pending.Count == 0)
+        {
+            <tr><td colspan="7" class="text-center">No registrations currently pending</td></tr>
+        }
+        @foreach (var item in Model.Pending)
+        {
+                <tr><td colspan="7">
+            @using (Html.BeginForm("SavePendingMember", "Account", FormMethod.Post, new { id = "form_" + item.UserId }))
+            {
+                <table class="table table-condensed"><tr>
+                    <td class="col-sm-1">
+                        @Html.HiddenFor(modelItem => item.UserId)
+                        @Html.DisplayFor(modelItem => item.UserName)
+                    </td>
+                    <td class="col-sm-3">
+                        @Html.TextBoxFor(modelItem => item.Email, new { @class = "form-control" })
+                    </td>
+                    @if (ClassicConfig.GetValue("STRIPLOGGING") == "1")
+                    {
+                        <td class="col-sm-2" style="word-wrap: break-word; max-width: 120px;">
+                            @Html.DisplayFor(modelItem => item.IpAddress)
+                        </td>
+                    }
+                    <td class="col-sm-2">
+                        @item.Created.ToDateTime().Value.ToFormattedString(true)
+                    </td>
+                    <td class="col-sm-1">
+                        @Html.DisplayFor(modelItem => item.IsApproved)
+                    </td>
+                    <td class="col-sm-3 flip text-right">
+                        <div data-id="@item.UserName" data-ip="@item.IpAddress" data-email="@item.Email" class="stopForumSpam text-primary fa fa-search fa-1_5x" title="StopForumSpam Check" data-toggle="tooltip" style="cursor: pointer"></div>
+                        <a href="@Url.Action("ViewProfile", "Account", new { id = item.UserId })" class="modal-link" title="View profile" data-toggle="tooltip"><i class="fa fa-1_5x fa-user"></i></a>
+                        <a data-role="submit" href="#" class="save-pending-change" data-toggle="tooltip" title="Save Email change" ><i class="fa fa-1_5x fa-save"></i></a>
+                        <div title="@ResourceManager.GetLocalisedString("tipAuthorEmail", "Tooltip")" data-toggle="tooltip" class="send-email text-primary fa fa-1_5x fa-envelope" data-url="@item.UserId" data-id="@item.UserId" style="cursor: pointer"></div>
+                        @if (ClassicConfig.GetValue("STRIPLOGGING") == "1")
+                        {
+                            <div class="showIPAddress text-primary fa fa-1_5x fa-sitemap" data-toggle="tooltip" title="Lookup IP address" data-id="@item.IpAddress" style="cursor: pointer"></div>                            
+                        }
+                        <a href="@Url.Action("ApproveMember", new { id = item.UserId })" title="Approve Registration" data-toggle="tooltip"><i class="fa fa-1_5x fa-check-square"></i></a>
+                        <a href="@Url.Action("DeletePendingMember", "Account", new { username = item.UserName })" class="lnkDelete" title="Delete Registration" data-toggle="tooltip"><i class="fa fa-1_5x fa-trash"></i></a>
+                        <input type="checkbox" class="selector" value="@item.UserName" name="memberSelect"/>
+                    </td>
+                </tr></table>
+            }
+                </td></tr>
+        }
+
+    </table>
+</div>
+
+<div id='emailModal' class='modal fade in' data-url='@Url.Action("EmailMember", "Account")' aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
+                <h4 class="modal-title" id="myModalLabel">@ResourceManager.GetLocalisedString("dlgEmailMemberTitle", "labels")</h4>
+            </div>
+            <div id='emailContainer' class="modal-body">
+                <div class="container text-center">
+                <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                <span class="sr-only">Loading...</span></div>                
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script src="@Url.Content("~/Scripts/snitz.editor.min.js")" type="text/javascript"></script>
+    <script>
+        $('#delete-selected').on('click', function (e) {
+            e.preventDefault();
+            $.post(SnitzVars.baseUrl + 'Account/DeleteSelected',
+                $('.selector:checkbox:checked').serialize(),
+                function (msg) {
+                    location.reload();
+                });
+        });        
+        $(document).ready(function() {
+            $("[data-role=submit]").click(function () {
+                $(this).closest("form").submit();
+            });
+
+            $('#approve-selected').on('click', function (e) {
+                e.preventDefault();
+                $.post(SnitzVars.baseUrl + 'Account/ApproveSelected',
+                   $('.selector:checkbox:checked').serialize(),
+                   function (msg) {
+                       
+                   });
+            });
+
+            $('.send-email').on('click', function() {
+                var userid = $(this).data('id');
+                $.get(SnitzVars.baseUrl + 'Account/EmailMember/' + userid, function(data) {
+                    $('#emailContainer').html(data);
+                    $.validator.unobtrusive.parse($("#emailMemberForm"));
+                    $('#emailModal').modal('show');
+                });
+            });
+        });
+
+    </script>
+}

@@ -1,0 +1,208 @@
+﻿
+@using LangResources.Utility
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model WWW.ViewModels.AdminBannersViewModel
+@{
+    ViewBag.PageTitle = "Banner Configuration";
+    ViewBag.ActivePage = "Banner Config";
+    ViewBag.SubmitButton = "";
+    //Layout = "~/Views/Admin/_Layout.cshtml";
+}
+
+@section styles
+{
+<style type="text/css">
+    .edit-mode { }
+    .edit-user{}
+    .edit-user display-mode{}
+    .save-user edit-mode{}
+    .display-mode{}
+    .cancel-user{}
+    .form-control{padding-left: 6px;padding-right:6px;}
+    .webgrid-table
+    {
+        font-family: Arial,Helvetica,sans-serif;
+        font-size: 14px;
+        font-weight: normal;
+        /*width: 650px;*/
+        display: table;
+        border-collapse: collapse;
+        border: solid 1px #C5C5C5;
+        background-color: white;
+    }
+    .webgrid-table td, th
+    {
+        border: 1px solid #C5C5C5;
+        padding: 3px 5px 2px;
+    }
+    .webgrid-header, .webgrid-header a
+    {
+        background-color: #E3E3E3;
+        color: black;
+        text-align: left;
+        text-decoration:none;
+    }
+    .webgrid-footer
+    {
+    }
+    .webgrid-row-style
+    {
+        padding: 3px 5px 2px;
+    }
+    .webgrid-alternating-row
+    {
+        background-color: #F5F5F5;
+        padding: 3px 5px 2px;
+    }
+    .col1Width
+    {
+        width: 60px;
+    }
+    .col2Width
+    {
+        width: 200px;
+    }
+    .col3Width
+    {
+        width: 70px;
+    }
+    .imgWidth
+    {
+        max-width: 100px;
+    }
+</style>    
+}
+@{
+    WebGrid objWebGrid = new WebGrid();
+}
+<h5>Ad Banner settings</h5><hr class="title"/>
+<div class="panel panel-primary panel-body clearfix ">
+    <div class="row-fluid">
+        <div class="col-xs-6" @if(Model.Banners.Length == 0){@Html.Raw("style={display:none;}")}>
+            @using (Html.BeginForm("ModConfig", "Admin", FormMethod.Post, new { @class = "form-horizontal" }))
+            {
+                ViewBag.SubmitButton = ResourceManager.GetLocalisedString("btnSave", "labels");
+                <div class="form-group">
+                    @Html.ConfigToggle("Banners top of page", "INTTOPBANNER")
+                </div>
+                <div class="form-group">@Html.ConfigToggle("Banners in side bar", "INTSIDEBANNER")</div>
+                <div class="form-group">
+                    @Html.ConfigString("Duration (secs)", "INTADDURATION", false, "", "control-label col-xs-8 col-sm-3", "col-xs-2")
+
+                </div>
+            
+            
+                Html.RenderPartial("_FormButtons");
+                @Html.Hidden("ControllerView", "ManageBanners");
+            }</div>
+    </div>
+    <div class="row-fluid"><a href="@Url.Action("AddEdit","Ad")" class="btn btn-sm btn-primary banner-modal-link" data-toggle="tooltip" title="Add a new banner" type="button">Add new Banner</a></div>
+    <div class="row-fluid">&nbsp;</div>
+
+@{
+    objWebGrid = new WebGrid(Model.Banners);
+}
+        @objWebGrid.GetHtml(tableStyle: "webgrid-table table-responsive",
+        headerStyle: "webgrid-header",
+        footerStyle: "webgrid-footer",
+        alternatingRowStyle: "webgrid-alternating-row",
+        selectedRowStyle: "webgrid-selected-row",
+        rowStyle: "webgrid-row-style",
+        mode: WebGridPagerModes.All,
+        columns:
+            objWebGrid.Columns(
+             objWebGrid.Column("Keyword", "Loc", format: @<text>  <span  class="display-mode">@item.Keyword </span> <input type="text" id="Keyword" value="@item.Keyword" class="edit-mode form-control" /><input type="hidden" id="ID" value="@item.Id"/> </text>, style: "col1Width"),
+             objWebGrid.Column("Url", "Url", format: @<text>  <span  class="display-mode"> <a id="lblUrl" href="@item.Url"  >@item.Url</a> </span> <input type="text" id="Url" value="@item.Url" class="edit-mode form-control" /></text>, style: "col2Width"),
+             objWebGrid.Column("AltText", "Alt Text", format: @<text> <span  class="display-mode"> <label id="lblAltText">@item.AltText</label> </span>  <input type="text" id="AltText" value="@item.AltText" class="edit-mode form-control" /> </text>, style: "col2Width"),
+             objWebGrid.Column("Width", format: @<text>  <span  class="display-mode">@item.Width </span> <input type="text" id="Width" value="@item.Width" class="edit-mode form-control" /> </text>, style: "col1Width"),
+             objWebGrid.Column("Height", format: @<text>  <span  class="display-mode">@item.Height </span> <input type="text" id="Height" value="@item.Height" class="edit-mode form-control" /> </text>, style: "col1Width"),
+             objWebGrid.Column("Weight", format: @<text>  <span  class="display-mode">@item.Weight </span> <input type="text" id="Weight" value="@item.Weight" class="edit-mode form-control" /> </text>, style: "col1Width"),
+             objWebGrid.Column("Image", "Img", format: @<text> <span  class="display-mode"> @item.Image </span>  <label id="Image" class="edit-mode">@item.Image</label> </text>, style: "col2Width"),
+
+             objWebGrid.Column("Clicks", format: @<text>  <span  class="display-mode">@item.Clicks </span> <label id="lblClicks" class="edit-mode">@item.Clicks</label> </text>, style: "col1Width"),
+             objWebGrid.Column("Impressions","Imp.", format: @<text>  <span  class="display-mode">@item.Impressions </span> <label id="lblImpressions" class="edit-mode">@item.Impressions</label> </text>, style: "col1Width"),
+
+             objWebGrid.Column("Action", format: @<text>
+                                <button class="edit-banner display-mode btn btn-info btn-xs" title="Edit banner" data-toggle="tooltip" ><i class="fa fa-edit"></i></button>
+                                <button class="del-banner display-mode btn btn-info btn-xs" title="Delete banner" data-toggle="tooltip" ><i class="fa fa-trash"></i></button>
+                                <button class="cancel-banner edit-mode btn btn-warning btn-xs" title="@ResourceManager.GetLocalisedString("btnCancel", "labels")" data-toggle="tooltip" ><i class="fa fa-close"></i></button>
+                                <button class="save-banner edit-mode btn btn-success btn-xs"  title="Save changes" data-toggle="tooltip" ><i class="fa fa-file-o"></i></button>
+                            </text>, style: "col3Width", canSort: false)
+           ))
+</div>
+
+
+@section scripts
+{
+<script type="text/javascript" >
+    $(function () {
+        $('body').on('click', '.banner-modal-link', function (e) {
+            e.preventDefault();
+            $(this).tooltip('hide');
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+
+        });
+
+        $('.edit-mode').hide();
+        $('.edit-banner, .cancel-banner').on('click', function () {
+            var tr = $(this).parents('tr:first');
+            tr.find('.edit-mode, .display-mode').toggle();
+        });
+        $('.save-banner').on('click', function () {
+            
+            var tr = $(this).parents('tr:first');
+            var id = tr.find("#ID").val();
+            var img = tr.find("#Image").val();
+            var url = tr.find("#Url").val();
+            var keyword = tr.find("#Keyword").val();
+            var alttext = tr.find("#AltText").val();
+            var weight = tr.find("#Weight").html();
+            tr.find("#lblUrl").text(url);
+            tr.find("#lblAltText").text(alttext);
+            tr.find('.edit-mode, .display-mode').toggle();
+            var Ad =
+            {
+                "Id": id,
+                "Image": img,
+                "Url": url,
+                "AltText": alttext,
+                "Weight": weight,
+                "Keyword": keyword
+            };
+            $.ajax({
+                url: SnitzVars.baseUrl + 'Ad/ChangeBanner/',
+                data: JSON.stringify(Ad),
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    BootstrapDialog.successShow(data);
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1500);
+                }
+            });
+
+        });
+        $('.del-banner').on('click', function () {
+            var tr = $(this).parents('tr:first');
+            var id = tr.find("#ID").val();
+
+            $.ajax({
+                url: SnitzVars.baseUrl + 'Ad/DeleteBanner/' + id,
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    BootstrapDialog.successShow(data);
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1500);
+                    
+                }
+            });
+
+        });
+    })
+</script>    
+}

@@ -1,0 +1,363 @@
+﻿@using BbCodeFormatter
+@using LangResources.Utility
+@using SnitzConfig
+@using Snitz.Base
+@using SnitzCore.Extensions
+@using SnitzDataModel.Models
+@using WWW.Views.Helpers
+@using System.Web.Mvc.Html
+@using SnitzDataModel.Extensions
+@using WWW.Helpers
+@using WWW.ViewModels
+@using Reply = SnitzDataModel.Models.Reply
+@using Topic = SnitzDataModel.Models.Topic
+@model dynamic
+@{
+    string pageno = Request.QueryString["pagenum"];
+    List<int> selectedReplies = null;
+    if (Session["ReplyList"] != null)
+    {
+        selectedReplies = (List<int>)Session["ReplyList"];
+    }
+    bool isAuthor = SnitzMembership.WebSecurity.CurrentUserId == Model.AuthorId;
+    DateTime date = Model.Date;
+    var archived = Request.QueryString["archived"];
+    if (ViewData["allowThanks"] == null)
+    { //call the plugin method
+        ViewData["allowThanks"] = CustomAssemblyResolver.ExecuteMethod("Snitz.PostThanks", "PostThanks.Helpers.Methods", "Allowed", new object[] { Model.ForumId });
+    }
+    bool allowThanks = (bool)ViewData["allowThanks"];
+    //buttons contains a list of buttons to exclude when renderring the message buttons
+    List<string> buttons = ViewData["buttons"] as List<string> ?? new List<string>();
+}
+@if (ViewData["buttonsOnly"] == null)
+{
+    <div @( Request.IsAuthenticated ? Html.Raw("class='col-xs-5'") : Html.Raw("class='col-xs-4'"))>
+        <a id="@Model.Id"></a>
+        @if (Model is Topic && Model.IsPoll == 1)
+        {
+            <i class="fa fa-bar-chart" title="@ResourceManager.GetLocalisedString("lblContainsPoll", "Poll")"></i>
+        }
+        else
+        {
+            <a rel="bookmark" href="#@Model.Id" title="#permalink"><i class="fa fa-clock-o"></i></a>
+        }
+
+        @if (Model.PostStatus == Enumerators.PostStatus.UnModerated)
+        {
+            <span class="text-danger">@ResourceManager.GetLocalisedString("lblUnmoderated", "Admin")</span>
+        }
+        else if (Model.PostStatus == Enumerators.PostStatus.OnHold)
+        {
+            <span class="text-danger"><i class="fa fa-pause"></i>@ResourceManager.GetLocalisedString("lblUnmoderated", "Admin")</span>
+        }
+        else if (Model.PostStatus == Enumerators.PostStatus.Draft)
+        {
+            <span class="text-danger">@ResourceManager.GetLocalisedString("lblDraftPost", "General")@Html.Raw("DRAFT POST !!! ")</span>
+        }
+        @if (WebSecurity.IsAuthenticated)
+        {
+            <label style="display: inline; font-size: smaller;"><a href="@Url.Action("UserProfile", "Account", new { id = Model.Author.Username })" data-toggle="tooltip" title="">@Model.Author.Username</a> - @Html.Timeago(date)</label>
+        }
+        else
+        {
+            <label style="display: inline; font-size: smaller;">@Model.Author.Username - @Html.Timeago(date)</label>
+        }
+    </div>
+}
+@if (Request.IsAuthenticated && archived != "1")
+{
+    if (((Model.PostStatus == Enumerators.PostStatus.Open && Model.ForumStatus == Enumerators.PostStatus.Open) || ViewBag.IsAdministrator || ViewBag.IsForumModerator || (isAuthor && Model.ForumStatus == Enumerators.PostStatus.Open)) && !Config.DisablePosting)
+    {
+        <div @( ViewData["buttonsOnly"] == null ? Html.Raw("class='col-xs-12 col-sm-5 pull-right flip text-right'") : Html.Raw("class='col-xs-12 col-sm-6 padding-none pull-right flip text-right'"))>
+            <ul class="list-inline list-unstyled messagebar-right">
+                @if (Model is Reply)
+                {
+                    if (Model.PostStatus == Enumerators.PostStatus.Open)
+                    {
+                        <!-- Who can post -->
+                        int forumid = Model.ForumId;
+                        if (Model.topic.Forum.ReplyAuth == Enumerators.PostAuthType.Anyone || (Model.topic.Forum.ReplyAuth == Enumerators.PostAuthType.Moderators && User.IsForumModerator(forumid)) || User.IsAdministrator())
+                        {
+                            <li @(!buttons.Contains("reply") ? Html.Raw("") : Html.Raw("class='hidden'"))>
+                                <a href="@Url.Action("PostMessage", "Reply", new {id = -1, topicid = Model.TopicId, forumid = forumid, catid = Model.CatId})" data-title="@ResourceManager.GetLocalisedString("tipTopicReply", "Tooltip")" data-toggle="tooltip">
+                                    <i class="fa fa-1_5x fa-comments-o"></i>
+                                </a>
+                            </li>
+                            <li @(!buttons.Contains("quote") ? Html.Raw("") : Html.Raw("class='hidden'"))>
+                                <a href="@Url.Action("PostMessage", "Reply", new {id = Model.Id, topicid = Model.TopicId, forumid = forumid, catid = Model.CatId, quote = PostType.Reply})" data-title="@ResourceManager.GetLocalisedString("tipQuoteReply", "Tooltip")" data-toggle="tooltip">
+                                    <i class="fa fa-1_5x fa-commenting-o"></i>
+                                </a>
+                            </li>
+
+                        }
+                    }
+
+                    if (((Enumerators.Subscription)ViewBag.Subscription).In(Enumerators.Subscription.TopicSubscription, Enumerators.Subscription.ForumSubscription) && ClassicConfig.SubscriptionLevel != Enumerators.SubscriptionLevel.None)
+                    {
+                        bool isSubscribed = User.TopicSubscriptions().Contains(Model.TopicId) || User.ForumSubscriptions().Contains(Model.ForumId);
+                        if (isSubscribed)
+                        {
+                            if ((Enumerators.Subscription)ViewBag.Subscription == Enumerators.Subscription.TopicSubscription)
+                            {
+                                <li @( !buttons.Contains("unsubscribe") ? Html.Raw("") : Html.Raw("class='hidden'"))>
+                                    @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfUnsubscribeTopic", "labels"), "UnSubscribe", "Topic", new { id = Model.TopicId, forumid = Model.ForumId, catid = Model.CatId }, "fa fa-1_5x fa-share-square")
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li @( !buttons.Contains("subscribe") ? Html.Raw("") : Html.Raw("class='hidden'"))>
+                                @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfSubscribeTopic", "labels"), "Subscribe", "Topic", new { id = Model.TopicId, forumid = Model.ForumId, catid = Model.CatId }, "fa fa-1_5x fa-share-square-o")
+                            </li>
+                        }
+                    }
+                    if (ViewBag.IsAdministrator || isAuthor || ViewBag.IsForumModerator)
+                    {
+
+                        if (ViewBag.IsAdministrator || ViewBag.IsForumModerator)
+                        {
+                            <li @( !buttons.Contains("edit") ? Html.Raw("class=''") : Html.Raw("class='hidden'"))>
+                                <a href="@Url.Action("PostMessage", "Reply", new { id = Model.Id, forumid = Model.ForumId, catid = Model.CatId,pagenum=pageno })" data-title="@ResourceManager.GetLocalisedString("tipEditReply", "Tooltip")" data-toggle="tooltip">
+                                    <i class="fa fa-1_5x fa-edit"></i>
+                                </a>
+                            </li>
+                            <li @( !buttons.Contains("del") ? Html.Raw("class=''") : Html.Raw("class='hidden'"))>
+                                @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("tipDelReply", "Tooltip"), "Delete", "Reply", new { id = Model.Id, archive = Model.Archived }, "fa fa-trash-o fa-1_5x")
+                            </li>
+                            if (Model.PostStatus == Enumerators.PostStatus.UnModerated || Model.PostStatus == Enumerators.PostStatus.OnHold)
+                            {
+                                <li>
+                                    @Html.ActionLink(" ", "Moderate", "Reply", new { id = Model.Id }, new { @class = "fa fa-1_5x fa-hand-paper-o modal-link", data_title = "Moderate", data_toggle = "tooltip" })
+                                </li>
+
+                            }
+
+                            <li @( !buttons.Contains("split") ? Html.Raw("class='hidden-xs'") : Html.Raw("class='hidden'"))>
+                                <a href="@Url.Action("SplitTopic", "Topic", new { id = Model.TopicId, replyid = Model.Id })" data-title="@ResourceManager.GetLocalisedString("tipSplitTopic", "Tooltip")" data-toggle="tooltip">
+                                    <i class="fa fa-1_5x fa-object-ungroup"></i>
+                                </a>
+                            </li>
+                            if (allowThanks)
+                            {
+                                <li>@{ Html.RenderAction("Index", "PostThanks", new { id = Model.TopicId, replyid = Model.Id, showcount = true }); }</li>
+                            }
+
+                            if (selectedReplies != null)
+                            {
+                                <li @( !buttons.Contains("select") ? Html.Raw("class='hidden-xs'") : Html.Raw("class='hidden-xs hidden'"))>
+                                    @if (selectedReplies.Contains(Model.Id))
+                                    {
+                                        <input type="checkbox" value="@Model.Id" checked class="reply-select" />
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" value="@Model.Id" class="reply-select" />
+                                    }
+                                </li>
+                            }
+                            else
+                            {
+                                <li @( !buttons.Contains("select") ? Html.Raw("class='hidden-xs'") : Html.Raw("class='hidden-xs hidden'"))>
+                                    <input type="checkbox" value="@Model.Id" class="reply-select" />
+                                </li>
+                            }
+                        }
+                        else if (isAuthor && ((Model.Id == ((Topic)ViewBag.Topic).LastPostReplyId) || Model.PostStatus == Enumerators.PostStatus.Draft || Model.PostStatus == Enumerators.PostStatus.UnModerated))
+                        {
+                            <li @( !buttons.Contains("edit") ? Html.Raw("") : Html.Raw("class='hidden'"))>
+                                <a href="@Url.Action("PostMessage", "Reply", new { id = Model.Id, forumid = Model.ForumId, catid = Model.CatId,pagenum=pageno })" data-title="@ResourceManager.GetLocalisedString("tipEditReply", "Tooltip")" data-toggle="tooltip">
+                                    <i class="fa fa-1_5x fa-edit"></i>
+                                </a>
+
+                            </li>
+                            <li @( !buttons.Contains("del") ? Html.Raw("") : Html.Raw("class='hidden'"))>
+                                @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("tipDelReply", "Tooltip"), "Delete", "Reply", new { id = Model.Id, archive = Model.Archived }, "fa fa-trash-o fa-1_5x")
+                            </li>
+                            if (allowThanks)
+                            {
+                                <li>@{ Html.RenderAction("Index", "PostThanks", new { id = Model.TopicId, replyid = Model.Id, showcount = true }); }</li>
+                            }
+                        }
+                        else if (isAuthor)
+                        {
+                            if (allowThanks)
+                            {
+                                <li>@{ Html.RenderAction("Index", "PostThanks", new { id = Model.TopicId, replyid = Model.Id, showcount = true }); }</li>
+                            }
+
+                        }
+
+                    }
+                    else if (allowThanks)
+                    {
+                        <li>&nbsp; @{ Html.RenderAction("Index", "PostThanks", new { id = Model.TopicId, replyid = Model.Id, showcount = false }); }</li>
+                    }
+                    if (ViewBag.bg == "bg2")
+                    {
+                        <li id="btn-top"><a href="#page-top" data-toggle="tooltip" data-title="@ResourceManager.GetLocalisedString("tipPageTop","Tooltip")"><i class="fa fa-1_5x fa-angle-double-up"></i></a></li>
+
+                    }
+                }
+                else //Topic
+                {
+
+                    if (Model.PostStatus == Enumerators.PostStatus.Open)
+                    {
+                        <!-- Who can post -->
+                        int forumid = Model.Forum.Id;
+                        if (Model.Forum.ReplyAuth == Enumerators.PostAuthType.Anyone || (Model.Forum.ReplyAuth == Enumerators.PostAuthType.Moderators && User.IsForumModerator(forumid)) || User.IsAdministrator())
+                        {
+                            <li @(!buttons.Contains("reply") ? Html.Raw("") : Html.Raw("class='hidden'"))>
+                                <a href="@Url.Action("PostMessage", "Reply", new {id = -1, topicid = Model.Id, forumid = Model.ForumId, catid = Model.CatId})" data-title="@ResourceManager.GetLocalisedString("tipTopicReply", "Tooltip")" data-toggle="tooltip">
+                                    <i class="fa fa-1_5x fa-comments-o"></i>
+                                </a>
+                            </li>
+                            <li @(!buttons.Contains("quote") ? Html.Raw("") : Html.Raw("class='hidden'"))>
+                                <a href="@Url.Action("PostMessage", "Reply", new {id = Model.Id, topicid = Model.Id, forumid = Model.ForumId, catid = Model.CatId, quote = PostType.Topic})" data-title="@ResourceManager.GetLocalisedString("tipQuoteTopic", "Tooltip")" data-toggle="tooltip">
+                                    <i class="fa fa-1_5x fa-commenting-o"></i>
+                                </a>
+                            </li>
+
+                        }
+                        if (ClassicConfig.GetValue("STRBOOKMARKS") == "1")
+                        {
+                            if (!buttons.Contains("bookmark"))
+                            {
+                                <li>
+                                    @{
+                                        Html.RenderPartial("_BookmarkLink", (int)Model.Id);
+                                    }
+                                </li>
+                            }
+
+                        }
+                        if (((Enumerators.Subscription)ViewBag.Subscription).In(Enumerators.Subscription.TopicSubscription, Enumerators.Subscription.ForumSubscription) && ClassicConfig.SubscriptionLevel != Enumerators.SubscriptionLevel.None)
+                        {
+                            bool isSubscribed = User.TopicSubscriptions().Contains(Model.Id) || User.ForumSubscriptions().Contains(Model.ForumId);
+                            if (isSubscribed)
+                            {
+                                if ((Enumerators.Subscription)ViewBag.Subscription == Enumerators.Subscription.TopicSubscription)
+                                {
+                                    <li @(!buttons.Contains("unsubscribe") ? Html.Raw("") : Html.Raw("class='hidden'"))>
+                                        @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfUnsubscribeTopic", "labels"), "UnSubscribe", "Topic", new { id = Model.Id, forumid = Model.ForumId, catid = Model.CatId }, "fa fa-1_5x fa-share-square")
+                                    </li>
+
+                                }
+                            }
+                            else
+                            {
+                                <li @(!buttons.Contains("subscribe") ? Html.Raw("") : Html.Raw("class='hidden'"))>
+                                    @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfSubscribeTopic", "labels"), "Subscribe", "Topic", new { id = Model.Id, forumid = Model.ForumId, catid = Model.CatId }, "fa fa-1_5x fa-share-square-o")
+                                </li>
+                            }
+                        }
+                        @*if (isAuthor && !(ViewBag.IsAdministrator || ViewBag.IsForumModerator))
+                {
+                    <li @( !buttons.Contains("edit") ? Html.Raw("") : Html.Raw("class='hidden'"))>
+                        <a href="@Url.Action("PostMessage", "Topic", new { id = Model.Id, forumid = Model.ForumId, catid = Model.CatId,pagenum=pageno })" title="@ResourceManager.GetLocalisedString("tipEditTopic", "Tooltip")" data-toggle="tooltip">
+                            <i class="fa fa-1_5x fa-edit"></i>
+                        </a>
+                    </li>
+                }*@
+                    }
+                    else
+                    {
+                        if (ClassicConfig.GetValue("STRBOOKMARKS") == "1")
+                        {
+                            if (!buttons.Contains("bookmark"))
+                            {
+                                <li>
+                                    @{
+                                        Html.RenderPartial("_BookmarkLink", (int)Model.Id);
+                                    }
+                                </li>
+                            }
+
+                        }
+                    }
+                    if (ViewBag.IsAdministrator || ViewBag.IsForumModerator)
+                    {
+                        <li @( !buttons.Contains("edit") ? Html.Raw("") : Html.Raw("class='hidden'"))>
+                            <a href="@Url.Action("PostMessage", "Topic", new { id = Model.Id, forumid = Model.ForumId, catid = Model.CatId,pagenum=pageno })" data-title="@ResourceManager.GetLocalisedString("tipEditTopic", "Tooltip")" data-toggle="tooltip">
+                                <i class="fa fa-1_5x fa-edit"></i>
+                            </a>
+                        </li>
+                        <li @( !buttons.Contains("del") ? Html.Raw("") : Html.Raw("class='hidden'"))>
+                            @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("tipTopicDel", "Tooltip"), "Delete", "Topic", new { id = Model.Id, archive = Model.Archived }, "fa fa-trash-o fa-1_5x")
+                        </li>
+                        if (Model.PostStatus == Enumerators.PostStatus.UnModerated || Model.PostStatus == Enumerators.PostStatus.OnHold)
+                        {
+                            <li>
+                                @Html.ActionLink(" ", "Moderate", "Topic", new { id = Model.Id }, new { @class = "fa fa-1_5x fa-hand-paper-o modal-link", data_title = "Moderate", data_toggle = "tooltip" })
+                            </li>
+                        }
+                        if (Model.PostStatus == Enumerators.PostStatus.Closed)
+                        {
+                            <li>
+                                @Html.ActionLink(" ", "Touch", "Topic", new { id = Model.Id }, new { @class = "fa fa-1_5x fa-calendar-times-o", data_title = "Touch Post", data_toggle = "tooltip" })
+                            </li>
+                        }
+                    }
+                    else if ((isAuthor && ((Topic)Model).ReplyCount < 1) || Model.PostStatus == Enumerators.PostStatus.Draft || Model.PostStatus == Enumerators.PostStatus.UnModerated)
+                    {
+                        <li @( !buttons.Contains("edit") ? Html.Raw("") : Html.Raw("class='hidden'"))>
+                            <a href="@Url.Action("PostMessage", "Topic", new { id = Model.Id, forumid = Model.ForumId, catid = Model.CatId,pagenum=pageno })" data-title="@ResourceManager.GetLocalisedString("tipEditTopic", "Tooltip")" data-toggle="tooltip">
+                                <i class="fa fa-1_5x fa-edit"></i>
+                            </a>
+                        </li>
+                    }
+                    else if (isAuthor)
+                    {
+                        <li @( !buttons.Contains("del") ? Html.Raw("") : Html.Raw("class='hidden'"))>
+                            @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("tipTopicDel", "Tooltip"), "Delete", "Topic", new { id = Model.Id, archive = Model.Archived }, "fa fa-trash-o fa-1_5x")
+                        </li>
+
+                    }
+
+                    if (allowThanks && Model.PostStatus != Enumerators.PostStatus.UnModerated)
+                    {
+                        <li>&nbsp; @{ Html.RenderAction("Index", "PostThanks", new { id = Model.Id, replyid = 0, showcount = true }); }</li>
+                    }
+                }
+            </ul>
+        </div>
+    }
+}
+else if (Request.IsAuthenticated && archived == "1" && ViewBag.IsAdministrator)
+{
+    <div @( ViewData["buttonsOnly"] == null ? Html.Raw("class='col-xs-5 pull-right flip flip text-right'") : Html.Raw("class='col-xs-6 pull-right flip flip text-right'"))>
+        <ul class="list-inline list-unstyled messagebar-right">
+            @if (Model is Reply)
+            {
+                <li @(!buttons.Contains("edit") ? Html.Raw("class=''") : Html.Raw("class='hidden'"))>
+                    <a href="@Url.Action("PostMessage", "Reply", new {id = Model.Id, forumid = Model.ForumId, catid = Model.CatId, pagenum = pageno, archived})" data-title="@ResourceManager.GetLocalisedString("tipEditReply", "Tooltip")" data-toggle="tooltip">
+                        <i class="fa fa-1_5x fa-edit"></i>
+                    </a>
+                </li>
+                <li id="btn-top"><a href="#page-top" data-toggle="tooltip" data-title="@ResourceManager.GetLocalisedString("tipPageTop","Tooltip")"><i class="fa fa-1_5x fa-angle-double-up"></i></a></li>
+            }
+            else
+            {
+                <li @( !buttons.Contains("edit") ? Html.Raw("class=''") : Html.Raw("class='hidden'"))>
+                    <a href="@Url.Action("PostMessage", "Topic", new { id = Model.Id, forumid = Model.ForumId, catid = Model.CatId,pagenum=pageno,archived })" data-title="@ResourceManager.GetLocalisedString("tipEditReply", "Tooltip")" data-toggle="tooltip">
+                        <i class="fa fa-1_5x fa-edit"></i>
+                    </a>
+                </li>
+
+            }
+        </ul>
+    </div>
+}
+else
+{
+    <div @( ViewData["buttonsOnly"] == null ? Html.Raw("class='col-xs-3 pull-right flip text-right'") : Html.Raw("class='col-xs-4 pull-right flip text-right'"))>
+        <ul class="list-inline list-unstyled messagebar-right">
+            @if (Model is Reply)
+            {
+                <li id="btn-top"><a href="#page-top" data-toggle="tooltip" data-title="@ResourceManager.GetLocalisedString("tipPageTop","Tooltip")"><i class="fa fa-1_5x fa-angle-double-up"></i></a></li>
+            }
+        </ul>
+    </div>
+
+}

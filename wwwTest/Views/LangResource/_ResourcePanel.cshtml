@@ -1,0 +1,36 @@
+﻿@model List<LangResources.Models.ResourceEntry>
+@{
+    Layout = null;
+    List<LangResources.Models.ResourceEntry> current = Model.Where(r => r.Name == ViewBag.ResName).OrderBy(r=>r.Culture).ToList();
+    
+}
+    <div id="resource-container">
+@if (current.Count > 0)
+{
+    <div class="panel panel-primary" >
+        <div class="panel-heading">Language Strings - <label>@ViewBag.ResName</label></div>
+        <div class="panel-body" id="resource-items">
+            
+            @{
+
+                foreach (var resource in current)
+                {
+                    @Html.Partial("_ResourceItem", resource)
+                }
+            }
+        </div>
+        <div class="panel-footer bg-silver">
+
+            <div class="input-group input-group-sm">
+                <span class="input-group-btn btn-group-custom" style="padding-right:4px;">
+                    <button href="@Url.Action("ResEdit", "LangResource", new {set = ViewBag.ResSet, name = ViewBag.ResName})" class="btn btn-default" data-target="#modal-container" data-toggle="modal">Add</button>
+
+                    <button class="btn btn-default" id="btn-res-del" data-set="@ViewBag.ResSet" data-res="@ViewBag.ResName">Delete</button>
+                    <button class="btn btn-default" id="btn-res-ren" data-res="@ViewBag.ResName">Rename</button>
+                </span>
+                <textarea id="res-new-name" style="width:250px;" class="form-control" rows="1">@ViewBag.ResName</textarea>
+            </div>            
+        </div>              
+    </div>
+}
+    </div>

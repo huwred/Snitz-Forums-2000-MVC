@@ -1,0 +1,66 @@
+﻿@using LangResources.Utility
+
+@{
+    ViewBag.Title = ResourceManager.GetLocalisedString("ttlDonatePage", "PayPal");
+}
+@section styles{
+    <link href="~/Content/jquery.ui.datepicker.min.css" rel="stylesheet">
+    <link href="~/Content/jquery-ui-timepicker-addon.min.css" rel="stylesheet">
+    <style>
+        .ui-autocomplete {z-index: 10000;}
+        .ui-menu {max-width: 400px !important;}
+        .ui-datepicker {background-color: gainsboro}
+    </style>
+}
+
+@section sidebox
+{
+    <div class="side-box">
+        <p></p>
+        <div class="panel-group">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    @Html.Raw(ResourceManager.GetLocalisedString("PageExtra", "PayPal"))
+                </div>
+            </div>
+            @if (!User.IsInRole("Administrator"))
+            {
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        @{ Html.RenderAction("Donations", "PayPal"); }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+<div class="container-fluid padding-none">
+    <h5>@ViewBag.Title</h5>
+    <hr class="title" />
+    <div class="panel panel-default col-xs-12 col-md-8 col-md-offset-2">
+        <div class="panel-body">
+            @Html.Raw(ResourceManager.GetLocalisedString("PageText", "PayPal"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-8 col-md-offset-2">
+        <div class="panel-body">
+            <div class="col-xs-12 col-sm-10 col-sm-offset-1 col-lg-8 col-lg-offset-2">
+                <!-- 
+                    Paypal buttons go here 
+                    'DonateNow' Renders a donate button
+                    'Subscribe' renders a subscription button
+                    id = the id of the product to use for the button
+                -->
+                @Html.Action("DonateNow", "PayPal", new {id = 1})
+            </div>
+        </div>
+    </div>
+    @if (User.IsInRole("Administrator"))
+    {
+        <div class="panel panel-default col-xs-12 col-md-8 col-md-offset-2">
+            <div class="panel-body">
+                @{ Html.RenderAction("Donations", "PayPal"); }
+            </div>
+        </div>
+    }
+</div>

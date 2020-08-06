@@ -1,0 +1,204 @@
+﻿
+@using LangResources.Utility
+@using Snitz.Base
+@using SnitzConfig
+@using SnitzDataModel.Extensions
+
+@model WWW.ViewModels.UserProfileViewModel
+@section styles
+{
+<style>
+dl.inline dd {display: inline;margin: 0;vertical-align: top;}
+dl.inline dd:after{display: block;content: '';}
+dl.inline dt{display: inline-block;min-width: 200px;}    
+dl.inline dl {margin-left: 100px;}
+dl.inline dl dt{display: inline-block;min-width: 100px;}
+</style>
+}
+@{
+    ViewBag.Title = ResourceManager.GetLocalisedString("Profile", "General");
+
+    bool currentUserProfile = SnitzMembership.WebSecurity.CurrentUserId == Model.Profile.UserId;
+    if (currentUserProfile && Model.Profile.PrivateProfile == 1)
+    {
+        ViewBag.Title = ViewBag.Title + " - " + ResourceManager.GetLocalisedString("PrivateProfile", "labels");
+
+    }
+    else if(currentUserProfile)
+    {
+        ViewBag.Title = ViewBag.Title + " - " + ResourceManager.GetLocalisedString("PublicProfile", "labels");
+    }
+    ViewBag.fullView = User.IsAdministrator() || currentUserProfile;
+}
+
+<h5>
+    @ViewBag.Title 
+    @if (ViewBag.fullView)
+    {
+        <span>@Html.ActionLink(" ", "UserProfileEdit", "Account", new { id = Model.Profile.UserId }, new { @class = "fa fa-edit fa-1_5x", @title = ResourceManager.GetLocalisedString("EditProfile", "General") })</span>
+    }
+
+    @if (ClassicConfig.AllowEmail && (Model.Profile.ReceiveEmails || User.IsAdministrator()))
+    {
+        <span title="@ResourceManager.GetLocalisedString("Email", "General") @ResourceManager.GetLocalisedString("Member", "General")" data-toggle="tooltip" class="send-email fa fa-envelope-o fa-1_5x" data-url="@Model.Profile.UserId" data-id="@Model.Profile.UserId" style="cursor: pointer"></span>
+    }
+    @if (User.IsAdministrator() || (ClassicConfig.GetValue("STRPMSTATUS") == "1" && Model.Profile.PrivateMessageReceive == 1))
+    {
+        <span title="PM @ResourceManager.GetLocalisedString("Member", "General")" data-toggle="tooltip" class="sendpm-link fa fa-comments-o fa-1_5x" data-url="@Model.Profile.UserId" data-id="@Model.Profile.UserName" style="cursor: pointer"></span>
+    }
+    @if (!String.IsNullOrWhiteSpace(ViewBag.Message))
+    {
+        <span class="text-success"> @ViewBag.Message</span>
+    }
+    @*@Model.UserTime*@
+</h5>
+<hr class="title" />
+<div class="container">
+    <ul class="nav nav-tabs" role="tablist" id="accountTab">
+        <li class="active"><a href="#account" role="tab" data-toggle="tab">@ResourceManager.GetLocalisedString("Personal", "labels")</a></li>
+        @if (User.IsAdministrator() || currentUserProfile || Model.Profile.PrivateProfile == 0)
+        {
+            <li><a href="#profile" role="tab" data-toggle="tab">@ResourceManager.GetLocalisedString("Profile", "General")</a></li>
+            if (ClassicConfig.GetValue("STREXTENDPROFILE") == "1")
+            {
+            <li><a href="#extended-profile" role="tab" data-toggle="tab">@ResourceManager.GetLocalisedString("usrAdmin", "ExtProfile")</a></li>
+            }
+        }
+        @if (User.IsAdministrator() || currentUserProfile)
+        {
+            <li><a href="#options" role="tab" data-toggle="tab">@ResourceManager.GetLocalisedString("Options", "labels")</a></li>
+            if (ViewBag.HasSubs && ClassicConfig.SubscriptionLevel != Enumerators.SubscriptionLevel.None)
+            {
+                <li><a href="#subscriptions" role="tab" data-toggle="tab">@ResourceManager.GetLocalisedString("Subscriptions", "labels")</a></li>
+            }
+        }
+        @if (User.IsAdministrator())
+        {
+            <li><a href="#admin" role="tab" data-toggle="tab">@ResourceManager.GetLocalisedString("Admin", "labels")</a></li>
+        }
+        @if (currentUserProfile)
+        {
+            <li><a href="#cookies" role="tab" data-toggle="tab">@ResourceManager.GetLocalisedString("Cookie", "labels")</a></li>
+        }
+
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade active in" id="account" role="tabpanel" aria-labelledby="account-tab">
+            @{ Html.RenderPartial("Tabs/_TabAccount"); }
+        </div>
+        @if (User.IsAdministrator() || currentUserProfile || Model.Profile.PrivateProfile == 0)
+        {
+            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profil-tab">
+                @{ Html.RenderPartial("Tabs/_TabProfile"); }
+            </div>
+        }
+        @if (ClassicConfig.GetValue("STREXTENDPROFILE") == "1")
+        {
+            <div class="tab-pane fade" id="extended-profile" role="tabpanel" aria-labelledby="extended-tab">
+                @{ Html.RenderPartial("Tabs/_TabExtendedProfile"); }
+            </div>
+        }
+        @if (User.IsAdministrator() || currentUserProfile)
+        {
+            <div class="tab-pane fade" id="options" role="tabpanel" aria-labelledby="options-tab">
+                @{ Html.RenderPartial("Tabs/_TabOptions"); }
+            </div>
+            if (ViewBag.HasSubs && ClassicConfig.SubscriptionLevel != Enumerators.SubscriptionLevel.None)
+            {
+                <div class="tab-pane fade" id="subscriptions" role="tabpanel" aria-labelledby="subscriptions-tab">
+                    @{ Html.RenderPartial("Tabs/_TabSubs"); }
+                </div>
+            }
+
+        }
+        @if (User.IsAdministrator())
+        {
+            <div class="tab-pane fade" id="admin" role="tabpanel" aria-labelledby="admin-tab">
+                @{ Html.RenderPartial("Tabs/_TabAdmin"); }
+            </div>
+        }
+        <div class="tab-pane fade" id="cookies" role="tabpanel" aria-labelledby="cookies-tab">
+            @{ Html.RenderPartial("Tabs/_TabCookies"); }
+        </div>
+    </div>
+</div>
+@{
+    Html.RenderPartial("_ModalPopups");
+}
+
+@section Scripts {
+
+
+    <script type="text/javascript">
+
+        $.validator.setDefaults({
+            ignore: ""
+        });
+
+
+        $(window).on("load", function(){
+            var url = document.location.toString();
+            
+            if (url.match('#')) {
+                $('.nav-tabs a[href="' + window.location.hash + '"]').tab('show');
+            } 
+
+// Change hash for page-reload
+            $('.nav-tabs a').on('shown.bs.tab',
+                function(e) {
+                    window.location.hash = e.target.hash;
+                });
+
+            //if (window.location.hash === '#changepass') {
+            //    activateTab('changepass');
+            //}
+            //if (window.location.hash === '#changeemail') {
+            //    activateTab('changeemail');
+            //}
+            $("#avatar-remove").bind("click", function() {
+                $.ajax({
+                    url: '@Url.Action("RemoveAvatar")',
+                    data: { "id": "@Model.Profile.UserId" },
+                    type: "POST",
+                    cache: false,
+                    success: function (data) {
+                        $('img.avatar').hide();
+                        
+                        $("#result").html(data);
+                    }
+                });
+            });
+
+            $('#accountTab').tabCollapse({
+                tabsClass: 'hidden-xs',
+                accordionClass: 'visible-xs'
+            });
+            $('a#member_posts').on('click', function() {
+                $('form#SearchAll').submit();
+            });
+            $('a#member_recent_posts').on('click', function() {
+                $('form#SearchRecent').submit();
+            });
+            $('a#member_my_posts').on('click', function () {
+                $('form#SearchMine').submit();
+            });
+
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function () {
+                //hide the success message if we change tabs
+                $('.text-success').html('');
+                $.expr[':'].blank = function (obj) {
+                    return obj.innerHTML.trim().length === 0;
+                };
+
+                $('div.middle:blank').hide();
+            });
+        });
+
+        //function activateTab(tab) {
+        //    $('.text-success').html('');
+        //    $('.nav-tabs a[href="#' + tab + '"]').tab('show');
+        //};
+
+
+    </script>
+}

@@ -1,0 +1,23 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@model List<SnitzDataModel.Models.ActiveTopic>
+
+
+@if (ClassicConfig.GetIntValue("INTNEWLAYOUT", 0) == 1)
+{
+    <div class="side-block">
+        <h5 class="side-block-head">@ResourceManager.GetLocalisedString("lblRecentActivity", "labels")</h5>
+        <div id="sidebar-recent-posts" class="side-block-body">
+            <ul id="recent-ticker" class="list-unstyled">
+            @foreach (var item in Model)
+            {
+                @Html.DisplayFor(m => item, "ActiveTopicNew")
+            }
+            </ul>
+        </div>
+    </div>
+}
+else
+{
+    @Html.DisplayFor(m => m)
+}

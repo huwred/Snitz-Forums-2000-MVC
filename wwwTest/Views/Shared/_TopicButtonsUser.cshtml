@@ -1,0 +1,93 @@
+﻿@using BbCodeFormatter
+@using LangResources.Utility
+@using SnitzConfig
+@using Snitz.Base
+@using SnitzCore.Extensions
+@using SnitzDataModel.Models
+@using WWW.Views.Helpers
+@using System.Web.Mvc.Html
+@using SnitzDataModel.Extensions
+@using WWW.Helpers
+@using WebSecurity = SnitzMembership.WebSecurity
+
+@model SnitzDataModel.Models.Topic
+@{
+    string pageno = Request.QueryString["pagenum"];
+    if (ViewData["allowThanks"] == null)
+    {
+        ViewData["allowThanks"] = CustomAssemblyResolver.ExecuteMethod("Snitz.PostThanks", "PostThanks.Helpers.Methods", "Allowed", new object[] { Model.ForumId });
+    }
+    bool allowThanks = (bool)ViewData["allowThanks"];
+    bool isauthor = WebSecurity.CurrentUserId == Model.AuthorId;
+    if (Model.ForumStatus == Enumerators.PostStatus.Closed)
+    {
+        Model.PostStatus = Enumerators.PostStatus.Closed;
+    }
+    List<string> buttons = ViewData["buttons"] as List<string> ?? new List<string>();
+}
+
+@switch (Model.PostStatus)
+{
+    case Enumerators.PostStatus.Draft:
+        if (isauthor)
+        {
+            @Html.ActionLink(" ", "PostMessage", "Topic", new { id = Model.Id, forumid = Model.ForumId, catid = Model.CatId, pagenum = pageno }, new { @class = "fa fa-1_5x fa-edit", title = ResourceManager.GetLocalisedString("tipEditTopic", "Tooltip"), data_toggle = "tooltip" })
+            @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfDeleteTopic", "labels"), "DeleteTopic", "Forum", new { id = Model.Id, archive = Model.Archived }, "fa fa-trash-o fa-1_5x")
+        }
+        break;
+    case Enumerators.PostStatus.Open:
+        if (isauthor && Model.ReplyCount == 0 && !buttons.Contains("admin"))
+        {
+            @Html.ActionLink(" ", "PostMessage", "Topic", new { id = Model.Id, forumid = Model.ForumId, catid = Model.CatId, pagenum = pageno }, new { @class = "fa fa-1_5x fa-edit", title = ResourceManager.GetLocalisedString("tipEditTopic", "Tooltip"), data_toggle = "tooltip" })
+            @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfDeleteTopic", "labels"), "DeleteTopic", "Forum", new { id = Model.Id, archive = Model.Archived }, "fa fa-trash-o fa-1_5x")
+        }
+        if (ViewBag.Bookmarks && !buttons.Contains("bookmark"))
+        {
+            Html.RenderPartial("_BookmarkLink", Model.Id);
+        }
+        if (!buttons.Contains("subs"))
+        {
+            @Html.SubscriptionLink(Model.CatId, Model.ForumId, Model.Id, User)
+        }
+
+
+        <!-- Who can post -->
+        if (Model.ForumReplyAuth == (int)Enumerators.PostAuthType.Anyone || Model.ForumReplyAuth == (int)Enumerators.PostAuthType.Moderators && User.IsForumModerator(Model.ForumId) || User.IsAdministrator())
+        {
+            @Html.ActionLink(" ", "PostMessage", "Reply", new { id = -1, topicid = Model.Id, forumid = Model.ForumId, catid = Model.CatId }, new { @class = "fa fa-1_5x fa-comments-o", title = ResourceManager.GetLocalisedString("tipTopicReply", "Tooltip"), data_toggle = "tooltip" })
+        }
+        if (allowThanks && User.Identity.IsAuthenticated && !buttons.Contains("thanks"))
+        {
+            Html.RenderAction("Index", "PostThanks", new { id = Model.Id, replyid = 0, showcount = true });
+        }
+
+        break;
+    case Enumerators.PostStatus.Closed:
+        if (isauthor && Model.ReplyCount == 0)
+        {
+            @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfDeleteTopic", "labels"), "DeleteTopic", "Forum", new { id = Model.Id, archive = Model.Archived }, "fa fa-trash-o fa-1_5x")
+        }
+        if (ViewBag.Bookmarks && !buttons.Contains("bookmark"))
+        {
+            Html.RenderPartial("_BookmarkLink", Model.Id);
+        }
+        if (!buttons.Contains("subs"))
+        {
+            @Html.SubscriptionLink(Model.CatId, Model.ForumId, Model.Id, User)
+        }
+        break;
+    case Enumerators.PostStatus.UnModerated:
+        if (isauthor && Model.ReplyCount == 0 && !buttons.Contains("unmod"))
+        {
+            @Html.ActionLink(" ", "PostMessage", "Topic", new { id = Model.Id, forumid = Model.ForumId, catid = Model.CatId, pagenum = pageno }, new { @class = "fa fa-1_5x fa-edit", title = ResourceManager.GetLocalisedString("tipEditTopic", "Tooltip"), data_toggle = "tooltip" })
+            @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfDeleteTopic", "labels"), "DeleteTopic", "Forum", new { id = Model.Id, archive = Model.Archived }, "fa fa-trash-o fa-1_5x")
+        }
+        break;
+    case Enumerators.PostStatus.OnHold:
+        if (isauthor && Model.ReplyCount == 0 && !buttons.Contains("unmod"))
+        {
+            @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfDeleteTopic", "labels"), "DeleteTopic", "Forum", new { id = Model.Id, archive = Model.Archived }, "fa fa-trash-o fa-1_5x")
+        }
+
+        break;
+}

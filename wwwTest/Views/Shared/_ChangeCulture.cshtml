@@ -1,0 +1,22 @@
+﻿@using System.Globalization
+@using LangResources.Utility
+@using SnitzCore.Utility
+@{
+    CultureInfo ci = SessionData.Get<CultureInfo>("Culture"); ;
+    string clang = ci.Name;
+    string[] supportedCultures = ResourceManager.SupportLanguages();
+
+}
+
+
+<li role="presentation" class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+        <div id="ForumLang" class="@clang flag"></div>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-right" role="menu">
+        @foreach (string culture in supportedCultures)
+        {
+                @: <li><a href="@Url.Action("ChangeCulture", "Account", new { lang = culture })" >@ResourceManager.GetLocalisedString("lang_"+ culture,"SupportedCultures")</a></li>
+        }
+    </ul>
+</li>

@@ -1,0 +1,226 @@
+﻿
+@using SnitzDataModel
+@using SnitzDataModel.Database
+@using WWW.Views.Helpers
+@using Category = SnitzDataModel.Models.Category
+@model WWW.ViewModels.AdminGroupsViewModel
+
+<div class="col-lg-8">
+    <div class="panel panel-primary panel-body form-horizontal">
+        <div class="col-xs-5">
+            <h5>Groups</h5>
+            <ul>
+                @foreach (var fgroup in Model.Groups)
+                {
+                    if (fgroup.Id == 1)
+                    {
+                        <li>@fgroup.Name</li>
+                    }
+                    else
+                    {
+                        <li>@Html.ActionLink(fgroup.Name, "ManageGroups", new { id = fgroup.Id })</li>
+                    }
+
+                }
+            </ul>
+            <hr class="title" />
+            @if (Model.CurrentGroupId > 0)
+            {
+                <button class="btn btn-primary edit-group" id="edit-group" data-value="@Model.CurrentGroupId">Edit current Group</button>
+            }
+            <button class="btn btn-primary edit-group" data-value="0" id="new-group">New Group</button>
+
+        </div>
+        <div class="col-xs-7">
+            @if (Model.CurrentGroupForums != null)
+            {
+                <div class="panel-body">
+                    <div class="form-group">
+                        @Html.ListBoxFor(x => x.CurrentGroupForums, new SelectList(Model.CurrentGroupForums, "Key", "Value"), new { @class = "form-control",style="margin-bottom:4px;" })
+                        
+                        <button type="button" id="rem-cat" class="btn btn-primary btn-sm" title="Remove Category">Remove Selected</button>
+                    </div>
+                    
+                        <div class="form-group">
+                            <form id="AddCatForm">
+                                
+                                <label class="control-label col-xs-4">Add Category</label>
+                                <div class="col-xs-7">
+                                    @{
+                                        List<Category> catList;
+                                        using (var db = new SnitzDataContext())
+                                        {
+                                            catList = db.FetchJumptoList();
+                                        }
+                                    }
+
+                                    <div class="input-group pull-right flip">
+                                        <select class="form-control" id="new-cat" name="CatList">
+                                            <option value="0">Select Category</option>
+                                            @foreach (Category cat in catList)
+                                            {
+                                                <option value="@cat.Id">
+                                                    @cat.Title
+                                                </option>
+                                            }
+
+                                        </select>
+                                        <span class="input-group-btn">
+                                            <button type="button" id="add-cat" class="btn btn-primary btn-sm" title="Add Category"><i class="fa fa-plus"></i></button>
+                                        </span>
+                                        <input type="hidden" name="CurrentGroupId" value="@Model.CurrentGroupId"/>
+                                    </div>
+                                </div>
+                                <div class="col-xs-1">
+
+                                </div>
+                            </form>
+                        </div>
+                </div>
+            }
+
+
+        </div>
+    </div>
+</div>
+<div id='modal-addgroup' class='modal fade in' aria-labelledby="resLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
+                <h4 class="modal-title" id="pmLabel">Add/Edit Group</h4>
+            </div>
+            <div id='groupContainer' class="modal-body">
+                <div class="container text-center">
+                    <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScripts())
+{
+    <script>
+
+        $(document).ready(function () {
+
+            $('#modal-addgroup').on('click', '#submitUpdateGroup', function (e) {
+
+                var formdata = new FormData($(this).closest('form').get(0));
+                e.preventDefault();
+                //Create an XMLHttpRequest and post it
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', SnitzVars.baseUrl + 'Admin/AddEditGroup');
+                xhr.send(formdata);
+                xhr.onerror = function () {
+
+                    BootstrapDialog.alert(
+                        {
+                            title: 'Error',
+                            message: 'Error saving resource'
+                        });
+                };
+                xhr.onreadystatechange = function () {
+
+                    if (xhr.readyState === 2 && xhr.status === 400) {
+                        BootstrapDialog.alert(
+                            {
+                                title: 'Error',
+                                message: xhr.statusText
+                            });
+                    }
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        var arr = xhr.responseText.split('|');
+                        if (arr[0] === "error") {
+                            BootstrapDialog.alert(
+                                {
+                                    title: 'Error',
+                                    message: 'Error saving resource'
+                                });
+                        } else {
+
+                            $('#modal-addgroup').modal('hide');
+                            location.reload();
+                        }
+
+                    }
+                    return false;
+                }
+                return false;
+            });
+            $('.edit-group').on('click',
+                function (evt) {
+                    evt.preventDefault();
+                    $.ajax
+                        ({
+                            type: "GET",
+                            contentType: "application/json; charset=utf-8",
+                            url: SnitzVars.baseUrl + "Admin/AddEditGroup/" + $(this).data("value"),
+                            dataType: "html",
+                            success: function (data) {
+                                $("#groupContainer").html(data);
+                                $('#modal-addgroup').modal('show');
+                                return false;
+                            },
+                            error: function (x, e) {
+                                alert('Failed');
+                            }
+                        });
+                    return false;
+
+                });
+            $("#add-cat").on('click', function (e) {
+                e.preventDefault();
+                var serializedForm = $("#AddCatForm").serialize();
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("AddGroupCat", "Admin")',
+                    data: serializedForm,
+                    dataType: "json",
+                    success: function (data) {
+                        $('#CurrentGroupForums').append($('<option/>', {
+                            value: $('#new-cat').find('option:selected').val(),
+                            text: $('#new-cat').find('option:selected').text()
+                        }));
+                        $("#new-cat").val('0');
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        BootstrapDialog.alert(
+                        {
+                            title: "Error ",
+                            message: jqXHR.responseText
+                        });
+                    }
+                });
+
+            });
+            $("#rem-cat").on('click', function (e) {
+                e.preventDefault();
+                $("#new-cat").val($('#CurrentGroupForums').find('option:selected').val());
+                
+
+                var serializedForm = $("#AddCatForm").serialize();
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("DelGroupCat", "Admin")',
+                    data: serializedForm,
+                    dataType: "json",
+                    success: function (data) {
+                        $('#CurrentGroupForums').find('option:selected').remove();
+                        $("#new-cat").val('0');
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        BootstrapDialog.alert(
+                        {
+                            title: "Error ",
+                            message: jqXHR.responseText
+                        });
+                    }
+                });
+
+            });
+        })
+    </script>
+}

@@ -1,0 +1,10 @@
+﻿
+@using LangResources.Utility
+@using SnitzCore.Utility
+@model SnitzDataModel.Models.Emoticon
+@{
+    string emName = Model.Name;
+    var locName = ResourceManager.GetLocalisedString(emName, "Emoticon"); 
+
+}
+<img data-toggle="tooltip" title="@locName @Model.Code" data-src="@Common.RootFolder/Content/images/emoticon/@Model.Image" alt="@Model.Name" rel="@Model.Code" class="lazyload emote"/>

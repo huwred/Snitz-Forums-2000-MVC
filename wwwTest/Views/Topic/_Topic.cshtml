@@ -1,0 +1,135 @@
+﻿@using LangResources.Utility
+@using Snitz.Base
+@using SnitzConfig
+@using SnitzDataModel.Database
+@using SnitzDataModel.Models
+@using WWW.Views.Helpers
+
+@model Topic
+@{
+
+    ViewBag.RatingSum = Model.GetTopicRating();
+
+    //Model.ForumStatus = Model.Forum.Status;
+    bool hasVoted = false;
+    if (Model.IsPoll == 1)
+    { hasVoted = new PollsRepository().HasVoted(Model.TopicPoll.Id, SnitzMembership.WebSecurity.CurrentUserId); }
+    hasVoted = hasVoted || SnitzCookie.HasVoted(Model.Id);
+
+    bool allowrating = Model.Forum != null ? Model.Forum.AllowTopicRating : Model.ForumAllowRating==1;
+    allowrating = allowrating && Model.AllowRating == 1 && ClassicConfig.GetIntValue("INTTOPICRATING", 0) == 1;
+}
+@if (Model.PostStatus == Enumerators.PostStatus.Draft)
+{
+    if (SnitzMembership.WebSecurity.CurrentUserId == Model.AuthorId)
+    {
+        <div class="row row-eq-height row-no-padding message-container-topic">
+            <div class="message-profile col-sm-2 hidden-xs">
+                @{Html.RenderPartial("_MessageUserProfile", Model);} 
+                @if (allowrating)
+                {
+                    <div style="width: 100%"><span class="badge progress-bar-success center-block">@ViewBag.RatingSum</span></div>
+                }
+            </div>
+            <div class="message-reply col-xs-12 col-sm-11">
+                <div class="messagebar clearfix">
+                    @{ Html.RenderPartial("_MessageButtons", Model, this.ViewData); }
+
+                </div>
+                <div class="message clearfix">
+                    <div class="clearfix hidden-desktop"><h4> @Html.FormatBbCode(Model.Subject)</h4></div>
+                    @Html.FormatBbCode(Model.Message.TrimEnd('<'))
+                    @if (Model.IsPoll == 1 && ClassicConfig.GetIntValue("INTPOLLS") == 1)
+                    {
+
+                        <div id="PollPanel">
+                            @if (Model.Forum.PollsAuth == Enumerators.PollAuth.Disallow)
+                            {
+                                @: <i class="fa fa-bar-chart fa-3x"></i> @ResourceManager.GetLocalisedString("lblDisabled", "Poll")
+                            }
+                            else if (hasVoted || Model.TopicPoll.Active == 0)
+                            {
+                                @Html.DisplayFor(m => m.TopicPoll, new { panel = "panel-info", featured = false })
+                            }
+                            else
+                            {
+                                @Html.EditorFor(m => m.TopicPoll, new { panel = "panel-default", featured = false })
+                            }
+                        </div>
+                    }
+                </div>
+                @if (Model.LastEditDate.HasValue && ClassicConfig.ShowEditedBy)
+                {
+                    <span class="text-danger">@Html.Raw(ResourceManager.GetLocalisedString("lblEditedBy", "labels") + " " + Model.EditedBy + " ")@Html.Timeago(Model.LastEditDate.Value)</span>
+                }
+                @if (ClassicConfig.GetValue("STRSIGNATURES") == "1" && ClassicConfig.GetValue("STRDSIGNATURES") == "1" && Model.ShowSig == 1 && !String.IsNullOrEmpty(Model.Author.Signature))
+                {
+                    if (!String.IsNullOrEmpty(Model.Author.Signature.Trim()))
+                    {
+                        <div class="message-footer">
+                            @Html.FormatBbCode(Model.Author.Signature)
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="row row-eq-height row-no-padding message-container-topic">
+        <div class="message-profile col-sm-2 hidden-xs">
+            @{ Html.RenderPartial("_MessageUserProfile", Model); }
+            @if (allowrating)
+            {
+                <div style="width: 100%"><span class="badge progress-bar-success center-block">@ViewBag.RatingSum</span></div>
+            }
+
+        </div>
+        <div class="message-reply col-xs-12 col-sm-11">
+            <div class="messagebar clearfix">
+                @{ Html.RenderPartial("_MessageButtons", Model, this.ViewData); }
+
+            </div>
+            <div class="message clearfix">
+                <div class="clearfix hidden-desktop"><h4> @Html.FormatBbCode(Model.Subject)</h4><hr class="title" /></div>
+                @if (ClassicConfig.GetIntValue("INTCALEVENTS") == 1)
+                {
+                    Html.RenderAction("EventInfoTag", "Calendar", new {id = Model.Id});
+                }
+                @Html.FormatBbCode(Model.Message)
+                @if (Model.IsPoll == 1 && ClassicConfig.GetIntValue("INTPOLLS") == 1)
+                {
+
+                    <div id="PollPanel">
+                        @if (Model.Forum.PollsAuth == Enumerators.PollAuth.Disallow)
+                        {
+                            @: <i class="fa fa-bar-chart fa-3x"></i> @ResourceManager.GetLocalisedString("lblDisabled", "Poll")
+                        }
+                        else if (hasVoted || Model.TopicPoll.Active == 0)
+                        {
+                            @Html.DisplayFor(m => m.TopicPoll, new { panel = "panel-info", featured = false })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(m => m.TopicPoll, new { panel = "panel-default", featured = false })
+                        }
+                    </div>
+                }
+            </div>
+            @if (Model.LastEditDate.HasValue && ClassicConfig.ShowEditedBy)
+                {
+                <span class="text-danger">@Html.Raw(ResourceManager.GetLocalisedString("lblEditedBy", "labels") + " " + Model.EditedBy + " ")@Html.Timeago(Model.LastEditDate.Value)</span>
+            }
+            @if (ClassicConfig.GetValue("STRSIGNATURES") == "1" && ClassicConfig.GetValue("STRDSIGNATURES") == "1" && Model.ShowSig == 1 && !String.IsNullOrEmpty(Model.Author.Signature))
+                {
+                    if (!String.IsNullOrEmpty(Model.Author.Signature.Trim()))
+                    {
+                    <div class="message-footer">
+                        @Html.FormatBbCode(Model.Author.Signature)
+                    </div>
+                }
+            }
+        </div>
+    </div>
+}

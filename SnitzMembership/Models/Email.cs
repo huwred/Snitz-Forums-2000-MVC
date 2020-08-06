@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using AegisImplicitMail;
+using RazorEngine.Configuration;
 
 namespace Postal
 {
@@ -184,8 +185,14 @@ using Westwind.Web.Mvc;
             InitialiseSmtpClient();
 
             var templateFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Views","Emails", ViewName + ".cshtml");
-            var templateService = new TemplateService();
-            var message = templateService.Parse(File.ReadAllText(templateFilePath), this, null, ViewName);
+            var config = new TemplateServiceConfiguration
+            {
+                TemplateManager = new ResolvePathTemplateManager(new[] {"EmailTemplates"}),
+                DisableTempFileLocking = true
+            };
+            var templateService = RazorEngineService.Create(config);
+            //var templateService = new TemplateService();
+            var message = templateService.RunCompile(templateFilePath,  null, ViewName);
             ViewData = new ViewDataDictionary(this);
             MimeMailMessage mail = ParseHeader(templateService, message);
             dynamic test = ViewData.Model;
@@ -220,7 +227,7 @@ using Westwind.Web.Mvc;
         /// <returns>The message.</returns>
         /// <param name="templateService">Template service.</param>
         /// <param name="message">Message.</param>
-        private MimeMailMessage ParseHeader(TemplateService templateService, string message)
+        private MimeMailMessage ParseHeader(IRazorEngineService templateService, string message)
         {
             var mailMessage = new MimeMailMessage();
             Match m = Regex.Match(message, @"([\s\S]*)(Subject:)(.*$)([\s\S]*)", RegexOptions.IgnoreCase | RegexOptions.Multiline);
@@ -231,7 +238,7 @@ using Westwind.Web.Mvc;
                 if (m.Groups[4].Value.Contains("Views"))
                 {
                     var templateFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Views", "Emails", ViewName + ".Html.cshtml");
-                    string newmessage = templateService.Parse(File.ReadAllText(templateFilePath), this, null, null);
+                    string newmessage = templateService.RunCompile(templateFilePath, null, ViewName);
                     Match m2 = Regex.Match(newmessage, @"([\s\S]*)(Content-Type:)(.*$)([\s\S]*)", RegexOptions.IgnoreCase | RegexOptions.Multiline);
                     ContentType = m2.Success ? m2.Groups[3].Value : "";
                     var charsetMatch = Regex.Match(ContentType, @"\bcharset\s*=\s*(.*)$", RegexOptions.IgnoreCase | RegexOptions.Multiline);

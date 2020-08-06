@@ -1,0 +1,42 @@
+﻿
+@using LangResources.Utility
+@using WWW.Views.Helpers
+@model SnitzDataModel.Models.ForumStatistics
+@{
+    string cssusername = "member";
+    if (Roles.IsUserInRole(Model.LatestTopic.LastPostAuthorName, "Administrator"))
+    {
+        cssusername = "administrator";
+    }
+}
+<div class="panel panel-category">
+    <div class="panel-heading">
+        <div class="list-inner">@ResourceManager.GetLocalisedString("lblForumStats", "labels")</div>
+    </div>
+    <div class="panel-body small">
+        <span class="numbers col-xs-12 col-md-6">
+            @Html.Raw(String.Format(ResourceManager.GetLocalisedString("staLastVisit", "Stats"), Html.Timeago(Model.LastVisit)))<br />
+            @String.Format(ResourceManager.GetLocalisedString("staMembers", "Stats"), Model.ActiveMemberCount, Model.MemberCount, Model.TotalPostCount, Model.ForumCount)<br />
+            @if (Model.LatestTopic != null)
+            {
+                <a href="@Url.Action("Posts", "Topic", new {id = Model.LatestTopic.Id, pagenum = -1, archived = 0})#@Model.LatestTopic.LastPostReplyId" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipLastPost", "Tooltip")">@ResourceManager.GetLocalisedString("lblLastPost", "labels")</a>
+                @Html.Raw(String.Format(ResourceManager.GetLocalisedString("staLatestPost", "Stats"), Html.Timeago(Model.LatestTopic.LastPostDate)))@Html.Raw("&nbsp;")
+                @Html.ActionLink(Model.LatestTopic.LastPostAuthorName, "UserProfile", "Account", new { id = Model.LatestTopic.LastPostAuthorName }, new { title = ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip"), @class = cssusername, data_toggle = "tooltip" })
+                @Html.Raw(". <br />")
+
+            }
+            @String.Format(ResourceManager.GetLocalisedString("staTopics", "Stats"), Model.TopicCount, Model.ActiveTopicCount)<br />
+            @String.Format(ResourceManager.GetLocalisedString("staArchive", "Stats"), Model.ArchivedReplyCount, Model.ArchivedTopicCount)<br />
+            @if (Model.NewestMember != null)
+            {
+                @Html.Raw(String.Format(ResourceManager.GetLocalisedString("staNewMember", "Stats"), Html.ActionLink(Model.NewestMember.Username, "UserProfile", "Account", new { id = Model.NewestMember.Username }, new { title = ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip"), @class = "member", data_toggle = "tooltip" })))
+                <br />
+
+            }
+        </span>
+        <span class="col-xs-12 col-md-6">
+            @{ Html.RenderAction("OnlineUsers"); }
+        </span>
+    </div>
+</div>
+

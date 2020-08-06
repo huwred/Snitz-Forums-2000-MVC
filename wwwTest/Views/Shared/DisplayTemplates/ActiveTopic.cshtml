@@ -1,0 +1,100 @@
+﻿@using LangResources.Utility
+@using Snitz.Base
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using WWW.Helpers
+@using WWW.Views.Helpers
+@model SnitzDataModel.Models.ActiveTopic
+
+@{
+    string forumsubject = Model.Forum != null ? Model.Forum.Subject : Model.ForumSubject;
+
+    var unmoderatedClass = "";
+    if (Model.PostStatus == Enumerators.PostStatus.UnModerated)
+    {
+        unmoderatedClass = "topic-unmoderated";
+    }
+    else if (Model.PostStatus == Enumerators.PostStatus.OnHold)
+    {
+        unmoderatedClass = "topic-onhold";
+    }
+    int replies = Model.ReplyCount;
+    if (User.IsAdministrator() || User.IsForumModerator(Model.ForumId))
+    {
+        replies += Model.UnmoderatedReplyCount.GetValueOrDefault(0);
+        if (Model.UnmoderatedReplyCount.GetValueOrDefault(0) > 0)
+        {
+            unmoderatedClass = "topic-unmoderated";
+        }
+    }
+    if (Model.PostStatus == Enumerators.PostStatus.Draft)
+    {
+        unmoderatedClass = "topic-draft";
+    }
+    var searchterms = ViewData["Terms"];
+    if (ClassicConfig.GetIntValue("STRTHANKS") == 1)
+    {
+        ViewData["allowThanks"] = CustomAssemblyResolver.ExecuteMethod("Snitz.PostThanks", "PostThanks.Helpers.Methods", "Allowed", new object[] { Model.ForumId });
+    }
+    var buttons = new List<string> { "subs", "thanks", "unmod", "admin" };
+}
+@if (Model.PostStatus != Enumerators.PostStatus.Draft || (Model.PostStatus == Enumerators.PostStatus.Draft && Model.AuthorId == SnitzMembership.WebSecurity.CurrentUserId))
+{
+<div class="row row-eq-height topic-recent flip text-left row-sm-padding @unmoderatedClass">
+    <div class="col-xs-12">
+        <div class="topic-strap">
+            <span class="hidden-xs subject">
+                <a href="@Url.Action("Posts", "Topic", new {id = Model.Id, pagenum = 1,archived = Model.Archived, terms = searchterms})" data-toggle="tooltip" class="topic-link hidden-xs" data-html="true" data-placement="auto" title='@Html.FormatBbCodeTooltip(Model.Message, true)'><span>@Html.FormatBbCode(Model.Subject, false)</span></a> @if (replies > 0)
+                {<span class="numbers" title="@ResourceManager.GetLocalisedString("tipReplies","Tooltip")" data-toggle="tooltip">@Html.Raw("(")@replies@Html.Raw(")")</span>}
+
+                <span class="hidden-sm hidden-md hidden-lg subject">
+                    <a href="@Url.Action("Posts", "Topic", new {id = Model.Id, pagenum = 1,archived = Model.Archived, terms = searchterms })" data-toggle="tooltip" class="topic-link" data-html="true" data-placement="auto" title="@Html.FormatBbCode(Model.Subject,false)">@Html.FormatBbCode(Model.Subject, false)</a> @if (replies > 0)
+                    {<span title="@ResourceManager.GetLocalisedString("tipReplies","Tooltip")" data-toggle="tooltip">@Html.Raw("(")@replies@Html.Raw(")")</span>}
+                </span>
+                <span class="icon-overlay-small">@Html.Overlay(Model, "icon-overlay-small")</span><br />
+            </span>
+            <span>
+                @Html.Raw("<span>")
+                <span class="text-muted">@ResourceManager.GetLocalisedString("lblPostedBy", "labels") </span> <span>@Html.ActionLink(Model.PostAuthorName, "UserProfile", "Account", new { id = Model.PostAuthorName }, new { title = ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip"), data_toggle = "tooltip" })</span>
+
+                @if (Model.ForumSubject != null || Model.Forum != null)
+                {
+                    <span class="text-muted">@ResourceManager.GetLocalisedString("lblin", "labels")</span> <span>@Html.ActionLink(forumsubject, "Posts", "Forum", new { id = Model.ForumId, pagenum = 1, archived = Model.Archived }, new { title = ResourceManager.GetLocalisedString("tipViewForum", "Tooltip"), data_toggle = "tooltip" })</span>
+                    @Html.Raw("</span>")
+                }
+                else
+                {@Html.Raw("</span>")}
+            </span>
+            @if (Model.LastPostReplyId > 0)
+            {<br />
+                <span>
+                    @if (ClassicConfig.GetValue("STRJUMPLASTPOST") == "1")
+                    {
+                    <span><a href="@Url.Action("Posts", "Topic", new {id = Model.Id, pagenum = -1,archived = Model.Archived})#@Model.LastPostReplyId" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipLastPost", "Tooltip")">@ResourceManager.GetLocalisedString("lblLastPost", "labels")</a></span>
+                    }
+                    else
+                    {
+                    <span>@ResourceManager.GetLocalisedString("lblLastPost", "labels")</span>
+                    }
+                    <span class="text-muted">@ResourceManager.GetLocalisedString("lblPostedBy", "labels")&nbsp;</span><span>@Html.ActionLink(Model.LastPostAuthorName, "UserProfile", "Account", new { id = Model.LastPostAuthorName }, new { title = ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip"), data_toggle = "tooltip" })</span>
+                    @Html.Timeago(Model.LastPostDate)
+                    @if (ClassicConfig.GetValue("STRJUMPLASTPOST") == "1")
+                    {
+                    <span><a href="@Url.Action("Posts", "Topic", new {id = Model.Id, pagenum = -1, archived = Model.Archived})#@Model.LastPostReplyId" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipLastPost", "Tooltip")"><i class="fa fa-arrow-right"></i></a></span>
+                    }
+                </span>
+            }
+            else
+            {
+                @Html.Timeago(Model.LastPostDate)
+                if (ClassicConfig.GetValue("STRJUMPLASTPOST") == "1")
+                {
+                    <a href="@Url.Action("Posts", "Topic", new {id = Model.Id, pagenum = -1, archived = Model.Archived})" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipLastPost", "Tooltip")"><i class="fa fa-arrow-right"></i></a>
+                }
+            }
+        </div>
+    </div>
+
+</div>
+}

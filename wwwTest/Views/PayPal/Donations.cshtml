@@ -1,0 +1,152 @@
+﻿
+@using WWW.Views.Helpers
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions;
+@model IEnumerable<SiteManage.Models.PayPalDonation>
+
+@if (Roles.IsUserInRole("Administrator"))
+{
+    <p>
+        @Html.ActionLink("Add Donation", "AddDonation", null, new { @class = "donation" })
+    </p>
+}
+    <table class="table table-condensed table-striped col-xs-6">
+        <caption>List of Donors</caption>
+
+        <thead class="thead-dark">
+            <tr>
+                <th style="display: none">
+                    @Html.DisplayNameFor(model => model.MemberId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DonatedDate)
+                </th>
+                @if (Roles.IsUserInRole("Administrator"))
+                {
+                    <th>
+                        @Html.DisplayNameFor(model => model.Amount)
+                    </th>
+                    <th></th>
+                }
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                string displayname = "Anon";
+                if (item.Anon != 1)
+                {
+                    if (item.Username != null)
+                    {
+                        displayname = item.Username;
+                    }
+                    else if (item.Name != null)
+                    {
+                        displayname = item.Name;
+                    }
+
+                }
+                <tr>
+                    <td style="display: none">
+                        @Html.DisplayFor(modelItem => item.MemberId)
+                    </td>
+                    <td>@displayname</td>
+                    <td>
+                        @item.DonatedDate.Value.ToFormattedString(false)
+                    </td>
+                    @if (Roles.IsUserInRole("Administrator"))
+                    {
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Amount)
+                        </td>
+                        <td class="flip text-right">
+                            <input type="checkbox" name="Anon" @if (item.Anon == 1) { @Html.Raw("checked")  } value="1" />
+                            <input type="checkbox" name="Anon" @if (item.Anon == 0) { @Html.Raw("checked")  } value="0" style="display: none" />
+                            <a href="@Url.Action("EditDonation", "PayPal", new {id = item.Id})" class="donation"><i class="fa fa-edit fa-1_5x"></i></a>
+                            <a href="@Url.Action("DeleteDonation", "PayPal", new {id = item.Id})"><i class="fa fa-trash-o fa-1_5x"></i></a>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+
+@using (Html.BeginScripts())
+{
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('body').on('click', '.donation', function (e) {
+            e.preventDefault();
+            $(this).tooltip('hide');
+
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+            $('#modal-container')
+                .on('loaded.bs.modal',
+                    function (e) {
+                        // modal has loaded so init autocomplete and datepicker
+                        $('#DonatedDate')
+                            .datetimepicker({
+                                dateFormat: 'dd M yy',
+                                showTimepicker: false,
+                                autoClose: true,
+                                timeInput: false
+                        });
+                        initLookup();
+
+                        $.validator.unobtrusive.parse($("#frmCreateEditDonation"));
+                    });
+        });
+
+
+    });
+    function OnUpsertSuccess(data) {
+        $('#modal-container').modal('hide');
+        window.location.reload();
+    }
+
+    function OnUpsertFailure(xhr, status) {
+        $('#modal-container').modal('hide');
+        alert('Error: ' + xhr.statusText);
+    }
+
+    function initLookup() {
+        $('.MemberLookup').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: window.SnitzVars.baseUrl + 'Home/LookupUser',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: request,
+                    success: function (data) {
+                        //debugger;
+                        response($.map(data, function (value, key) {
+                            return {
+                                label: value.Value,
+                                value: value.Key
+                            };
+                        }));
+                    }
+
+                });
+            },
+            select: function (event, ui) {
+                event.preventDefault();
+                $("#MemberId").val(ui.item.value);
+                $("#MemberName").val(ui.item.label);
+            },
+            focus: function (event, ui) {
+                event.preventDefault();
+                $("#MemberName").val(ui.item.label);
+            },
+            minLength: 2
+        });
+    }
+</script>
+
+}

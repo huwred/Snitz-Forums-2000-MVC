@@ -1,0 +1,178 @@
+﻿@using LangResources.Utility
+@using Snitz.Base
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model SnitzDataModel.Models.Forum
+
+@{
+    var auth = Session["Forum_" + Model.Id] == null ? "" : Session["Forum_" + Model.Id].ToString();
+    bool requireauth = auth != Model.PasswordNew;
+    string postsclass = "old-posts";
+    string forumtitle = ResourceManager.GetLocalisedString("lblOldPosts", "labels");
+    bool newPosts = (DateTime)ViewData["LastVisitDateTime"] < Model.LastPostDate;
+    if (newPosts)
+    {
+        postsclass = "new-posts";
+        forumtitle = ResourceManager.GetLocalisedString("lblNewPosts", "labels");
+    }
+    string adminClass = "col-md-10";
+    if (User.Identity.IsAuthenticated)
+    {
+        adminClass = "col-md-7";
+    }
+    if (User.IsAdministrator())
+    {
+        adminClass = "col-md-6";
+    }
+    if (Model.Status == Enumerators.PostStatus.Closed)
+    {
+        postsclass += " locked";
+    }
+}
+@if (User.IsAdministrator() || User.CanViewForum(Model, null))
+{
+    <div class="panel panel-success @postsclass">
+        <div class="panel-body padding-none">
+            @if (Model.Type != Enumerators.ForumType.WebLink)
+            {
+                <div class="row-fluid row-no-padding">
+                    <div class="hidden-xs hidden-sm col-md-icon @postsclass" id="forum_@Model.Id" title="@forumtitle" data-toggle="tooltip"></div>
+                    <div class="col-xs-12 col-md-forum">
+                        <div class="row-fluid row-no-padding">
+                            <div class="col-xs-8 col-sm-7 @adminClass">
+
+                                @Html.ActionLink("" + Model.Subject, "Posts", "Forum", new { id = Model.Id, pagenum = 1 }, null)
+                            </div>
+                            <div class="col-xs-2 col-sm-1 numbers">@Model.TopicCount</div>
+                            <div class="col-xs-2 col-sm-1 numbers">@Model.PostCount</div>
+                            @if (User.IsAdministrator() || User.IsForumModerator(Model.Id))
+                            {
+                                <div class="hidden-xs col-sm-3 flip text-right pull-right flip">
+                                    @Html.ActionLink(" ", "PostMessage", "Topic", new { id = 0, forumid = Model.Id, catid = Model.CatId }, new { @class = "fa fa-comment-o fa-1_5x", title = ResourceManager.GetLocalisedString("tipNewTopic", "Tooltip"), data_toggle = "tooltip" })
+                                    @Html.ForumSubscriptionLink(Model.CatId, Model.Id, User)
+                                    @(Model.Status == Enumerators.PostStatus.Open ? Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfLockForum", "labels"), "Lock", "Forum", new { id = Model.Id, catid = Model.CatId, @lock = true }, "fa fa-lock fa-1_5x") : Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfUnlockForum", "labels"), "Lock", "Forum", new { id = Model.Id, catid = Model.CatId, @lock = false }, "fa fa-unlock-alt fa-1_5x"))
+                                    @if (User.IsAdministrator())
+                                    {
+                                        @Html.ActionLink(" ", "CreateEdit", "Forum", new { id = Model.Id, catid = Model.CatId }, new { @class = "fa fa-edit fa-1_5x", title = ResourceManager.GetLocalisedString("tipEditForum", "Tooltip"), data_toggle = "tooltip" })
+                                        @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfDeleteForum", "labels"), "Delete", "Forum", new { id = Model.Id, catid = Model.CatId }, "fa fa-trash-o fa-1_5x")
+                                        if (ClassicConfig.GetValue("STRARCHIVESTATE") == "1")
+                                        {
+                                            @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfArchiveForum", "labels"), "ArchiveForum", "Forum", new { id = Model.Id }, "fa fa-archive fa-1_5x")
+                                        }
+                                    }
+                                    @if (ClassicConfig.GetIntValue("INTFORUMRSS") == 1)
+                                    {
+                                        @Html.ActionLink(" ", "Forum", "RssFeed", new { id = Model.Id }, new { @class = "fa fa-rss fa-1_5x", title = ResourceManager.GetLocalisedString("tipForumRss", "Tooltip"), data_toggle = "tooltip" })
+                                    }
+                                </div>
+                            }
+                            else if (User.Identity.IsAuthenticated)
+                            {
+                                <div class="hidden-xs hidden-sm col-md-3 flip text-right pull-right flip">
+                                    @if (Model.Status == Enumerators.PostStatus.Open )
+                                    {
+                                        @Html.ActionLink(" ", "PostMessage", "Topic", new { id = 0, forumid = Model.Id, catid = Model.CatId }, new { @class = "fa fa-comment-o fa-1_5x", title = ResourceManager.GetLocalisedString("tipNewTopic", "Tooltip"), data_toggle = "tooltip" })
+                                    }
+
+                                    @Html.ForumSubscriptionLink(Model.CatId, Model.Id, User)
+                                    @if (ClassicConfig.GetIntValue("INTFORUMRSS") == 1)
+                                    {
+                                        @Html.ActionLink(" ", "Forum", "RssFeed", new { id = Model.Id }, new { @class = "fa fa-rss fa-1_5x", title = ResourceManager.GetLocalisedString("tipForumRss", "Tooltip"), data_toggle = "tooltip" })
+                                    }
+                                </div>
+                            }
+                        </div>
+                        <div class="row-fluid">
+                            <div class="col-xs-12 col-sm-9">
+                                <span class="forum-description">@Html.FormatBbCode(Model.Description)</span>
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="col-xs-12 col-md-8 topic-strap">
+                                <span>
+                                    @if (Model.PrivateForums.In(Enumerators.ForumAuthType.AllowedMemberPassword, Enumerators.ForumAuthType.MembersPassword, Enumerators.ForumAuthType.PasswordProtected) && requireauth && (!User.IsAdministrator() || User.IsForumModerator(Model.Id)))
+                                    {
+                                        @Html.Raw("&nbsp;")
+                                    }
+                                    else
+                                    {
+                                        if (Model.LastPostDate.HasValue && Model.LastPostAuthorName != null)
+                                        {
+                                            <span>
+                                                <a href="@Url.Action("Posts", "Topic", new {id = Model.LastPostTopicId, pagenum = -1, archived = 0})#@Model.LastPostReplyId" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipLastPost", "Tooltip")">@ResourceManager.GetLocalisedString("lblLastPost", "labels")</a>
+                                            </span>
+                                            @Html.Timeago(Model.LastPostDate.Value)
+                                            <span class="text-muted">@ResourceManager.GetLocalisedString("lblPostedBy", "labels")</span>
+                                            <span>@Html.ActionLink(Model.LastPostAuthorName, "UserProfile", "Account", new { id = Model.LastPostAuthorName }, new { title = ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip"), data_toggle = "tooltip", @class = Roles.IsUserInRole(Model.LastPostAuthorName, "Administrator") ? "administrator" : "member" })</span>
+
+                                            if (ClassicConfig.GetValue("STRJUMPLASTPOST") == "1")
+                                            {
+                                                <span><a href="@Url.Action("Posts", "Topic", new {id = Model.LastPostTopicId, pagenum = -1, archived = 0})#@Model.LastPostReplyId" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipLastPost", "Tooltip")"> <i class="fa fa-1_5x fa-arrow-right"></i> </a></span>
+                                            }
+                                        }
+                                    }
+                                </span>
+                            </div>
+                            <div class="hidden-xs hidden-sm col-md-4 flip text-right">
+                                @if (ClassicConfig.GetIntValue("STRARCHIVESTATE") == 1 && Model.ArchivedPostCount.Value > 0)
+                                {
+                                    @String.Format(ResourceManager.GetLocalisedString("lblArchivedCount","labels"), Model.ArchivedPostCount.Value.ToLangNum())
+                                    @*@Html.DisplayCount(Model.ArchivedPostCount.Value, "Archived Post")*@
+                                    @Html.Raw("&nbsp;")
+                                    if (Model.ArchivedPostCount > 0)
+                                    {
+                                        @Html.ActionLink(" ", "Posts", "Forum", new { id = Model.Id, pagenum = 1, archived = 1 }, new { @class = "fa fa-folder-open fa-1_5x", data_toggle = "tooltip", title = ResourceManager.GetLocalisedString("tipViewArchive", "Tooltip") })
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            }
+            else
+            {
+                <div class="row-fluid row-no-padding">
+                    <div class="hidden-xs hidden-sm col-md-icon web-link" id="forum_@Model.Id" title="@forumtitle" data-toggle="tooltip"></div>
+                    <div class="col-xs-12 col-md-forum">
+                        <div class="col-md-10">
+                            <a href="@Model.Url" title="@Html.FormatBbCode(Model.Subject, false)" target="_blank">@Html.FormatBbCode(Model.Subject, false)</a>
+                            <br />
+                            @Html.FormatBbCode(Model.Description)
+                        </div>
+                        <div class="hidden-xs hidden-sm col-md-2 flip text-right">
+                            @if (User.IsAdministrator() || User.IsForumModerator(Model.Id))
+                            {
+                                @Html.ActionLink(" ", "CreateEdit", "Forum", new { id = Model.Id, catid = Model.CatId }, new { @class = "fa fa-edit fa-1_5x", title = ResourceManager.GetLocalisedString("tipEditWeblink", "Tooltip"), data_toggle = "tooltip" })
+                                @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfDeleteWeblink", "labels"), "Delete", "Forum", new { id = Model.Id, catid = Model.CatId }, "fa fa-trash-o fa-1_5x")
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        @if (Model.Type != Enumerators.ForumType.WebLink)
+        {
+            <div class="panel-footer clearfix hidden-xs hidden-sm">
+                <div class="row-fluid">
+                    <div class="pfoot col-md-6">@Html.DisplayNameForEnum(Model.Moderation, true).If(!Model.Moderation.Equals(Enumerators.Moderation.UnModerated))@Html.DisplayNameForEnum(Model.Subscription).If(!Model.Subscription.In(Enumerators.Subscription.None, Enumerators.Subscription.ForumSubscription))</div>
+                    <div class="pfoot col-md-6 flip text-right">
+                    </div>
+                    <div class="pfoot col-md-9">
+                        @if (ClassicConfig.GetValue("STRSHOWMODERATORS") == "1" && !Model.Moderation.Equals(Enumerators.Moderation.UnModerated))
+                        {
+                            <label>Moderators:</label>
+                            foreach (var item in Model.ForumModerators)
+                            {
+                                @Html.Raw(item.Value + ", ")
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+

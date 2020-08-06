@@ -1,0 +1,33 @@
+﻿@using LangResources.Utility
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@model WWW.ViewModels.FilesViewModel
+
+@{
+    //Layout = "~/Views/Admin/_Layout.cshtml";
+    ViewBag.PageTitle = "Manage Avatars";
+    ViewBag.ActivePage = ResourceManager.GetLocalisedString("mnuAdminAvatar", "labels");
+    int counter = 0;
+}
+
+<h4>@ViewBag.ActivePage</h4>
+<hr class="title"/>
+
+<div class="container-fluid">
+    <div class="row">
+        @foreach (var item in Model.Files)
+        {
+
+            <div class="col-xs-2">
+                <img src="@Model.FolderUrl@item.Name" class="avatar-admin"/>
+                @Html.ActionLinkConfirm("Remove Avatar?", "RemoveAvatar", "Admin", new {url=item.Name}, "fa fa-trash-o fa-1_5x") @item.Name
+            </div>
+            counter++;
+            if (counter == 6)
+            {
+                counter = 0;
+                @Html.Raw("</div><div class='row'>")
+            }
+        }
+    </div>
+</div>

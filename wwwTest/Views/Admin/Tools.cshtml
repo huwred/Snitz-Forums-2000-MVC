@@ -1,0 +1,150 @@
+﻿@using SnitzConfig
+
+@model WWW.ViewModels.AdminToolsViewModel
+@{
+    ViewBag.PageTitle = "Tools Menu";
+    ViewBag.ActivePage = "Tools";
+    ViewBag.GroupByIp = true;
+}
+@section styles
+{
+    <style type='text/css'>
+        fieldset {border-radius: 5px;padding: 8px;margin-top: 12px;padding-top: 0px;}
+        legend {font-size: 16px;margin-bottom: 6px;padding-top: 8px;
+            -webkit-padding-before: 28px;
+        }
+
+        body:not(:-moz-handler-blocked) legend{padding-top: 28px;}
+    </style>
+}
+<div class="panel panel-primary panel-body clearfix">
+
+    <div class="row-fluid">
+        <div class="col-sm-5 flip text-left">
+            <fieldset class="btn-warning">
+                <legend>Reload Forum Application  </legend>
+                use this to reset the AppPool to reload settings, language resources etc
+                @Html.ActionLink("Reset Application", "Reset", null, new { @class = "btn btn-danger btn-sm pull-right flip" })
+            </fieldset>
+
+            @using (Html.BeginForm("DeleteMemberTopics", "Admin", FormMethod.Post, new { @class = "form-horizontal" }))
+            {
+                <fieldset class="btn-info">
+                    <legend>Delete All Topics by Member</legend>
+                    <div class="form-group">
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(model => model.MemberName, new { @class = "form-control", data_autocomplete_url = Url.Action("AutoCompleteUsername"), placeholder = "Enter username" })
+                        </div>
+                        <div class="col-xs-4">
+                            <button type="submit" id="del-topics-@Model.ForumId" class="hidden"></button>
+                            <a href="#" title="Delete Members Topics?" data-toggle="tooltip" onclick="BootstrapDialog.confirm('Are you sure you want to delete all topics by this Member?', function(ok) { if (ok) {$('#loading').show(); $('#del-topics-@Model.ForumId').click(); }}) " rel="nofollow" class="btn btn-primary btn-sm pull-right flip">Delete</a>
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-8">
+                            <div>
+                                <input type="checkbox" name="delete-replies" class="checkbox-inline" /> Delete Replies?
+                            </div>
+                            <div>
+                                <input type="checkbox" name="delete-user" class="checkbox-inline" /> Delete Account?
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                    </div>
+                </fieldset>
+
+            }
+            @using (Html.BeginForm("DeleteTopics", "Forum", FormMethod.Post, new { @class = "form-horizontal" }))
+            {
+                <fieldset class="btn-info">
+                    <legend>Delete ALL posts in Forum</legend>
+                    <div class="form-group">
+                        <div class="col-xs-8">@Html.DropDownListFor(model => model.ForumId, new SelectList(Model.ForumList, "Key", "Value"), new { @class = "form-control" })</div>
+                        <div class="col-xs-4">
+                            <button type="submit" id="del-forum-@Model.ForumId" class="hidden"></button>
+                            <a href="#" title="Delete Forum Topics?" data-toggle="tooltip" onclick="BootstrapDialog.confirm('Are you sure you want to delete all the posts in this forum?', function(ok) { if (ok) {$('#loading').show(); $('#del-forum-@Model.ForumId').click(); }}) " rel="nofollow" class="btn btn-primary btn-sm pull-right flip">Delete</a>
+                        </div>
+                    </div>
+                </fieldset>
+            }
+            @using (Html.BeginForm("MoveTopics", "Forum", FormMethod.Post, new { @class = "form-horizontal" }))
+            {
+                <fieldset class="btn-info">
+                    <legend>Move ALL posts in Forum</legend>
+                    <div class="form-group">
+                        <div class="col-xs-8">@Html.DropDownListFor(model => model.ForumId, new SelectList(Model.ForumList, "Key", "Value"), new { @class = "form-control" })</div>
+                        <div class="col-xs-4">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-8">@Html.DropDownListFor(model => model.TargetForumId, new SelectList(Model.ForumList, "Key", "Value"), new { @class = "form-control" })</div>
+                        <div class="col-xs-4">
+                            <button type="submit" id="move-forum-@Model.ForumId" class="hidden"></button>
+                            <a href="#" title="Move Forum Topics?" data-toggle="tooltip" onclick="BootstrapDialog.confirm('Are you sure you want to move all the posts in this forum?', function(ok) { if (ok) {$('#loading').show(); $('#move-forum-@Model.ForumId').click(); }}) " rel="nofollow" class="btn btn-primary btn-sm pull-right flip">Move</a>
+                        </div>
+                    </div>
+                </fieldset>
+            }
+            @using (Html.BeginForm("UpdatePostCount", "Admin", FormMethod.Post, new { @class = "form-horizontal" }))
+            {
+                <fieldset class="btn-info">
+                    <legend>Update Forum Post Counts &nbsp;&nbsp; </legend>
+                    <a href="#" title="Update post counts?" data-toggle="tooltip" onclick="BootstrapDialog.confirm('Are you sure you want to update the postcount?', function(ok) { if (ok) {$('#loading').show(); $('#count-forum-@Model.ForumId').click();} }) " rel="nofollow" class="btn btn-primary btn-sm pull-right flip">Update</a>
+                    <div class="form-group">
+                        <button type="submit" id="count-forum-@Model.ForumId" class="hidden"></button>
+                    </div>
+                </fieldset>
+            }
+            @using (Html.BeginForm("EnableDebug", "Admin", FormMethod.Post, new { @class = "form-horizontal" }))
+            {
+                <fieldset class="btn-info">
+                    <legend>
+                        @if (ClassicConfig.ShowDebug)
+                        {
+                            @Html.Raw("Disable Debug Errors &nbsp;&nbsp;")
+                        }
+                        else
+                        {
+                            @Html.Raw("Enable Debug Errors &nbsp;&nbsp;")
+                        }
+                    </legend>
+                    @if (ClassicConfig.ShowDebug)
+                    {
+                        <input type="hidden" name="enable-debug" value="False" />
+                        <a href="#" title="Disable Debug?" data-toggle="tooltip" onclick="BootstrapDialog.confirm('Are you sure you want to Disable Debug Mode?', function(ok) { if (ok) $('#enable-debug').click(); }) " rel="nofollow" class="btn btn-primary btn-sm pull-right flip">Disable</a>
+                    }
+                    else
+                    {
+                        <input type="hidden" name="enable-debug" value="True" />
+                        <a href="#" title="Enable Debug?" data-toggle="tooltip" onclick="BootstrapDialog.confirm('Are you sure you want to Enable Debug Mode?', function(ok) { if (ok) $('#enable-debug').click(); }) " rel="nofollow" class="btn btn-primary btn-sm pull-right flip">Enable</a>
+                    }
+                    <div class="form-group">
+                        <button type="submit" id="enable-debug" class="hidden"></button>
+                    </div>
+                </fieldset>
+            }
+            <p>@Html.ValidationSummary(false, "", new { @class = "list-group-item-info" })</p>
+        </div>
+        <div class="col-sm-7"><br/>
+            <div class="form-group padding-lg">
+                <div id="loading" style="display:none" class="modal-backdrop fade in">
+                    <div class="centered">
+                        <i class="fa fa-spinner fa-4x fa-spin" id="spinWait"></i>
+                    </div>
+
+                </div>
+            </div>            
+        </div>
+        <div class="col-sm-7">
+            @Html.Action("Index","Charts",null)
+            
+        </div>
+
+    </div>
+
+</div>
+@section scripts{
+<script src="~/Scripts/Chart.min.js" type="text/javascript"></script>
+}

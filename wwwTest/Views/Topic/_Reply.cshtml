@@ -1,0 +1,67 @@
+﻿@using LangResources.Utility
+@using Snitz.Base
+@using SnitzConfig
+@using WWW.Views.Helpers
+
+@model SnitzDataModel.Models.Reply
+@if (Model.PostStatus == Enumerators.PostStatus.Draft)
+{
+    if (SnitzMembership.WebSecurity.CurrentUserId == Model.AuthorId)
+    {
+        <div class="row row-eq-height row-no-padding message-container" id="reply_@Model.Id">
+            <div class="message-profile col-sm-2 hidden-xs">
+                @{ Html.RenderPartial("_MessageUserProfile", Model); }
+            </div>
+            <div class="message-reply col-xs-12 col-sm-10">
+                <div class="messagebar messagebar-reply clearfix">
+                    @{ Html.RenderPartial("_MessageButtons", Model, this.ViewData); }
+                </div>
+                <div class="message clearfix">
+                    @Html.FormatBbCode(Model.Message)
+                </div>
+                @if (Model.LastEditDate.HasValue && ClassicConfig.ShowEditedBy)
+                {
+                <span class="text-danger">@ResourceManager.GetLocalisedString("lblEditedBy", "labels") @Html.Raw(Model.EditedBy) @Html.Timeago(Model.LastEditDate.Value)</span>
+                }
+                @if (ClassicConfig.GetValue("STRSIGNATURES") == "1" && ClassicConfig.GetValue("STRDSIGNATURES") == "1" && Model.ShowSig == 1 && !String.IsNullOrEmpty(Model.Author.Signature))
+                {
+                    if (!String.IsNullOrEmpty(Model.Author.Signature.Trim()))
+                    {
+                        <div class="message-footer">
+                            @Html.FormatBbCode(Model.Author.Signature)
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="row row-eq-height row-no-padding message-container" id="reply_@Model.Id">
+        <div class="message-profile col-sm-2 hidden-xs">
+            @{ Html.RenderPartial("_MessageUserProfile", Model); }
+        </div>
+        <div class="message-reply col-xs-12 col-sm-11">
+            <div class="messagebar messagebar-reply clearfix">
+                @{ Html.RenderPartial("_MessageButtons", Model, this.ViewData); }
+            </div>
+            <div class="message clearfix">
+                @Html.FormatBbCode(Model.Message.TrimEnd('<'))
+            </div>
+            @if (Model.LastEditDate.HasValue && ClassicConfig.ShowEditedBy)
+            {
+            <span class="text-danger">@ResourceManager.GetLocalisedString("lblEditedBy", "labels") @Html.Raw(Model.EditedBy) @Html.Timeago(Model.LastEditDate.Value)</span>
+            }
+            @if (ClassicConfig.GetValue("STRSIGNATURES") == "1" && ClassicConfig.GetValue("STRDSIGNATURES") == "1" && Model.ShowSig == 1 && !String.IsNullOrEmpty(Model.Author.Signature))
+            {
+                if (!String.IsNullOrEmpty(Model.Author.Signature.Trim()))
+                {
+                    <div class="message-footer">
+                        @Html.FormatBbCode(Model.Author.Signature)
+                    </div>
+                }
+            }
+        </div>
+    </div>
+}

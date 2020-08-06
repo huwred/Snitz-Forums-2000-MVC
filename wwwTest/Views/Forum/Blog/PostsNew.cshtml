@@ -1,0 +1,231 @@
+﻿@using BbCodeFormatter
+@using LangResources.Utility
+@using SnitzConfig
+@using SnitzDataModel
+@using Snitz.Base
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using SnitzDataModel.Models
+@using WWW.Views.Helpers
+@using Topic = SnitzDataModel.Models.Topic
+@using WebSecurity = SnitzMembership.WebSecurity
+
+@model WWW.ViewModels.ForumViewModel
+@{
+    ViewBag.Title = ResourceManager.GetLocalisedString("lblForum", "labels") + ":" + Model.Forum.Subject;
+    ViewBag.CategorySubscription = Model.Forum.Category.Subscription;
+    ViewBag.ForumSubscription = Model.Forum.Subscription;
+}
+
+@section pageMeta
+{
+    <meta name="description" content="@BbCodeProcessor.StripTags(Model.Forum.Description).TruncateLongString(360)">
+    <meta name="author" content="@(Config.ForumTitle ?? ClassicConfig.ForumTitle)">
+}
+@section styles
+{
+    @if (Model.Forum.PrivateForums.In(Enumerators.ForumAuthType.All))
+    {
+        <link rel="alternate" type="application/rss+xml" title="@ResourceManager.GetLocalisedString("tipForumRss", "Tooltip") @ViewBag.Title" href="@Url.Action("Forum","RSSFeed", new {id=Model.Id})" />
+    }
+    @if (ViewBag.RequireAuth)
+    {
+        <style>
+            .modal-backdrop.in {
+                opacity: 1.0
+            }
+        </style>
+    }
+    <style>
+        .forum-strap {
+            display: none;
+        }
+    </style>
+
+    @Html.Raw(Config.ThemeCss("star-rating.min.css"))
+    @Html.Raw(Config.ThemeCss("tag_cloud.css"))
+}
+
+@section breadcrumb
+{
+    @Html.BuildBreadcrumbNavigation()
+
+}
+@section topicsearchbox
+{
+    <h5>Search this Forum</h5>
+    @Html.Partial("_Search", new SearchModel() { ForumId = @Model.Forum.Id })
+}
+@section sidebox
+{
+    <div class="panel-group">
+        <div class="side-box">
+            <h5>@LangResources.Utility.ResourceManager.GetLocalisedString("sbSearchForum", "labels")</h5>
+            @Html.Partial("_Search", new SearchModel() { ForumId = @Model.Forum.Id })
+        </div>
+        <div class="side-box">
+            @Html.Action("Index", "TagCloud", new { id = Model.Forum.Id })
+        </div>
+        @*<div class="side-box">
+            @Html.Action("BlogList","Topic", new { id = Model.Forum.Id })
+        </div>*@
+    </div>
+
+}
+
+@if (!ViewBag.RequireAuth)
+{
+
+    if (WebSecurity.IsAuthenticated && User.IsAdministrator())
+    {
+        <div class="row-fluid">
+            @Html.ActionLink(" ", "CreateEdit", "Forum", new { id = @Model.Id }, new { @class = "fa fa-cog fa-1_5x pull-right flip", title = ResourceManager.GetLocalisedString("tipEditForum", "Tooltip"), data_toggle = "tooltip" })
+        </div>
+    }
+
+    if (WebSecurity.IsAuthenticated)
+    {
+        if (ViewBag.ForumSubscription != Enumerators.Subscription.None && ViewBag.CategorySubscription == Enumerators.CategorySubscription.ForumSubscription && !ClassicConfig.SubscriptionLevel.In(new[] { Enumerators.SubscriptionLevel.None, Enumerators.SubscriptionLevel.Topic }))
+        {
+            if (!ViewBag.hasForumSubscription)
+            {
+                <a data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipForumSubscribe", "Tooltip")" href="@Url.Action("Subscribe", "Forum", new {id = 0, forumid = Model.Forum.Id, catid = Model.Forum.CatId})" class="btn btn-sm btn-primary pull-right flip">
+                    <i class="fa fa-share-square"></i>
+                    <span class="hidden-xs hidden-sm">@ResourceManager.GetLocalisedString("btnSubscribe", "labels")</span>
+                </a>
+            }
+            else
+            {
+                <a title="@ResourceManager.GetLocalisedString("tipRemoveForumSub", "Tooltip")" data-toggle="tooltip" href="@Url.Action("UnSubscribe", "Forum", new {id = 0, forumid = Model.Forum.Id, catid = Model.Forum.CatId})" class="btn btn-sm btn-primary pull-right flip">
+                    <i class="fa fa-share-square"></i>
+                    <span class="hidden-xs hidden-sm">@ResourceManager.GetLocalisedString("btnUnsubscribe", "labels")</span>
+                </a>
+            }
+        }
+        if (!Config.DisablePosting && Model.Forum.Status == Enumerators.PostStatus.Open)
+        {
+            <div class="btn-toolbar padding-sm pull-right flip">
+                <a title="New Blog post" data-toggle="tooltip" href="@Url.Action("PostMessage", "Topic", new {id = 0, forumid = Model.Forum.Id, catid = Model.Forum.CatId})" class="btn btn-sm btn-primary pull-right flip">
+                    <i class="fa fa-file-text"></i>
+                    <span class="hidden-xs hidden-sm">@ResourceManager.GetLocalisedString("lblNewBlog", "BlogPages")</span>
+                </a>
+            </div>
+        }
+
+    }
+    <div class="col-xs-7 col-lg-4 pull-right flip">
+        @using (Html.BeginForm("Posts"))
+        {
+            @Html.EnumDropDownListFor(model => model.DefaultDays, new { onchange = "$(this).closest('form').submit();", @class = "form-control" }, "")
+        }
+    </div>
+    <h5 class="title clearfix">
+        @ResourceManager.GetLocalisedString("lblBlogPosts", "BlogPages") <small>
+            @if (Model.Forum.Status == Enumerators.PostStatus.Closed)
+            {
+                @Html.Raw("<i class='fa fa-lock'></i> " + ResourceManager.GetLocalisedString("ForumLocked", "labels"))
+            }
+        </small>
+    </h5>
+    <hr class="title" />
+    <div id="topic-panel">
+
+        @foreach (Topic topic in Model.Topics)
+        {
+            @Html.DisplayFor(m => topic, "Blogs")
+        }
+
+        <div class="row pager-bottom">
+            <div class="col-xs-12">@Html.Partial("_Pager", Model)</div>
+        </div>
+
+    </div>
+
+}
+
+@section scripts
+{
+    @Scripts.Render("~/Scripts/star-rating.min.js")
+    <script type="text/javascript">
+    $(window).on("load", function(){
+
+            //$.validator.unobtrusive.parse("#message-form");
+            if ('@ViewBag.RequireAuth' === 'True') {
+                BootstrapDialog.show({
+                    type: BootstrapDialog.TYPE_WARNING,
+                    title: '@ResourceManager.GetLocalisedString("dlgPasswordForum", "labels")',
+                    message: '@ResourceManager.GetLocalisedString("dlgPasswordMsg", "labels") <input type="password" class="form-control">',
+                    onhide: function (dialogRef) {
+                        var pass = dialogRef.getModalBody().find('input').val();
+                        if ($.trim(pass.toLowerCase()) !== '') {
+                            $.ajax({
+                                type: "POST",
+                                url: '@Url.Action("PasswordCheck", "Forum")',
+                                data: { pwd: pass, forumid: '@Model.Forum.Id', topicid: '0' },
+                                success: function (result) {
+                                    window.location.href = '@Url.Action("Posts", "Forum", new { id = Model.Forum.Id, pagenum = 1 })';
+                                    return false;
+                                },
+                                error: function (error) {
+
+                                    BootstrapDialog.alert({
+                                        title: '@ResourceManager.GetLocalisedString("ErrHeading", "ErrorMessage")',
+                                        message: error
+                                    });
+                                    return false;
+                                }
+                            });
+                        } else {
+
+                            BootstrapDialog.alert({
+                                title: 'Error',
+                                message: '@ResourceManager.GetLocalisedString("dlgPasswordReq", "labels")'
+                            });
+                            return false;
+                        }
+                    },
+                    buttons: [{
+                        id: 'btn-cancel',
+                        label: '@ResourceManager.GetLocalisedString("btnCancel", "labels")',
+                        action: function (dialogRef) {
+                            window.location.href = SnitzVars.baseUrl;
+                            return false;
+                        }
+                    }, {
+                        id: 'btn-ok',
+                        label: '@ResourceManager.GetLocalisedString("btnOk", "labels")',
+                        action: function (dialogRef) {
+                            dialogRef.close();
+                        }
+                    }]
+                });
+
+            }
+
+            $('.collapse').on('shown.bs.collapse', function () {
+                $(this).parent().find(".fa-plus").removeClass("fa-plus").addClass("fa-minus");
+                $(this).parent().find(".btn-primary").removeClass("hidden");
+            }).on('hidden.bs.collapse', function () {
+                $(this).parent().find(".fa-minus").removeClass("fa-minus").addClass("fa-plus");
+                $(this).parent().find(".btn-primary").addClass("hidden");
+            });
+
+        });
+
+
+
+    /*
+            This is not necessary, but gives the tag-cloud a nice fade-in effect.
+          */
+        $(document).ready(function onPageLoad() {
+            var animatedProperties = {
+                paddingLeft: '30px',
+                paddingTop: '40px',
+                paddingBottom: '55px',
+                paddingRight: '45px',
+                opacity: 1
+            };
+
+            $('.tag-cloud').animate(animatedProperties, 500);
+        });</script>
+}

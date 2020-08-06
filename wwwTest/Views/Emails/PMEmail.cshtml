@@ -1,0 +1,10 @@
+﻿@using SnitzConfig
+@{
+    Layout = null;
+
+}
+
+To: @Html.Raw(Model.UserName) <@Model.To>
+From: @Html.Raw(Config.ForumTitle) <@ClassicConfig.ForumEmail>
+Subject: New Private Message
+Views: Html

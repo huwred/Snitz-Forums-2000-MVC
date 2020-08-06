@@ -1,0 +1,134 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@using SnitzCore.Utility
+@using SnitzDataModel.Models
+@using WWW.ViewModels
+@using WWW.Views.Helpers
+
+@{
+    List<string> show = ViewData["show"] as List<string> ?? new List<string>();
+
+    <!--
+    poll - featured Poll
+    recent - latest posts
+    catlist - Category/Forum list
+    photo - Featured image
+    widget|name - display named widget
+    rssfeed|feed url;count - display an rssfeed
+    calendar - Upcoming events
+    online - Online users
+    files - File downloads
+    posters - Top 10 post graphs
+    donate - Donate now
+    subscribe - Subscribe
+    -->
+}
+@if (show.Any())
+{
+    <div class="hidden-xs hidden-sm">
+        @foreach (var item in show)
+        {
+            var plugin = item.Split(':')[0];
+            if (plugin == "poll")
+            {
+                if (ClassicConfig.GetValue("INTPOLLS") == "1" && ClassicConfig.GetValue("INTFEATUREDPOLL") == "1" && ClassicConfig.GetValue("INTFEATUREDPOLLID") != "0")
+                {
+                    <div class="side-box poll" id="PollPanel">
+                        @{ Html.RenderAction("FeaturedPoll", "Polls"); }
+                    </div>
+                }
+            }
+            if (plugin == "recent")
+            {
+                <div id="recent-topics" class="side-box side-box-topics hidden-xs hidden-sm">
+                    @if (ClassicConfig.GetIntValue("INTNEWLAYOUT", 0) == 0)
+                    {
+                        <h5>@ResourceManager.GetLocalisedString("lblRecentActivity", "labels")</h5>
+                        <hr class="title" />
+                    }
+
+                    @{
+                        Html.RenderAction("RefreshRecentTopics", "Home", new { id = Model is Category ? Model.Id : 0, forumid = Model is ForumViewModel ? Model.Id : 0 });
+                    }
+
+                </div>
+            }
+            if (plugin == "catlist")
+            {
+                <div class="side-box">
+                    @{ Html.RenderPartial("_CategoryForumList"); }
+                </div>
+            }
+            if (plugin == "photo")
+            {
+                if (ClassicConfig.GetIntValue("INTFEATUREDPHOTO") == 1 && ClassicConfig.GetIntValue("STRPHOTOALBUM") == 1)
+                {
+                    <div class="side-box side-box-image hidden-xs hidden-sm" id="fimage" style="position: relative;">
+                        @{ Html.RenderAction("FeaturedImage", "PhotoAlbum"); }
+                    </div>
+                }
+            }
+            if (plugin.StartsWith("widget"))
+            {
+                var widget = plugin.Split('|');
+                if (Config.TableExists("FORUM_WIDGETS"))
+                {
+                    Html.RenderAction("Display", "Widgets", new { name = widget[1] });
+                }
+
+            }
+            if (plugin.StartsWith("rssfeed"))
+            {
+                var widget = plugin.Split('|');
+                var parms = widget[1].Split(';');
+                Html.RenderAction("Index", "RSSWidget", new { feed = parms[0], items = parms[1] });
+
+            }
+            if (plugin == "calendar")
+            {
+                if (Config.TableExists("CAL_EVENTS") && ClassicConfig.GetIntValue("INTCALEVENTS") == 1 && ClassicConfig.GetIntValue("INTCALUPCOMINGEVENTS") == 1 && ClassicConfig.GetIntValue("INTCALPUBLIC") == 1)
+                {
+                    Html.RenderPartial("_UpcomingEvents");
+                }
+            }
+            if (plugin == "online")
+            {
+                <div class="side-box">
+                    @{ Html.RenderAction("OnlineUsers", new { sidebar = true }); }
+                </div>
+            }
+            if (plugin == "files")
+            {
+                if (ClassicConfig.GetValue("STRMANAGEFILES") == "1")
+                {
+                    <div class="side-box">
+                        @{ Html.RenderAction("Downloads", "Files"); }
+                    </div>
+                }
+            }
+            if (plugin == "posters")
+            {
+                <div class="side-box">
+                    @Html.Action("PostsByUser","Charts")
+                </div>
+                <div class="side-box">
+                    @Html.Action("RepliesByUser","Charts")
+                </div>
+            }
+            if (Config.TableExists("FORUM_DONATION") && ClassicConfig.GetIntValue("INTSHOWDONATE", 0) == 1)
+            {
+            if( plugin == "donate"){
+                <div class="side-box">
+                    @Html.Action("DonateNow","PayPal", new {id=1})
+                </div>
+            }
+            if( plugin == "subscribe"){
+                <div class="side-box">
+                    @Html.Action("Subscribe","PayPal", new {id=1})
+                </div>
+            }
+        }
+
+        }
+    </div>
+}

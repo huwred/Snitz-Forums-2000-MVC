@@ -1,0 +1,33 @@
+﻿
+@using SnitzConfig
+
+<div class="hidden-xs hidden-sm">
+    @if (ClassicConfig.GetIntValue("INTPOLLS",0) == 1 && ClassicConfig.GetValue("INTFEATUREDPOLL") == "1" && ClassicConfig.GetValue("INTFEATUREDPOLLID") != "0")
+    {
+        <div class="side-box poll" id="PollPanel">
+            @{ Html.RenderAction("FeaturedPoll", "Polls"); }
+        </div>
+    }
+
+    @if (Config.TableExists("CAL_EVENTS") && ClassicConfig.GetIntValue("INTCALUPCOMINGEVENTS") == 1 && ClassicConfig.GetIntValue("INTCALPUBLIC") == 1)
+    {
+        Html.RenderPartial("_UpcomingEvents");
+    }
+
+    @if (ClassicConfig.GetIntValue("INTFEATUREDPHOTO") == 1 && ClassicConfig.GetIntValue("STRPHOTOALBUM") == 1)
+    {
+        <div class="side-box side-box-image hidden-xs hidden-sm" id="fimage" style="position: relative;">
+            @{ Html.RenderAction("FeaturedImage", "PhotoAlbum"); }
+        </div>
+    }
+    @*@if (Config.TableExists("FORUM_WIDGETS"))
+    {
+        Html.RenderAction("Display", "Widgets", new { name = "BBCRSS" });
+    }*@
+    @if (Config.TableExists("FORUM_WIDGETS"))
+    {
+        //Html.RenderAction("Index", "RSSWidget", new { feed = "https://news.google.com/news/rss/headlines/section/topic/TECHNOLOGY.en_uk/Technology?ned=uk&hl=en-GB&gl=GB", template = "GoogleFeed", items = 2 });
+
+        //Html.RenderAction("Index", "RSSWidget", new { feed = "https://feeds.bbci.co.uk/news/video_and_audio/technology/rss.xml" });
+    }
+</div>

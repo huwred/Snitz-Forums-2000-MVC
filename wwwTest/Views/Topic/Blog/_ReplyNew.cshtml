@@ -1,0 +1,47 @@
+﻿@using LangResources.Utility
+@using Snitz.Base
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@using WWW.Views.Helpers
+
+@model SnitzDataModel.Models.Reply
+@{
+    DateTime date = Model.Date.Value;
+
+    var unmoderatedClass = "";
+    if (Model.PostStatus == Enumerators.PostStatus.UnModerated)
+    {
+        unmoderatedClass = "topic-unmoderated";
+    }
+    else if (Model.PostStatus == Enumerators.PostStatus.OnHold)
+    {
+        unmoderatedClass = "topic-onhold";
+    }
+}
+
+
+    <div class="col-xs-7 col-xs-offset-3 blog-container reply @unmoderatedClass" id="r_@Model.Id">
+
+        <div>
+            @Html.Avatar(Model.Author.Username, Model.AuthorAvatar, "avatarsmall img-circle block").If(Config.ShowAvatar)
+
+            @Html.ActionLink(" " + Model.Author.Username, "UserProfile", "Account", new { id = Model.Author.Username }, new { title = ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip"), data_toggle = "tooltip" })
+            @Html.Timeago(Model.Date)
+            @Html.Partial("_MessageButtons", Model, new ViewDataDictionary(this.ViewData) { { "buttonsOnly", true }, { "buttons", new List<string> { "reply", "quote", "split", "select" } } })
+        </div>
+        @*<p>@Model.Author.Username <span class="small">@Html.Timeago(date)</span></p>*@
+
+        <div class="blog-message padding-md">
+            @Html.FormatBbCode(Model.Message)
+        </div><br />
+
+        <a data-toggle="collapse" href="#rep_@Model.Id" class="accordion-toggle" data-parent="#accordianParent"><i class="fa fa-comment-o"></i> Reply</a>
+
+        <br />
+        <div class="col-xs-12 collapse" id="rep_@Model.Id"></div>
+    </div>
+
+
+

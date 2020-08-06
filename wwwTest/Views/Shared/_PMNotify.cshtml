@@ -1,0 +1,17 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+
+
+@if (TempData["PMCount"] != null && (int)TempData["PMCount"] > 0)
+{
+    <a href="@Url.Action("Index", "PrivateMessage")" class="animated slideInRight"><i class="fa fa-envelope-o fa-1_5x animated infinite flash"></i> @TempData["PMCount"] @ResourceManager.GetLocalisedString("mnuNewMail", "Menu")</a>
+
+    if (ClassicConfig.GetIntValue("STRPMSOUND") == 1)
+    {
+        <audio autoplay>
+            <source src="@Url.Content("~/Content")/pm.wav" type="audio/wav">
+            <source src="@Url.Content("~/Content")/pm.mp3" type="audio/mp3">
+        </audio>
+    }
+
+}

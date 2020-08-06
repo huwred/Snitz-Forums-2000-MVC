@@ -1,0 +1,8 @@
+﻿@using LangResources.Utility
+
+<div class="form-group padding-md pull-right flip">
+    <input type="button" value="@ResourceManager.GetLocalisedString("btnCancel", "labels")" class="btn btn-sm btn-primary cancel" data-dismiss="modal"/>
+    <input type="reset" value="@ResourceManager.GetLocalisedString("btnReset", "labels")" class="btn btn-sm btn-warning " />
+    <input type="submit" id="btn-submit" value="@ViewBag.SubmitButton" class="btn btn-sm btn-success" />    
+</div>
+<div class="form-group text-warning">@Html.ValidationSummary(false)</div>

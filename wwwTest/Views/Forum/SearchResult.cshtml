@@ -1,0 +1,84 @@
+﻿@using System.Linq
+@using System.Web.Mvc.Html
+@using LangResources.Utility
+@using SnitzConfig
+@using WWW.Views.Helpers
+
+@model SnitzDataModel.Models.SearchResult
+@{
+    ViewBag.Title = @ResourceManager.GetLocalisedString("SearchResults", "Title") + " " + (Model.Archived ? "(Archived)" : "");
+    TempData["SideBox"] = true;
+    var topics = Model.Topics;
+}
+@section breadcrumb
+{
+    @Html.BuildBreadcrumbNavigation()
+}
+
+@section sidebox{
+    @Html.Partial("_RightColumn", new ViewDataDictionary(this.ViewData) { { "show", new List<string>() { "catlist","recent" } } })
+}
+
+<div id="wrap-body">
+    <div class="chunk-main">
+        @if (topics.Count == 0)
+        {
+            <div class="text-center">@ResourceManager.GetLocalisedString("Search_NoResults", "labels") </div>
+        }
+        else
+        {
+            if (ClassicConfig.GetIntValue("INTNEWLAYOUT", 0) == 1)
+            {
+                <div id="search-results forumbg">
+                    @{ Html.RenderPartial("_SearchResult"); }
+                </div>
+            }
+            else
+            {
+                <div id="search-results forumbg">
+                    <h5>@ViewBag.Title <small> @(String.IsNullOrWhiteSpace(Model.Params.MemberName) ? Model.Params.Term : Model.Params.Term + " " + ResourceManager.GetLocalisedString("lblPostedBy", "labels") + " " + Model.Params.MemberName)</small></h5>
+                    @if (Convert.ToInt32(Model.PageCount) > 1)
+                    {
+                        <div class="row">
+                            <div class="col-xs-10">@Html.Partial("_SearchPager", Model)</div>
+                            <div class="col-xs-2 pull-right flip padding-xs">
+                                @{ Html.RenderPartial("_PageSize"); }
+                            </div>
+                        </div>
+                    }
+                    @(Model.Params.SubjectOnly ? Html.DisplayFor(m => topics) : Html.DisplayFor(m => topics, new {Terms = String.Join("+", Model.FullParams.Terms.Select(i => i))}))
+                    @if (Convert.ToInt32(Model.PageCount) > 1)
+                    {
+                        <div class="row">
+                            <div class="col-xs-10">@Html.Partial("_SearchPager", Model)</div>
+                            <div class="col-xs-2 pull-right flip padding-xs">
+                                @{ Html.RenderPartial("_PageSize"); }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@section scripts
+{
+    <script type="text/javascript">
+
+        $(window)
+            .on("load", function() {
+                var termsArray = [@Html.Raw(String.Join(",", Model.FullParams.Terms.Select(i => "'" + i + "'")))];
+                for (var i = 0; i < termsArray.length; i++) {
+                    $('span a.topic-link').highlight(termsArray[i]);
+                }
+                //tooltip initialisers
+                $('.topic-strap').tooltip({
+                    placement: tooltipPos,
+                    html:true,
+                    selector: "a[class=topic-link]"
+                });
+            });
+
+    </script>
+}

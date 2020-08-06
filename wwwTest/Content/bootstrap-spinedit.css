@@ -1,0 +1,8 @@
+﻿div.spinedit { display: inline-block; position: relative; }
+input[type="text"].spinedit { width: 55px;display: inline-block;}
+div.spinedit .fa-chevron-up,
+div.spinedit .fa-chevron-down { position: relative; cursor: pointer; width: 12px; left: 8px; }
+div.spinedit .fa-chevron-up { top: -10px; }
+div.spinedit .fa-chevron-down { top: 10px; left: -4px; }
+
+.form-search div.spinedit, .form-inline div.spinedit, .form-horizontal div.spinedit { top: 5px; }

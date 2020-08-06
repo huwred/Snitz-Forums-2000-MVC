@@ -1,0 +1,36 @@
+﻿
+<div class="padding-md row-fluid clearfix">
+    <h5>Cookie Values <small>@Html.ActionLink("clear", "ClearCookies", null,new{title="Clear all cookies. (this will log you out)",data_toggle="tooltip"})</small></h5>
+    <div class="panel-body">
+        <dl class="dl-horizontal">
+            @{
+                var cookies = Request.Cookies;
+        
+                for (int i = 0; i < cookies.Count ; i++)
+                {
+                    var httpCookie = cookies[i];
+                    if (httpCookie != null && httpCookie.HasKeys)
+                    {
+                        <dt title="@WebUtility.UrlDecode(httpCookie.Name)">@WebUtility.UrlDecode(httpCookie.Name)</dt>
+                        <dd>
+                            <ul class="list-inline">
+                                @foreach (string value in httpCookie.Values)
+                                {
+                                    @Html.Raw("<li>" + value + " : " + httpCookie[value] + "</li>")
+                                }
+                            </ul>
+                        </dd>
+                    }
+                    else
+                    {
+                        if (httpCookie != null && !httpCookie.Name.Contains("ASP"))
+                        {
+                            <dt title="@WebUtility.UrlDecode(httpCookie.Name)">@WebUtility.UrlDecode(httpCookie.Name)</dt>
+                            <dd>@httpCookie.Value</dd>
+                        }
+                    }
+                }    
+            }
+        </dl>
+    </div>
+</div>

@@ -1,0 +1,79 @@
+﻿
+@using WWW.Views.Helpers
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions;
+@model IEnumerable<SiteManage.Models.PayPalProduct>
+@{
+    Layout = null;
+}
+<p>
+    @Html.ActionLink("Create New", "AddProduct", null, new { @class = "product" })
+</p>
+@if (Model.Any())
+{
+    <table class="table table-condensed table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Amount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Mode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RecurLength)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RecurPeriod)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Currency)
+            </th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Amount)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Mode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RecurLength)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RecurPeriod)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Currency)
+                    </td>
+                    <td class="flip text-right">
+                        <a href="@Url.Action("EditProduct", "PayPal", new {id = item.Id})" class="product"><i class="fa fa-edit fa-1_5x"></i></a>
+                        <a href="@Url.Action("DeleteProduct", "PayPal", new {id = item.Id})"><i class="fa fa-trash-o fa-1_5x"></i></a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <label>No Products defined</label>
+}
+

@@ -1,0 +1,77 @@
+﻿
+@using LangResources.Utility
+@model WWW.Models.ChangeUsernameModel
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
+    <h4 class="modal-title">@ResourceManager.GetLocalisedString("ChangeUsername", "labels")</h4>
+</div> 
+
+@using (Html.BeginForm("ChangeUsername", "Account", FormMethod.Post, new { id = "changeUsernameForm" }))
+{
+    
+    
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+    <span class="text-success">@ViewBag.Message</span>
+<div class="modal-body ltr">
+    <div class="container-fluid form-horizontal">
+        <div class="form-group">
+            @Html.LabelFor(model => model.NewUserName, new { @class = "control-label col-sm-4 hidden-xs" })
+            <div class="col-sm-7">
+                @Html.TextBoxFor(model => model.NewUserName, new { @class = "form-control ltr", placeholder = ResourceManager.GetLocalisedString("NewUsername", "General") })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Password, new { @class = "control-label col-sm-4 hidden-xs" })
+            <div class="col-sm-7">
+                @Html.PasswordFor(model => model.Password, new { @class = "form-control ltr",placeholder = ResourceManager.GetLocalisedString("plhEnterPassword", "labels") })
+            </div>
+        </div>
+
+        @Html.HiddenFor(model => model.Username)
+
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-danger" data-dismiss="modal">@ResourceManager.GetLocalisedString("btnCancel", "labels")</button>
+    <button type="submit" id="approve-btn" class="btn btn-success">@ResourceManager.GetLocalisedString("btnChange", "labels")</button>
+</div>
+}
+
+<script type="text/javascript">
+    $(window).on("load", function(){
+
+        $("#changeUsernameForm")
+                    .removeData("validator") /* added by the raw jquery.validate plugin */
+                    .removeData("unobtrusiveValidation");  /* added by the jquery unobtrusive plugin */
+
+        $.validator.unobtrusive.parse($("#changeUsernameForm"));
+        setRequiredFields();
+        $("#changeUsernameForm").submit(function (e) {
+            $('input[type="submit"]').attr('disabled', 'disabled');
+            e.preventDefault();
+            if ($(this).valid()) {
+                
+                $.post(SnitzVars.baseUrl + 'Account/ChangeUsername', $(this).serialize(), function (data) {
+                    if (data != null && data.success) {
+                        $('#modal-container').modal('hide');
+                        window.location.href = data.responseText;
+                        return false;
+                    } else {
+                        BootstrapDialog.show({
+                            type: BootstrapDialog.TYPE_WARNING,
+                            title: 'Change Username Error',
+                            message: data.responseText
+                                        });
+                    }
+                    
+                });
+            } else {
+                $('input[type="submit"]').removeAttr('disabled');
+            }
+
+        });
+
+    });
+</script>   

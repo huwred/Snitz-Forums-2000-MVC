@@ -1,0 +1,97 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@using WWW.Views.Helpers
+@{
+            var controller = HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString();
+            var configName = controller.ToUpper();
+
+            var pagename = HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper();
+            switch (pagename)
+            {
+                case "SEARCH":
+                case "ACTIVE":
+                    configName = pagename;
+                    break;
+            }
+
+            var pagesizes = ClassicConfig.GetValue("STR" + configName + "PAGESIZES", Config.DefaultPageSize.ToString()).Split(',');
+            bool hidden = pagesizes.Count() == 1;
+        }
+        @if (!hidden)
+        {
+    <div class="form-group pull-right flip">
+        <div class="input-group">
+            <div class="radioBtn btn-group btn-group-sm" title="@ResourceManager.GetLocalisedString("lblPageSize", "General")" data-toggle="tooltip">
+                @foreach (string psize in pagesizes)
+                {
+                    <a class="btn btn-default btn-sm notActive" data-toggle="fun" data-title="@psize">@psize</a>
+                }
+
+            </div>
+            <input type="hidden" name="fun" id="fun">
+        </div>
+    </div>
+    using (Html.BeginStyles())
+    {
+        <style>
+            .radioBtn .notActive {
+                color: #3276b1;
+                background-color: #fff;
+            }
+        </style>
+    }
+    using (Html.BeginScripts())
+    {
+<script>
+        var pagesizeCookie = '@configName.ToLower()' + "-pagesize";
+
+        if ($.cookie(pagesizeCookie)) {
+            var storedSize = parseInt($.cookie(pagesizeCookie));
+            $('a[data-toggle="fun"]')
+                .not('[data-title="' + storedSize + '"]')
+                .removeClass('active')
+                .addClass('notActive');
+            $('a[data-toggle="fun"][data-title="' + storedSize + '"]')
+                .removeClass('notActive')
+                .addClass('active');
+
+        }
+
+        $(document)
+            .on('click', '.radioBtn a',
+                function () {
+                    var sel = $(this).data('title');
+                    var tog = $(this).data('toggle');
+                    $('#' + tog).prop('value', sel);
+
+                    $('a[data-toggle="' + tog + '"]')
+                        .not('[data-title="' + sel + '"]')
+                        .removeClass('active')
+                        .addClass('notActive');
+                    $('a[data-toggle="' + tog + '"][data-title="' + sel + '"]')
+                        .removeClass('notActive')
+                        .addClass('active');
+
+                    if (!$.cookie(pagesizeCookie)) {
+                        var testCookie = 'cookie support check';
+                        $.cookie(testCookie, true);
+                        if ($.cookie(testCookie)) { // browser supports cookie
+                            $.cookie(testCookie, null);
+                            $.removeCookie(testCookie);
+                            $.cookie(pagesizeCookie, sel, { expires: 1/*, path: window.SnitzVars.cookiePath, domain: window.SnitzVars.cookieDomain*/ });
+                            location.reload(); // re-load the page
+
+                        }
+
+                    } else {
+                        var storedSize = parseInt($.cookie(pagesizeCookie));
+                        var currentSize = parseInt(sel);
+                        if (storedSize !== currentSize) { // user may have changed the pagesize
+                            $.cookie(pagesizeCookie, sel, { expires: 1/*, path: window.SnitzVars.cookiePath, domain: window.SnitzVars.cookieDomain*/ });
+                            location.reload();
+                        }
+                    }
+                });
+</script>
+    }
+}

@@ -1,0 +1,309 @@
+﻿@using System.Globalization
+@using LangResources.Utility
+@using SnitzConfig
+@using SnitzCore.Filters
+@using SnitzCore.Utility
+@using WWW.Filters
+@using WWW.Views.Helpers
+@{
+    //check the culture so we can set the page direction and language
+    CultureInfo ci = SessionData.Get<CultureInfo>("Culture");
+    string clang = ci.TwoLetterISOLanguageName;
+    bool isRighToLeft = SessionData.Get<bool>("isRighToLeft");
+    
+    var versionstring = typeof(WWW.Global).Assembly.GetName().Version;
+}
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://ogp.me/ns/fb#" lang="@clang" dir="@(isRighToLeft ?  "rtl" : "ltr" )">
+<head>
+    <meta charset="utf-8" />
+    @*<meta http-equiv="X-UA-Compatible" content="IE=edge">*@
+    @RenderSection("MetaRefresh", required: false)
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    @RenderSection("pageMeta", required: false)
+    <title>@ViewBag.Title</title>
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <link rel="alternate" type="application/rss+xml" title="@ResourceManager.GetLocalisedString("tipForumRss", "Tooltip") @Html.Raw(Config.ForumTitle)" href="@Url.Action("Active","RssFeed")" />
+
+    @Styles.Render("~/bundles/sitecss")
+
+    @Styles.Render("~/Content/stylesheet.min.css")
+    @Styles.Render("~" + Config.ThemeFolder() + "/snitz.min.css")
+    @if (isRighToLeft)
+    {
+        <!-- Load the default rtl css file -->
+        <link href="~/Content/bootstrap-rtl.min.css" rel="stylesheet">
+        @Html.Raw(Config.ThemeCss("snitz-rtl.min.css?v=" + versionstring))
+    }
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    @Scripts.Render("~/bundles/oldIEBrowsersSupport")
+    <![endif]-->
+    <script src="@Url.Action("Index","JavaScriptSettings")"></script>
+    <script src="@Url.Action("Resources","JavaScriptSettings")"></script>
+
+    @if (Config.TableExists("CAL_EVENTS") && ClassicConfig.GetIntValue("INTCALUPCOMINGEVENTS") == 1 && ClassicConfig.GetIntValue("INTCALPUBLIC") == 1)
+    {
+        @Styles.Render("~/Content/fullcalendar.min.css")
+        @Html.Raw(Config.ThemeCss("fullcalendar.min.css"))
+        if (isRighToLeft)
+        {
+            @Styles.Render("~/Content/fullcalendar-rtl.css")
+        }
+    }
+    @Styles.Render("~/Content/stylesheet.min.css?v=" + versionstring)
+    @if (isRighToLeft)
+    {
+        @Styles.Render("~/Content/stylesheetrtl.min.css?v=" + versionstring)
+    }
+    @Html.Raw(Config.ThemeCss("colours.min.css?v=" + versionstring))
+
+    @RenderSection("styles", required: false)
+    @Html.PageStyles()
+
+    <style>
+        body {
+            background-color: white !important;
+        }
+
+            body > .container-fluid {
+                padding-top: 0px;
+            }
+
+        .chunk, .chunk-main {
+            clear: both;
+            margin: 0;
+            max-width: 1220px;
+            padding: 0;
+        }
+
+        #forumlist {
+            margin-top: 0px;
+        }
+
+        #wrap-subhead {
+            margin-left: 0px;
+        }
+    </style>
+</head>
+<body id="page-top" onload="setStyleFromCookie(); ">
+    <noscript>
+        <div class="alert">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong>Warning!</strong> Please enable JavaScript in your browser!
+        </div>
+    </noscript>
+
+    <!-- Begin page content -->
+    <main class="container-fluid persian" id="overall-wrap">
+        <div id="pm-notify" style="vertical-align: middle; display: none;">
+            @{ Html.RenderPartial("_PMNotify"); }
+        </div>
+        @if (IsSectionDefined("breadcrumb"))
+        {
+            <div class="row-fluid hidden">
+                <div class="breadcrumb col-xs-10 col-sm-8 col-md-9">
+                    @{ RenderSection("breadcrumb", required: false).WriteTo(TextWriter.Null); }
+                </div>
+                @*<div class="hidden-xs col-sm-4 col-md-3">
+                    @{ Html.RenderPartial("_LoginPartial"); }
+                </div>*@
+            </div>
+        }
+
+        <div class="row-fluid" id="main">
+            @if (IsSectionDefined("thirdcol"))
+            {
+                RenderSection("thirdcol", false).WriteTo(TextWriter.Null);
+            }
+
+            <!-- Main Content area -->
+            <div class="col-xs-12" id="main-content">
+                @if (OfflineHelper.OfflineData != null)
+                {
+                    int min = (OfflineHelper.OfflineData.TimeWhenSiteWillGoOfflineUtc - DateTime.UtcNow).Minutes;
+                    @(min > 0 ? Html.Raw("<div class='alert alert-danger'>Forum will shutdown in " + min + " minutes</div>") : Html.Raw("<div class='alert alert-warning'>Forum is currently shutdown</div>"))
+                }
+
+                @{
+                    if (ClassicConfig.GetIntValue("intTopBanner") == 1)
+                    {
+                        if (IsSectionDefined("topBanner"))
+                        {
+                            @RenderSection("topBanner", required: false)
+                        }
+                    }
+                    else
+                    {
+                        <!-- if banners are off we need to prevent any defined sections from renderring -->
+                        if (IsSectionDefined("topBanner"))
+                        {
+                            RenderSection("topBanner", false).WriteTo(TextWriter.Null);
+                        }
+                    }
+                }
+
+                @if (IsSectionDefined("featured"))
+                {
+                    @RenderSection("featured", required: false)
+                }
+                @if (IsSectionDefined("topicsearchbox"))
+                {
+                    //on small screens render the page search box at the top
+                    <div class="side-box hidden-md hidden-lg">
+                        @RenderSection("topicsearchbox", required: false)
+                    </div>
+                }
+                @RenderBody()
+            </div>
+            <!-- side columns -->
+            <div class="hidden" id="right-col">
+                @if (IsSectionDefined("sideBanner"))
+                {
+                    RenderSection("sideBanner", false).WriteTo(TextWriter.Null);
+                }
+                @if (IsSectionDefined("sidebox"))
+                {
+                    RenderSection("sidebox", false).WriteTo(TextWriter.Null);
+                }
+            </div>
+        </div>
+        @if (CookieConsent.AskCookieConsent(ViewContext))
+        {
+            Html.RenderPartial("_CookieConsentMessage");
+        }
+    </main>
+
+<!-- Page loading container -->
+<div id="loading" style="display:none;" class="modal-backdrop fade in">
+    <div class="container text-center" style="height:100%;">
+        <i class="fa fa-spinner fa-4x fa-pulse fa-fw" id="spinWait" style="top: 50%; position: relative;"></i>
+    </div>
+</div>
+
+    <!-- Modal-containers -->
+    <div id="application-error-div" class="modal fade" role="dialog" tabindex="-1">
+        <div id="" class="modal-dialog" style="width:75%">
+            <div class="modal-content">
+                @if (TempData["errorpopup"] != null)
+                {
+                    @Html.Raw(TempData["errorpopup"].ToString())
+                }
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-container" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div id="" class="modal-dialog">
+            <div class="modal-content" id="mdlContent">
+                <div class="container text-center">
+                    <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id='aboutModal' class='modal fade' data-url='@Url.Action("About")' dir="ltr">
+        <div id='aboutContainer' class="modal-dialog">
+        </div>
+    </div>
+    <div id='licenseModal' class='modal fade' data-url='@Url.Action("License")' dir="ltr">
+        <div id='licenseContainer' class="modal-dialog">
+        </div>
+    </div>
+    <div class="modal fade mymodal" id="chatModal" tabindex="-1" role="dialog" aria-labelledby="chatModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"> <i class='fa fa-times'></i> </button>
+                    <button class="close modalMinimize"> <i class='fa fa-minus'></i> </button>
+                    <h4 class="modal-title">Chat</h4>
+                </div>
+                <div class="modal-body form-group" id="chat-content">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="btn-close" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <input type="hidden" id="displayname" value="@HttpContext.Current.Session.SessionID" />
+    <!-- Common scripts -->
+    @Scripts.Render("~/bundles/corejs?v=" + versionstring)
+
+    <!-- language specific scripts -->
+    @if (clang == "fa")
+    {
+        @Scripts.Render("~/bundles/Persian?v=" + versionstring)
+    }
+
+    @if (clang == "nb" || clang == "nn" || clang == "no")
+    {
+        @Scripts.Render("~/Scripts/timeago/timeago.no.js?v=" + versionstring)
+    }
+    else if (clang != "en")
+    {
+        @Scripts.Render("~/Scripts/timeago/timeago." + clang + ".js?v=" + versionstring)
+    }
+
+    @Scripts.Render("~/bundles/Snitzjs?v=" + versionstring)
+<script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.js"></script>
+    @Scripts.Render("~/Scripts/iframeResizer.contentWindow.min.js")
+<script type="text/javascript">
+    var SnitzVars = SnitzVars || {
+
+    }
+    SnitzVars.erpop = '@(TempData["errorpopup"] != null)';
+    SnitzVars.pending ="@ViewBag.PendingMembers";
+    SnitzVars.errMsg = '@ViewBag.Error';
+    SnitzVars.successMsg = '@ViewBag.Success';
+    tempScrollTop = sessionStorage.getItem('scrollTop');
+
+    function refreshlazyload(){
+
+        lazyload();
+    };
+
+    $(document).ready(function () {
+        lazyload();
+        $(".fig-caption").each(function () {
+            var test = $(this);
+            $.ajax({
+                url: SnitzVars.baseUrl + "PhotoAlbum/GetCaption/" + $(this).data("id"),
+                type: "GET",
+                success: function (data) {
+                    //alert(data); // the View
+                    test.html(data);
+                }
+            });
+        });
+
+        if (SnitzVars.erpop==='True') {
+            $('#application-error-div').modal('show');
+        }
+        /*show popup error message*/
+
+        if (SnitzVars.errMsg.length > 1) {
+            errorDlg('@ViewBag.ErrTitle', SnitzVars.errMsg);
+        }
+
+        /*show pending members*/
+        if (SnitzVars.pending.length > 1 && SnitzVars.pending === 'True') {
+            pendingMemberShow('@ResourceManager.GetLocalisedString("mnuAdminPending", "labels")');
+        }
+
+    });
+</script>
+    <!-- main script section for pages -->
+    @RenderSection("scripts", required: false)
+    <!-- Render any scripts defined in partial pages -->
+    @Html.PageScripts()
+    <script>
+        //Init stuff
+        ready_or_not();
+
+    </script>
+</body>
+</html>

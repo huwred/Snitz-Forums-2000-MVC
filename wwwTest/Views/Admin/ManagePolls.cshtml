@@ -1,0 +1,62 @@
+﻿@using SnitzConfig
+@using SnitzDataModel.Extensions
+
+@using WWW.Views.Helpers
+@{
+    ViewBag.PageTitle = "Manage Polls";
+    ViewBag.ActivePage = "Manage Polls";
+    //Layout = "~/Views/Admin/_Layout.cshtml";
+
+    bool isadmin = User.IsAdministrator();
+}
+<div class="col-lg-8">
+    <div class="panel panel-primary panel-body form-horizontal">
+        @using (Html.BeginForm("SavePollSettings", "Admin"))
+        {
+            <div class="form-group">
+                @Html.ConfigToggle("Allow Polls:", "INTPOLLS", "", "control-label col-xs-5")
+                <div class="col-xs-4">
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.ConfigToggle("Show active Polls:", "INTACTIVEPOLLS", "", "control-label col-xs-5")
+                <div class="col-xs-4">
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.ConfigToggle("Show featured Poll:", "INTFEATUREDPOLL", "", "control-label col-xs-5")
+                <div class="col-xs-4">
+                </div>
+            </div>
+            <div class="form-group">
+
+                <label for="intfeaturedpollid" class="control-label col-xs-5">Featured Poll ID:</label>
+                <div class="col-xs-2">
+                    <input class="form-control" id="intfeaturedpollid" type="number" name="intfeaturedpollid" value="@ClassicConfig.GetValue("INTFEATUREDPOLLID")" />
+                </div>
+                <div class="col-xs-4">
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.ConfigToggle("Hide featured Poll after voting:", "INTHIDEPOLL", "disabled", "control-label col-xs-5")
+                <div class="col-xs-4">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="intmaxvotes" class="control-label col-xs-5">Max. No of Poll answers:</label>
+                <div class="col-xs-2">
+                    <input class="form-control" id="intmaxvotes" type="number" name="intmaxvotes" value="@(ClassicConfig.GetValue("INTMAXVOTES"))" />
+                </div>
+                <div class="col-xs-4">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-4">&nbsp;</div>
+                <div class="col-xs-4">@Html.ActionLink("View Active Polls", "Index", "Polls", new { admin = true }, null)</div>
+            </div>
+            Html.RenderPartial("_FormButtons");
+
+
+        }
+    </div>
+</div>

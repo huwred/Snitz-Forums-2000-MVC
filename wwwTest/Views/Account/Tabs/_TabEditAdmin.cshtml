@@ -1,0 +1,46 @@
+﻿@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model WWW.Models.ProfileEditModel
+
+    <div class="padding-md container-fluid form-inline">
+        <div class="col-xs-12">
+            <div class="form-group col-xs-6">
+                @Html.LabelFor(model => model.Profile.LastVisitDate, new { @class = "control-label" })
+                @Html.DisplayDateFor(model => model.Profile.LastVisit, true)
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="form-group col-xs-6">
+                @Html.LabelFor(model => model.Profile.LastPostDate, new { @class = "control-label" })
+                @Html.DisplayDateFor(model => model.Profile.LastPost, true)
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="form-group col-xs-6">
+
+                @Html.LabelFor(model => model.Profile.Locked, new { @class = "control-label" }) @Html.CheckBoxFor(model => model.Profile.Locked, new { @class = "yesno-checkbox", data_size = "mini", data_on_text = "Yes", data_off_text = "No" })
+
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="form-group col-xs-6">
+                @Html.LabelFor(model => model.Profile.MLev, new { @class = "control-label" })
+                @Html.EnumDropDownListFor(model => model.Profile.MLev, new { @class = "form-control" }, "")
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="form-group col-xs-6">
+                @*<input id="layout3" name="Profile.AllowSubscriptions" type="checkbox" class="yesno-checkbox" data-size="mini" checked="@(Model.Profile.AllowSubscriptions)" />*@
+                @Html.LabelFor(model => model.Profile.AllowSubscriptions, new { @class = "control-label" }) @Html.CheckBoxFor(model => model.Profile.AllowSubscriptions, new { @class = "yesno-checkbox", data_size = "mini", data_on_text = "Yes", data_off_text = "No" })
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="form-group col-xs-6">
+
+                @Html.LabelFor(model => model.Profile.AllowSendEmail, new { @class = "control-label" }) @Html.CheckBoxFor(model => model.Profile.AllowSendEmail, new { @class = "yesno-checkbox", data_size = "mini", data_on_text = "Yes", data_off_text = "No" })
+            </div>
+        </div>
+        @{ Html.RenderPartial("_FormButtons"); }
+    </div>
+

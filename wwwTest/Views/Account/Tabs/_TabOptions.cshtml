@@ -1,0 +1,60 @@
+﻿@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model WWW.ViewModels.UserProfileViewModel
+<div class="padding-md row-fluid form-horizontal clearfix">
+    <div class="panel-body">
+        @if (ViewBag.fullView)
+        {
+            if (ClassicConfig.GetIntValue("INTALLOWHIDEONLINE") == 1)
+            {
+                <div class="form-group">
+                    <div class="col-sm-4">@Html.LabelFor(model => model.Profile.AnonymousUser, DisplayOptions.Humanize) </div>
+                    <div class="col-xs-8">
+                        @Html.DisplayFor(model => model.Profile.AnonymousUser, new { @class = "form-control" })
+                    </div>
+                </div>
+            }
+            <div class="form-group">
+                <div class="col-xs-4">
+                    @Html.LabelFor(model => model.Profile.ReceiveEmails, DisplayOptions.Humanize)
+                </div>
+                <div class="col-xs-8">
+                    @Html.DisplayFor(model => model.Profile.ReceiveEmails, new { @class = "form-control" })
+                </div>
+            </div>
+            if (ClassicConfig.GetValue("STRSIGNATURES") == "1")
+            {
+                <div class="form-group">
+                    <div class="col-xs-4">
+                        @Html.LabelFor(model => model.Profile.ViewSignatures, DisplayOptions.Humanize)
+                    </div>
+                    <div class="col-xs-8">
+                        @Html.DisplayFor(model => model.Profile.ViewSignatures, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-xs-4">
+                        @Html.LabelFor(model => model.Profile.AlwaysUseSignature, DisplayOptions.Humanize)
+                    </div>
+                    <div class="col-xs-8">
+                        @Html.DisplayFor(model => model.Profile.AlwaysUseSignature, new { @class = "form-control" })
+                    </div>
+                </div>
+
+            }
+        }
+        @if (ClassicConfig.GetValue("STRSIGNATURES") == "1")
+        {
+            <div class="col-xs-12">
+                @Html.LabelFor(model => model.Profile.Signature)
+            </div>
+            <br />
+            <div class="col-xs-12 col-md-5">
+                @Html.FormatBbCode(Model.Profile.Signature)
+            </div>
+        }
+    </div>
+</div>
+

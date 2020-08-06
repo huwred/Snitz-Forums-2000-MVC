@@ -1,0 +1,269 @@
+﻿@using LangResources.Utility
+@using Snitz.Base
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model WWW.ViewModels.SearchViewModel
+@{
+
+    ViewBag.Title = ResourceManager.GetLocalisedString("Search", "labels") + " " + Config.ForumTitle;
+    ViewBag.SubmitButton = ResourceManager.GetLocalisedString("btnFind", "labels");
+}
+
+@section breadcrumb
+{
+    @Html.BuildBreadcrumbNavigation()
+}
+@section sidebox{
+    @Html.Partial("_RightColumn", new ViewDataDictionary(this.ViewData) { { "show", new List<string>() { "catlist", "recent" } } })
+
+}
+<h5>@ResourceManager.GetLocalisedString("Search_Title", "labels")</h5>
+<hr class="title" />
+
+<div id="wrap-body">
+
+    @using (Ajax.BeginForm("Search", "Forum", null, new AjaxOptions { UpdateTargetId = "search-results",OnSuccess= "SearchDone",OnFailure="SearchDone", OnBegin = "formBegin" }, new { id = "SearchForm", @class = "chunk-main padding-md" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="panel padding-md">
+            <div class="inner">
+                <div class="panel-heading">
+                    <h4><a data-toggle="collapse" href="#collapse1" class="accordion-toggle"> @ResourceManager.GetLocalisedString("Search_Filters", "labels")</a></h4>
+                </div>
+            </div>
+            <div class="inner">
+                <div id="collapse1" class="panel-collapse collapse in filters">
+                    <fieldset>
+                        <dl>
+                            <dt>
+                                <label for="keywords">@ResourceManager.GetLocalisedString("lblKeywords", "labels")</label><br>
+                                @if (Config.FullTextSearch)
+                                {
+                                    <span class="srch-full">@String.Format(ResourceManager.GetLocalisedString("fulltextSearch", "General"), ResourceManager.GetLocalisedString("SearchWordMatch_All", "EnumDescriptions"), ResourceManager.GetLocalisedString("SearchWordMatch_Any", "EnumDescritions"))</span>
+                                }
+                                else
+                                {
+                                    <span>@ResourceManager.GetLocalisedString("termsSearch", "General")</span>
+                                }
+                            </dt>
+                            <dd>@Html.TextBoxFor(model => model.SearchModel.Term, new { @class = "form-control", placeholder = ResourceManager.GetLocalisedString("plhSearchTerm", "Controls") })</dd>
+                            <dd>@Html.RadioButtonForSelectList(model => model.SearchModel.PhraseType, Model.SearchModel.PhraseType.ToSelectList(), Enumerators.Position.Vertical)
+
+                            </dd>
+                            @if (Config.FullTextSearch)
+                            {
+                                <dd>
+                                    @Html.RadioButtonForSelectList(model => model.SearchModel.FullTextType, Model.SearchModel.FullTextType.ToSelectList(), Enumerators.Position.Vertical)
+                                </dd>
+                            }
+                        </dl>
+                        <dl>
+                            <dt>
+                                @Html.LabelFor(model => model.SearchModel.MemberName)<br />
+                                @ResourceManager.GetLocalisedString("usernameSearch", "General")
+                            </dt>
+                            <dd>@Html.TextBoxFor(model => model.SearchModel.MemberName, new { @class = "form-control", placeholder = ResourceManager.GetLocalisedString("plhUsername", "Controls") })</dd>
+                        </dl>
+                    </fieldset>
+                    <fieldset>
+                        <dl>
+                            <dt>
+                                @Html.LabelFor(model => model.SearchModel.Category)<br />
+                                @ResourceManager.GetLocalisedString("Search_CatDesc", "labels")
+
+                            </dt>
+                            <dd>
+                                @{
+                                    var lst1 = new SelectList(Model.SearchModel.CategoryList, "Id", "Title").ToList();
+                                    lst1.Insert(0, new SelectListItem { Text = ResourceManager.GetLocalisedString("Search_AllCategories", "labels"), Value = "-1" });
+
+                                }
+
+                                @Html.DropDownListFor(model => model.SearchModel.Category, lst1, new { @class = "form-control", @tabindex = 1 })
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>
+                                @Html.LabelFor(model => model.SearchModel.ForumId)<br />
+                                @ResourceManager.GetLocalisedString("Search_ForumDesc", "labels")
+                            </dt>
+                            <dd>
+                                @Html.DropDownListFor(model => model.SearchModel.ForumId, new SelectList(Model.ForumList, "Key", "Value"), new { @class = "form-control" })
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>
+                                @Html.LabelFor(model => model.SearchModel.SearchIn)<br />
+                            </dt>
+                            <dd>
+                                @Html.EnumDropDownListFor(model => model.SearchModel.SearchIn, new { @class = "form-control" }, "")
+
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>
+                                <label>@ResourceManager.GetLocalisedString("Search_Archive", "labels")</label><br />
+                                @ResourceManager.GetLocalisedString("Search_ArchiveDesc", "labels")
+
+                            </dt>
+                            <dd>
+                                @Html.RadioButtonFor(model => model.SearchModel.Archived, "true", new { id = "archived" })
+                                @Html.Label("archived", ResourceManager.GetLocalisedString("lblYes", "labels"))
+                                @Html.RadioButtonFor(model => model.SearchModel.Archived, "false", new { id = "notarchived" })
+                                @Html.Label("notarchived", ResourceManager.GetLocalisedString("lblNo", "labels"))
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>
+                                @Html.LabelFor(model => model.SearchModel.SearchByDays)<br />
+                            </dt>
+                            <dd>
+                                @Html.EnumDropDownListFor(model => model.SearchModel.SearchByDays, new { @class = "form-control" }, "")
+                            </dd>
+                        </dl>
+                        <div class="column2">
+                            <div class="form-group">
+                            </div>
+                            <div class="radio">
+
+                            </div>
+                            <div class="form-group">
+
+
+                            </div>
+
+
+                        </div>
+
+                        @*<div class="panel-footer">Footer</div>*@
+                    </fieldset>
+                    <fieldset class="display-options">
+                        <dl>
+                            <dt><label class="control-label">@ResourceManager.GetLocalisedString("selOrder", "Controls")</label></dt>
+                            <dd><div class="input-group">
+                                    <span class="input-group-btn">
+                                        <select name="OrderBy" id="sk" class="form-control"><option @if (Model.OrderBy == "a") { @Html.Raw("selected='selected'") } value="a">@ResourceManager.GetLocalisedString("optAuthor", "Controls")</option><option @if (Model.OrderBy == "r") { @Html.Raw("selected='selected'") } value="r">@ResourceManager.GetLocalisedString("optLastAuthor", "Controls")</option><option @if (Model.OrderBy == "t") { @Html.Raw("selected='selected'") } value="t">@ResourceManager.GetLocalisedString("optPostTime", "Controls")</option><option @if (Model.OrderBy == "f") { @Html.Raw("selected='selected'") } value="f">@ResourceManager.GetLocalisedString("optForum", "Controls")</option><option @if (Model.OrderBy == "i") { @Html.Raw("selected='selected'") } value="i">@ResourceManager.GetLocalisedString("optSubject", "Controls")</option></select>
+                                    </span>
+                                    <span class="input-group-btn">
+                                        <select name="SortDir" id="sd" class="form-control"><option @if (Model.SortDir == "ASC") { @Html.Raw("selected='selected'") } value="ASC">@ResourceManager.GetLocalisedString("optAsc", "Controls")</option><option @if (Model.SortDir == "DESC") { @Html.Raw("selected='selected'") } value="DESC">@ResourceManager.GetLocalisedString("optDesc", "Controls")</option></select>
+                                    </span>
+                                </div>
+                            </dd>
+                        </dl>
+                    </fieldset>
+                    <fieldset class="submit-buttons text-right padding-lg" style="padding-bottom: 12px;">
+                        <input name="reset" class="btn btn-default" type="reset" value="@ResourceManager.GetLocalisedString("btnReset", "labels")">&nbsp;
+                        <input name="submit" class="btn btn-primary" type="submit" value="@ResourceManager.GetLocalisedString("btnFind", "labels")">
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+
+        @*@Html.HiddenFor(model => model.OrderBy)*@
+
+    }
+    <div id="search-results">
+
+    </div>
+</div>
+
+@section Scripts {
+
+    <script type="text/javascript">
+
+        function formBegin() {
+            $(".panel-heading a").addClass("collapsed");
+            $("#collapse1").removeClass("in");
+        }
+        function SearchDone() {
+            var pagesizeCookie = 'search-pagesize';
+            if ($.cookie(pagesizeCookie)) {
+                var storedSize = parseInt($.cookie(pagesizeCookie));
+                $('a[data-toggle="fun"]')
+                    .not('[data-title="' + storedSize + '"]')
+                    .removeClass('active')
+                    .addClass('notActive');
+                $('a[data-toggle="fun"][data-title="' + storedSize + '"]')
+                    .removeClass('notActive')
+                    .addClass('active');
+
+            }
+            $(document).on('click', '.radioBtn a',function () {
+                var sel = $(this).data('title');
+                var tog = $(this).data('toggle');
+                $('#' + tog).prop('value', sel);
+
+                $('a[data-toggle="' + tog + '"]')
+                    .not('[data-title="' + sel + '"]')
+                    .removeClass('active')
+                    .addClass('notActive');
+                $('a[data-toggle="' + tog + '"][data-title="' + sel + '"]')
+                    .removeClass('notActive')
+                    .addClass('active');
+
+                if (!$.cookie(pagesizeCookie)) {
+                    var testCookie = 'cookie support check';
+                    $.cookie(testCookie, true);
+                    if ($.cookie(testCookie)) { // browser supports cookie
+                        $.cookie(testCookie, null);
+                        $.removeCookie(testCookie);
+                        $.cookie(pagesizeCookie, sel, { expires: 1, path: window.SnitzVars.cookiePath, domain: window.SnitzVars.cookieDomain });
+                        $('#SearchForm').submit();
+                        //location.reload(); // re-load the page
+                    }
+
+                } else {
+                    var storedSize = parseInt($.cookie(pagesizeCookie));
+                    var currentSize = parseInt(sel);
+                    if (storedSize !== currentSize) { // user may have changed the pagesize
+                        $.cookie(pagesizeCookie, sel, { expires: 1, path: window.SnitzVars.cookiePath, domain: window.SnitzVars.cookieDomain});
+                        $('#SearchForm').submit(); //location.reload();
+                    }
+                }
+            });
+            //enable button on submit
+            var button = $('#SearchForm').find('input[type="submit"]');
+            setTimeout(function () {
+                button.removeAttr('disabled');
+            }, 1);
+        }
+        /*conditional validator for subject*/
+        $("form").data("validator", null);
+        setConditionalValidators();
+        $.validator.unobtrusive.parse($("form"));
+
+        $(document).ready(function () {
+
+            //SearchModel.FullTextType
+            $("input[name$='SearchModel.PhraseType']").click(function () {
+                var value = $(this).val();
+                if (value == '0') {
+                    $("[name$='SearchModel.FullTextType']").hide();
+                    $("[name$='SearchModel.FullTextType']").next().hide();
+                }
+                else if (value == '1') {
+                    $("[name$='SearchModel.FullTextType']").show();
+                    $("[name$='SearchModel.FullTextType']").next().show();
+                }
+                else if (value == '2') {
+                    $("[name$='SearchModel.FullTextType']").show();
+                    $("[name$='SearchModel.FullTextType']").next().show();
+                }
+            });
+
+            if ($("input[name$='SearchModel.PhraseType']:checked").val() == '0') {
+                $("[name$='SearchModel.FullTextType']").hide();
+                $("[name$='SearchModel.FullTextType']").next().hide();
+            } else {
+                $("[name$='SearchModel.FullTextType']").show();
+                $("[name$='SearchModel.FullTextType']").next().show();
+            }
+
+
+        });
+
+    </script>
+}

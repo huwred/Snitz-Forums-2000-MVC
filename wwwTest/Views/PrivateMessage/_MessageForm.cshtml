@@ -1,0 +1,122 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel
+@using SnitzDataModel.Extensions
+@using SnitzDataModel.Models
+@using WWW.Views.Helpers
+@model WWW.ViewModels.PrivateMessagePost
+@using (Ajax.BeginForm("SendMessage", null,new AjaxOptions { HttpMethod = "Post", LoadingElementId = "loading", UpdateTargetId = "message-box", OnSuccess = "PmSentOK" , OnFailure="PmSendFail"},new{id="message-form"}))
+{
+
+    @Html.ValidationSummary(false)
+    <div class="panel panel-info">
+        
+        <div class="panel-heading form-horizontal">
+            <div class="form-group">
+                <label class="control-label col-sm-2">@ResourceManager.GetLocalisedString("To", "PrivateMessage")</label>
+                <div class="col-sm-4"><input type="text" name="ToUser" id="ToUser" class="form-control ltr" data-autocomplete-url="@Url.Action("AutoCompleteUsername")" @ViewBag.ReadOnly value="@Model.ToUser" data-val="true" data-val-required="@ResourceManager.GetLocalisedString("UsernameRequired", "Validation")"/></div>
+                <div class="col-sm-6">
+                    @if (User.IsAdministrator() || User.IsModerator())
+                    {
+                    <label><input type="checkbox" name="AllMembers" id="allmembers" value="true" />@ResourceManager.GetLocalisedString("AllMembers", "PrivateMessage")</label>
+                    }                   
+                    <span class="small">
+                        @ResourceManager.GetLocalisedString("RecipientSeparator", "PrivateMessage")<span style="font-size:large;font-weight:bold"> ; </span>@if (ClassicConfig.GetIntValue("INTMAXPMRECIPIENTS") > 0)
+                        {
+                            @: @ResourceManager.GetLocalisedString("lblMax", "PrivateMessage") @ClassicConfig.GetIntValue("INTMAXPMRECIPIENTS").ToLangNum() @ResourceManager.GetLocalisedString("lblRecipients", "PrivateMessage")
+                        }
+                    </span>
+                </div>
+
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">@ResourceManager.GetLocalisedString("Subject", "PrivateMessage")</label>
+                <div class="col-sm-6">@Html.TextBoxFor(x => x.Subject, new {@class = "form-control"})</div>
+            </div>
+            <div class="form-group">
+
+                <label class="control-label col-sm-2">@ResourceManager.GetLocalisedString("Message", "PrivateMessage")</label>
+
+                <div class="col-sm-9" id="editorDiv">@Html.TextAreaFor(x => x.Message, new {@class = "form-control bbc-code-editor", rows = 8})
+
+                    @if (ClassicConfig.EmoticonTable)
+                    {
+                        Html.RenderPartial("_emoticons", Emoticon.Emoticons());
+                    }                     
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2"></div>
+                <div class="col-xs-1">@Html.CheckBoxFor(x => x.SaveDraft, new {@class = "checkbox-inline msg-draft" })</div>
+                <label>@ResourceManager.GetLocalisedString("cbxDraft", "labels")</label>
+                @Html.HiddenFor(x=>x.Read)
+            </div>
+            @if (ClassicConfig.GetValue("STRPMSIG")=="1")
+            {
+                <div class="form-group">
+                    <div class="col-sm-2"></div>
+                    <div class="col-xs-1">@Html.CheckBoxFor(x => x.ShowSignature, new {@class = "checkbox-inline"})</div>
+                    <label>@ResourceManager.GetLocalisedString("cbxShowSig", "labels")</label>
+                </div>
+            }
+            @if (!Model.IsFull)
+            {
+                <div class="form-group flip text-left">
+                    <div class="col-sm-2"></div>
+                    <div class="col-xs-1">@Html.CheckBoxFor(x => x.SaveToSent, new {@class = "checkbox-inline"})</div>
+                    <label>@ResourceManager.GetLocalisedString("SaveSentPM", "PrivateMessage")</label>
+                </div>
+            }
+            else
+            {
+                <div class="form-group flip text-left">
+                    <div class="col-sm-2"></div>
+                    <div class="col-xs-1"><input type="checkbox" name="SaveToSent" class="checkbox-inline" disabled/></div>
+                    <label>@ResourceManager.GetLocalisedString("NoSaveSent", "PrivateMessage")</label>
+                </div>                
+            }
+        </div>
+    </div>
+    @Html.HiddenFor(x=>x.Id)
+        @Html.AntiForgeryToken()
+        
+    
+}
+
+<script type="text/javascript">
+    $('.pm-send').removeAttr('disabled');
+    $.validator.unobtrusive.parse("#message-form");
+    $('#message-form').validate();
+    $('*[data-autocomplete-url]').each(function () {
+        $(this).autocomplete({
+            source: $(this).data("autocomplete-url"),
+            minLength: 3
+        });
+    });
+    if ($("#Message").val().length > 0) {
+        $("#Message").focus();
+    } else {
+        $("#ToUser").focus();
+    }
+    $(window).on("load", function(){
+        // Insert Emoticon
+        $(".emote").on('click', function (event) {
+            var emotiText = $(event.target).attr("rel");
+            //get the id of the textarea
+            var parentDiv = $(this).closest("[id^=editorDiv]");
+            var textId = parentDiv.find(".bbc-code-editor")[0].id;
+            $("#" + textId).insertAtCaret(emotiText);
+        });
+        $('#allmembers').change(function () {
+            if (this.checked) {
+                $('#ToUser').val('All Members');
+                $('#ToUser').prop('readonly', true);
+            } else {
+                $('#ToUser').val('');
+                $('#ToUser').prop('readonly', false);                
+            }
+            
+        });
+    });
+</script>

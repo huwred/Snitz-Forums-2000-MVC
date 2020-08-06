@@ -1,0 +1,8 @@
+﻿@using SnitzConfig
+@model SnitzMembership.TopicSubscriptionEmail
+
+
+To: @Model.UserName <@Model.To>
+From: @Raw(Config.ForumTitle) <@ClassicConfig.ForumEmail>
+Subject: @Raw(Model.Subject)  - New posting
+Views: Html

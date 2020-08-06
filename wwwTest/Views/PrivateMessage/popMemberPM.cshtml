@@ -1,0 +1,162 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@using SnitzDataModel
+@using SnitzDataModel.Extensions
+@using SnitzDataModel.Models
+@model WWW.ViewModels.PrivateMessagePost
+@{
+    bool self = Model.ToUser == WebSecurity.CurrentUserName;
+}
+<div class="container">
+    @using (Html.BeginForm("SendMemberPmPost", "PrivateMessage", FormMethod.Post, new { id = "sendPMForm" }))
+    {    
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(false)
+        <div class="panel panel-info">
+           
+            @if (self)
+            {
+                <div class="panel-body bg-warning">
+                    <div class="form-group">
+                        <label class="control-label">@ResourceManager.GetLocalisedString("lblSelf", "PrivateMessage")</label>
+                    </div>
+                </div>
+            }
+            <div class="panel-heading form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-2">@ResourceManager.GetLocalisedString("To", "PrivateMessage")</label>
+                    <div class="col-sm-4">@Html.TextBoxFor(x => x.ToUser, new { @class = "form-control ltr" })</div>
+                    <div class="col-sm-6">@if (User.IsAdministrator() || User.IsModerator())
+                                          {
+                        <label><input type="checkbox" name="AllMembers" id="allmembers" value="true" />@ResourceManager.GetLocalisedString("AllMembers", "PrivateMessage")</label>
+                                          }</div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-2">@ResourceManager.GetLocalisedString("Subject", "PrivateMessage")</label>
+                    <div class="col-sm-8">
+                    <div class="input-group">
+                        @*<span class="input-group-addon" id="basic-addon1">From</span>*@
+                        @Html.TextBoxFor(x => x.Subject, new { @class = "form-control" })
+                        @if (ClassicConfig.GetValue("STRPMATTACH") == "1")
+                        {
+                            <span class="input-group-btn">
+                                <a href="@Url.Action("FileUpload", "Home")" data-toggle="tooltip" type="button" class="btn btn-default pm-attach modal-link" title="@ResourceManager.GetLocalisedString("tipAttachFile", "PrivateMessage")" ><i class="fa fa-paperclip"></i></a>
+
+                            </span>
+                        }
+                    </div>                                
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-2">@ResourceManager.GetLocalisedString("Message", "PrivateMessage")</label>
+                    <div class="col-sm-9" id="pm-editorDiv">@Html.TextAreaFor(x => x.Message, new { @class = "form-control bbc-code-editor", rows = 8, id="PMMessage" })
+                        @if (ClassicConfig.EmoticonTable)
+                        {
+                            Html.RenderPartial("_emoticons", Emoticon.Emoticons());
+                        } 
+                    </div>
+                </div>
+                @if (ClassicConfig.GetValue("STRPMSIG") == "1")
+                {
+                    <div class="form-group">
+                        <div class="col-sm-2"></div>
+                        <div class="col-xs-1">@Html.CheckBoxFor(x => x.ShowSignature, new { @class = "checkbox-inline" })</div>
+                        <label>@ResourceManager.GetLocalisedString("cbxShowSig", "labels")</label>
+                    </div>
+                }
+                @if (!Model.IsFull)
+                {
+                    <div class="form-group flip text-left">
+                        <div class="col-sm-2"></div>
+                        <div class="col-xs-1">@Html.CheckBoxFor(x => x.SaveToSent, new {@class = "checkbox-inline"})</div>
+                        <label>@ResourceManager.GetLocalisedString("SaveSentPM", "PrivateMessage")</label>
+                    </div>
+                }
+                else
+                {
+                    <div class="form-group flip text-left">
+                        <div class="col-sm-2"></div>
+                        <div class="col-xs-1"><input type="checkbox" name="SaveToSent" class="checkbox-inline" disabled/></div>
+                        <label>@ResourceManager.GetLocalisedString("NoSaveSent", "PrivateMessage")</label>
+                    </div>                
+                }
+
+            </div>
+        </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-warning" data-dismiss="modal">@ResourceManager.GetLocalisedString("btnCancel", "labels")</button>
+        <input type="submit" class="btn btn-primary" value="@ResourceManager.GetLocalisedString("btnSend", "labels")"/>
+    </div>
+
+    }
+
+</div>
+<script>
+    $(document).ready(function (){
+
+    //});
+    //$(window).on("load", function(){
+        $.validator.unobtrusive.parse("#sendPMForm");
+        lazyload();
+        // Insert Emoticon
+        $("#pm-editorDiv").on('click', '.emote', function (event) {
+            var emotiText = $(event.target).attr("rel");
+            //get the id of the textarea
+            var parentDiv = $(this).closest("[id^=pm-editorDiv]");
+            var textId = parentDiv.find(".bbc-code-editor")[0].id;
+            $("#" + textId).insertAtCaret(emotiText);
+        });
+        $('form').submit(function (event) {
+            event.preventDefault();
+            $('input[type="submit"]').attr('disabled', 'disabled');
+            var validator = $(this).validate();
+            validator.showErrors();
+
+            if ($(this).valid()) {
+
+                $.ajax({
+                    url: this.action,
+                    type: this.method,
+                    data: $(this).serialize(),
+                    success: function() {
+                        $('#modal-sendpm').modal('hide');
+
+                        var dlg = BootstrapDialog.show({
+                            type: BootstrapDialog.TYPE_PRIMARY,
+                            title: '@ResourceManager.GetLocalisedString("PrivateMessaging", "PrivateMessage")',
+                            message: '@ResourceManager.GetLocalisedString("SendPMSuccess", "PrivateMessage")'
+                        });
+                        setTimeout(function() {
+                                dlg.close();
+                            },
+                            1500);
+                    },
+                    error: function(error) {
+                        BootstrapDialog.alert({
+                            title: 'Error',
+                            message: error
+                        });
+                    }
+                });
+            } else {
+                $('input[type="submit"]').removeAttr('disabled');
+            }
+            return false;
+        });
+        $('#modal-sendpm').on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+        });
+        $('#allmembers').change(function () {
+            if (this.checked) {
+                $('#ToUser').val('All Members');
+                $('#ToUser').prop('readonly', true);
+            } else {
+                $('#ToUser').val('');
+                $('#ToUser').prop('readonly', false);
+            }
+
+        });
+
+    });
+</script>

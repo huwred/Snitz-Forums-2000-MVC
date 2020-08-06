@@ -1,0 +1,53 @@
+﻿@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using SnitzMembership
+
+@if (ViewBag.GroupByIp)
+{
+
+    var dictionary = OnlineUsersInstance.OnlineUsers.OnlineHashtable.GroupBy(pair => pair.Value.IpAddress)
+           .ToDictionary(group => group.Key,
+                         group => group.ToDictionary(pair => pair.Key,
+                                                     pair => pair.Value));
+
+
+    foreach (KeyValuePair<string, Dictionary<string, OnlineUser>> de in dictionary)
+    {
+        var userrec = MemberManager.GetUserByIP(de.Key);
+<div class="row-fluid">
+    <div class="col-xs-2">
+        [@de.Key]
+        @if (userrec != null)
+        {
+            @userrec.UserName
+        }
+    </div>
+    <div class="col-xs-3">
+
+        @if (de.Value.Count > 1)
+        {
+            if (de.Value.First().Key.StartsWith("_'?Unknown"))
+            {
+                @de.Value.First().Value.HostName @Html.Raw(" (" + de.Value.Count + " sessions)")
+
+            }
+            else
+            {
+                @de.Value.First().Key @Html.Raw(" (" + de.Value.Count + " sessions)")
+            }
+
+        }
+        else
+        {
+            @(de.Value.First().Key.StartsWith("_'?Unknown") ? de.Value.First().Value.HostName : de.Value.First().Key)
+
+        }
+        
+    </div>
+    <div class="col-xs-3">@de.Value.First().Value.CurrentPage)</div>
+    <div class="col-xs-2">@de.Value.First().Value.Value.ToClientTime().ToFormattedString()</div>
+    <div class="col-xs-2">@de.Value.First().Value.UserAgent</div>
+</div>
+            @Html.Raw("<hr class='title'/>")
+    }
+}

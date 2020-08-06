@@ -1,0 +1,359 @@
+﻿
+@using LangResources.Utility
+@using SnitzConfig
+@using SnitzCore.Utility
+@using WWW.Views.Helpers
+@{
+    // {"buttons",new List<string>{"fonts","align","style","rule","links","code","quote","List"}}
+    List<string> buttons = ViewData["buttons"] as List<string> ?? new List<string>();
+    bool isRtl = SessionData.Get<bool>("isRighToLeft");
+}
+
+<div class="form-group clearfix">
+    <div class="btn-toolbar editor-buttons" role="toolbar">
+        <!-- Text styling -->
+        <div @( !buttons.Contains("fonts") ? Html.Raw("class='btn-group'") : Html.Raw("class='btn-group hidden'"))>
+            <div class="btn-group btn-group-sm">
+                <button tabindex="10" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="@ResourceManager.GetLocalisedString("tipFontSelect", "Tooltip")">
+                    @ResourceManager.GetLocalisedString("btnFont", "labels")
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="sel-postform" data-label="font" data-first="[font=Arial]" data-last="[/font=Arial]" href="#" style="font-family: Arial, Helvetica, sans-serif" data-toggle="tooltip" title="Arial">@ResourceManager.GetLocalisedString("btnFont_Arial", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="font" data-first="[font=Arial Black]" data-last="[/font=Arial Black]" href="#" style="font-family: Arial Black, Gadget, sans-serif" data-toggle="tooltip" title="Arial Black">@ResourceManager.GetLocalisedString("btnFont_ArialBlack", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="font" data-first="[font=Book Antiqua]" data-last="[/font=Book Antiqua]" href="#" data-toggle="tooltip" style="font-family: Palatino Linotype, Book Antiqua, Palatino, serif" title="Book Antiqua">@ResourceManager.GetLocalisedString("btnFont_BookAntiqua", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="font" data-first="[font=Century Gothic]" data-last="[/font=Century Gothic]" href="#" data-toggle="tooltip" style="font-family: Century Gothic" title="Century Gothic">@ResourceManager.GetLocalisedString("btnFont_CenturyGothic", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="font" data-first="[font=Comic Sans MS]" data-last="[/font=Comic Sans MS]" href="#" data-toggle="tooltip" style="font-family: Comic Sans MS, cursive, sans-serif" title="Comic Sans MS">@ResourceManager.GetLocalisedString("btnFont_Comic", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="font" data-first="[font=Courier New]" data-last="[/font=Courier New]" href="#" data-toggle="tooltip" style="font-family: Courier New, Courier, monospace" title="Courier New">@ResourceManager.GetLocalisedString("btnFont_Courier", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="font" data-first="[font=Georgia]" data-last="[/font=Georgia]" href="#" data-toggle="tooltip" style="font-family: Georgia, serif" title="Georgia">@ResourceManager.GetLocalisedString("btnFont_Georgia", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="font" data-first="[font=Impact]" data-last="[/font=Impact]" href="#" data-toggle="tooltip" style="font-family: Impact, Charcoal, sans-serif" title="Impact">@ResourceManager.GetLocalisedString("btnFont_Impact", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="font" data-first="[font=Lucida]" data-last="[/font=Lucida]" href="#" data-toggle="tooltip" style="font-family: Lucida Sans Unicode, Lucida Grande, sans-serif" title="Lucida">@ResourceManager.GetLocalisedString("btnFont_Lucida", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="font" data-first="[font=Lucida Console]" data-last="[/font=Lucida Console]" href="#" data-toggle="tooltip" style="font-family: Lucida Console, Monaco, monospace" title="Lucida Console">@ResourceManager.GetLocalisedString("btnFont_LucidaCon", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="font" data-first="[font=Tahoma]" data-last="[/font=Tahoma]" href="#" data-toggle="tooltip" style="font-family: Tahoma, Geneva, sans-serif" title="Tahoma">@ResourceManager.GetLocalisedString("btnFont_Tahoma", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="font" data-first="[font=Times New Roman]" data-last="[/font=Times New Roman]" href="#" data-toggle="tooltip" style="font-family: Times New Roman, Times, serif" title="Times New Roman">@ResourceManager.GetLocalisedString("btnFont_Times", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="font" data-first="[font=Trebuchet]" data-last="[/font=Trebuchet]" href="#" data-toggle="tooltip" style="font-family: Trebuchet MS, Helvetica, sans-serif" title="Trebuchet MS">@ResourceManager.GetLocalisedString("btnFont_Trebuchet", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="font" data-first="[font=Verdana]" data-last="[/font=Verdana]" href="#" data-toggle="tooltip" style="font-family: Verdana, Geneva, sans-serif" title="Verdana">@ResourceManager.GetLocalisedString("btnFont_Verdana", "labels")</a></li>
+                </ul>
+                <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpFont", "btnHelp"))</span>
+                <span style="display: none;" class="btn-help"></span>
+            </div>
+            <div class="btn-group btn-group-sm">
+                <button tabindex="10" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="@ResourceManager.GetLocalisedString("tipFontSize", "Tooltip")">
+                    @ResourceManager.GetLocalisedString("btnSize", "labels")
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" data-label="size">
+                    <li><a class="sel-postform" data-label="size" data-first="[size=1]" data-last="[/size=1]" href="#" data-toggle="tooltip" style="font-size: x-small" title="@ResourceManager.GetLocalisedString("btnSize_1", "labels")">@ResourceManager.GetLocalisedString("btnSize_1", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="size" data-first="[size=2]" data-last="[/size=2]" href="#" data-toggle="tooltip" style="font-size: small" title="@ResourceManager.GetLocalisedString("btnSize_2", "labels")">@ResourceManager.GetLocalisedString("btnSize_2", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="size" data-first="[size=3]" data-last="[/size=3]" href="#" data-toggle="tooltip" style="font-size: medium" title="@ResourceManager.GetLocalisedString("btnSize_3", "labels")">@ResourceManager.GetLocalisedString("btnSize_3", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="size" data-first="[size=4]" data-last="[/size=4]" href="#" data-toggle="tooltip" style="font-size: large" title="@ResourceManager.GetLocalisedString("btnSize_4", "labels")">@ResourceManager.GetLocalisedString("btnSize_4", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="size" data-first="[size=5]" data-last="[/size=5]" href="#" data-toggle="tooltip" style="font-size: x-large" title="@ResourceManager.GetLocalisedString("btnSize_5", "labels")">@ResourceManager.GetLocalisedString("btnSize_5", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="size" data-first="[size=6]" data-last="[/size=6]" href="#" data-toggle="tooltip" style="font-size: xx-large" title="@ResourceManager.GetLocalisedString("btnSize_6", "labels")">@ResourceManager.GetLocalisedString("btnSize_6", "labels")</a></li>
+                </ul>
+                <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpSize", "btnHelp"))</span>
+                <span style="display: none;" class="btn-help"></span>
+            </div>
+            <div class="btn-group btn-group-sm">
+                <button tabindex="10" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="@ResourceManager.GetLocalisedString("tipTextcolour", "Tooltip")">
+                    @ResourceManager.GetLocalisedString("btnColour", "labels")
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" style="">
+                    <li><a class="sel-postform" data-label="colour" data-first="[black]" data-last="[/black]" href="#" data-toggle="tooltip" style="color: black !important;" title="@ResourceManager.GetLocalisedString("btnColour_Black", "labels")">@ResourceManager.GetLocalisedString("btnColour_Black", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="colour" data-first="[red]" data-last="[/red]" href="#" data-toggle="tooltip" style="color: red !important;" title="@ResourceManager.GetLocalisedString("btnColour_Red", "labels")">@ResourceManager.GetLocalisedString("btnColour_Red", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="colour" data-first="[navy]" data-last="[/navy]" href="#" data-toggle="tooltip" style="color: navy !important;" title="@ResourceManager.GetLocalisedString("btnColour_Navy", "labels")">@ResourceManager.GetLocalisedString("btnColour_Navy", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="colour" data-first="[maroon]" data-last="[/maroon]" href="#" data-toggle="tooltip" style="color: maroon !important;" title="@ResourceManager.GetLocalisedString("btnColour_Maroon", "labels")">@ResourceManager.GetLocalisedString("btnColour_Maroon", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="colour" data-first="[green]" data-last="[/green]" href="#" data-toggle="tooltip" style="color: green !important;" title="@ResourceManager.GetLocalisedString("btnColour_Green", "labels")">@ResourceManager.GetLocalisedString("btnColour_Green", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="colour" data-first="[orange]" data-last="[/orange]" href="#" data-toggle="tooltip" style="color: orange !important;" title="@ResourceManager.GetLocalisedString("btnColour_Orange", "labels")">@ResourceManager.GetLocalisedString("btnColour_Orange", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="colour" data-first="[purple]" data-last="[/purple]" href="#" data-toggle="tooltip" style="color: purple !important;" title="@ResourceManager.GetLocalisedString("btnColour_Purple", "labels")">@ResourceManager.GetLocalisedString("btnColour_Purple", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="colour" data-first="[blue]" data-last="[/blue]" href="#" data-toggle="tooltip" style="color: blue !important;" title="@ResourceManager.GetLocalisedString("btnColour_Blue", "labels")">@ResourceManager.GetLocalisedString("btnColour_Blue", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="colour" data-first="[brown]" data-last="[/brown]" href="#" data-toggle="tooltip" style="color: brown !important;" title="@ResourceManager.GetLocalisedString("btnColour_Brown", "labels")">@ResourceManager.GetLocalisedString("btnColour_Brown", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="colour" data-first="[teal]" data-last="[/teal]" href="#" data-toggle="tooltip" style="color: teal !important;" title="@ResourceManager.GetLocalisedString("btnColour_Teal", "labels")">@ResourceManager.GetLocalisedString("btnColour_Teal", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="colour" data-first="[yellow]" data-last="[/yellow]" href="#" data-toggle="tooltip" style="color: yellow !important;" title="@ResourceManager.GetLocalisedString("btnColour_Yellow", "labels")">@ResourceManager.GetLocalisedString("btnColour_Yellow", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="colour" data-first="[beige]" data-last="[/beige]" href="#" data-toggle="tooltip" style="color: beige !important;" title="@ResourceManager.GetLocalisedString("btnColour_Beige", "labels")">@ResourceManager.GetLocalisedString("btnColour_Beige", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="colour" data-first="[pink]" data-last="[/pink]" href="#" data-toggle="tooltip" style="color: pink !important;" title="@ResourceManager.GetLocalisedString("btnColour_Pink", "labels")">@ResourceManager.GetLocalisedString("btnColour_Pink", "labels")</a></li>
+                    <li><a class="sel-postform" data-label="colour" data-first="[limegreen]" data-last="[/limegreen]" href="#" data-toggle="tooltip" style="color: limegreen !important;" title="@ResourceManager.GetLocalisedString("btnColour_LimeGreen", "labels")">@ResourceManager.GetLocalisedString("btnColour_LimeGreen", "labels")</a></li>
+                </ul>
+                <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpColour", "btnHelp"))</span>
+                <span style="display: none;" class="btn-help"></span>
+            </div>
+        @*</div>
+        <div @(!buttons.Contains("fonts") ? Html.Raw("class='btn-group'") : Html.Raw("class='btn-group hidden'"))>*@
+            <!-- Alignment -->
+            <div @(!buttons.Contains("align") ? Html.Raw("class='btn-group btn-group-sm'") : Html.Raw("class='btn-group btn-group-sm hidden'"))>
+                <button tabindex="10" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="@ResourceManager.GetLocalisedString("tipAlignSelect", "Tooltip")">
+                    @ResourceManager.GetLocalisedString("btnAlign", "labels")
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" style="width: 225px;">
+                    @if (isRtl)
+                    {
+                        <li>
+                            <a tabindex="10" href="#" class="btn-postform" data-label="ltr" data-toggle="tooltip" data-first="[ltr]" data-last="[/ltr]" title="@ResourceManager.GetLocalisedString("tipLTR", "Tooltip")">
+                                <span class="">LTR</span>&nbsp;@ResourceManager.GetLocalisedString("tipLTR", "Tooltip")
+                            </a>
+                            <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpDirectionLTR", "btnHelp"))</span>
+                        </li>
+                        <li>
+                            <a tabindex="10" href="#" class="btn-postform" data-label="left" data-toggle="tooltip" data-first="[left]" data-last="[/left]" title="@ResourceManager.GetLocalisedString("tipAlignLeft", "Tooltip")">
+                                <span class="fa fa-align-left "></span>&nbsp;&nbsp;&nbsp;&nbsp;@ResourceManager.GetLocalisedString("tipAlignLeft", "Tooltip")
+                            </a>
+                            <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpLeft", "btnHelp"))</span>
+                            <span style="display: none;" class="btn-help"></span>
+                        </li>
+                        <li>
+                            <a tabindex="10" href="#" class="btn-postform" data-label="center" data-toggle="tooltip" data-first="[center]" data-last="[/center]" title="@ResourceManager.GetLocalisedString("tipAlignMiddle", "Tooltip")">
+                                <span class="fa fa-align-center "></span>&nbsp;&nbsp;&nbsp;&nbsp;@ResourceManager.GetLocalisedString("tipAlignMiddle", "Tooltip")
+                            </a>
+                            <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpCenter", "btnHelp"))</span>
+                            <div style="display: none;"></div>
+                        </li>
+                        <li>
+                            <a tabindex="10" href="#" class="btn-postform" data-label="right" data-toggle="tooltip" data-first="[right]" data-last="[/right]" title="@ResourceManager.GetLocalisedString("tipAlignRight", "Tooltip")">
+                                <span class="fa fa-align-right "></span>&nbsp;&nbsp;&nbsp;&nbsp;@ResourceManager.GetLocalisedString("tipAlignRight", "Tooltip")
+                            </a>
+                            <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpRight", "btnHelp"))</span>
+                            <span style="display: none;" class="btn-help"></span>
+                        </li>
+                        <li>
+                            <a tabindex="10" href="#" class="btn-postform" data-label="rtl" data-toggle="tooltip" data-first="[rtl]" data-last="[/rtl]" title="@ResourceManager.GetLocalisedString("tipRTL", "Tooltip")">
+                                <span class="">RTL</span>&nbsp;@ResourceManager.GetLocalisedString("tipRTL", "Tooltip")
+                            </a>
+                            <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpDirectionRTL", "btnHelp"))</span>
+                        </li>
+                    }
+                    else
+                    {
+                        <li>
+                            <a tabindex="10" href="#" class="btn-postform" data-label="rtl" data-toggle="tooltip" data-first="[rtl]" data-last="[/rtl]" title="@ResourceManager.GetLocalisedString("tipRTL", "Tooltip")">
+                                <span class="">RTL</span>&nbsp;@ResourceManager.GetLocalisedString("tipRTL", "Tooltip")
+                            </a>
+                            <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpDirectionRTL", "btnHelp"))</span>
+                        </li>
+                        <li>
+                            <a tabindex="10" href="#" class="btn-postform" data-label="right" data-toggle="tooltip" data-first="[right]" data-last="[/right]" title="@ResourceManager.GetLocalisedString("tipAlignRight", "Tooltip")">
+                                <span class="fa fa-align-right "></span>&nbsp;&nbsp;&nbsp;&nbsp;@ResourceManager.GetLocalisedString("tipAlignRight", "Tooltip")
+                            </a>
+                            <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpRight", "btnHelp"))</span>
+                            <span style="display: none;" class="btn-help"></span>
+                        </li>
+                        <li>
+                            <a tabindex="10" href="#" class="btn-postform" data-label="center" data-toggle="tooltip" data-first="[center]" data-last="[/center]" title="@ResourceManager.GetLocalisedString("tipAlignMiddle", "Tooltip")">
+                                <span class="fa fa-align-center "></span>&nbsp;&nbsp;&nbsp;&nbsp;@ResourceManager.GetLocalisedString("tipAlignMiddle", "Tooltip")
+                            </a>
+                            <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpCenter", "btnHelp"))</span>
+                            <div style="display: none;"></div>
+                        </li>
+                        <li>
+                            <a tabindex="10" href="#" class="btn-postform" data-label="left" data-toggle="tooltip" data-first="[left]" data-last="[/left]" title="@ResourceManager.GetLocalisedString("tipAlignLeft", "Tooltip")">
+                                <span class="fa fa-align-left "></span>&nbsp;&nbsp;&nbsp;&nbsp;@ResourceManager.GetLocalisedString("tipAlignLeft", "Tooltip")
+                            </a>
+                            <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpLeft", "btnHelp"))</span>
+                            <span style="display: none;" class="btn-help"></span>
+                        </li>
+
+                        <li>
+                            <a tabindex="10" href="#" class="btn-postform" data-label="ltr" data-toggle="tooltip" data-first="[ltr]" data-last="[/ltr]" title="@ResourceManager.GetLocalisedString("tipLTR", "Tooltip")">
+                                <span class="">LTR</span>&nbsp;@ResourceManager.GetLocalisedString("tipLTR", "Tooltip")
+                            </a>
+                            <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpDirectionLTR", "btnHelp"))</span>
+                        </li>
+                    }
+                </ul>
+                <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpFont", "btnHelp"))</span>
+                <span style="display: none;" class="btn-help"></span>
+            </div>
+            <!-- Format -->
+            <div @( !buttons.Contains("style") ? Html.Raw("class='btn-group'") : Html.Raw("class='btn-group hidden'"))>
+                <div class="btn-group btn-group-sm">
+                    <button tabindex="10" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="@ResourceManager.GetLocalisedString("tipTextformat", "Tooltip")">
+                        @ResourceManager.GetLocalisedString("btnFormat", "labels")
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" style="">
+                        <li>
+                            <a tabindex="10" href="#" class="btn-postform" data-label="bold" data-toggle="tooltip" data-first="[b]" data-last="[/b]" title="@ResourceManager.GetLocalisedString("tipBold", "Tooltip")">
+                                <span id="inner" class="fa fa-bold"></span>&nbsp;&nbsp;<span style="font-weight:bold">@ResourceManager.GetLocalisedString("tipBold", "Tooltip")</span>
+                            </a>
+                            <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpBold", "btnHelp"))</span>
+                            <span style="display: none;" class="btn-help"></span>
+                        </li>
+                        <li>
+                            <a tabindex="10" href="#" class="btn-postform" data-label="italic" data-toggle="tooltip" data-first="[i]" data-last="[/i]" title="@ResourceManager.GetLocalisedString("tipItalic", "Tooltip")">
+                                <span class="fa fa-italic"></span>&nbsp;&nbsp;<span style="font-style:italic">@ResourceManager.GetLocalisedString("tipItalic", "Tooltip")</span>
+                            </a>
+                            <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpItalic", "btnHelp"))</span>
+                            <span style="display: none;" class="btn-help"></span>
+                        </li>
+                        <li>
+                            <a tabindex="10" href="#" class="btn-postform" data-label="underline" data-toggle="tooltip" data-first="[u]" data-last="[/u]" title="@ResourceManager.GetLocalisedString("tipUnderline", "Tooltip")">
+                                <span class="fa fa-underline"></span>&nbsp;&nbsp;<span style="text-decoration:underline">@ResourceManager.GetLocalisedString("tipUnderline", "Tooltip")</span>
+                            </a>
+                            <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpUnderline", "btnHelp"))</span>
+                            <span style="display: none;" class="btn-help"></span>
+                        </li>
+                        <li>
+                            <a tabindex="10" href="#" class="btn-postform" data-label="strike" data-toggle="tooltip" data-first="[s]" data-last="[/s]" title="@ResourceManager.GetLocalisedString("tipStrike", "Tooltip")">
+                                <span class="fa fa-strikethrough"></span>&nbsp;&nbsp;<span style="text-decoration:line-through">@ResourceManager.GetLocalisedString("tipStrike", "Tooltip")</span>
+                            </a>
+                            <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpStrike", "btnHelp"))</span>
+                            <span style="display: none;" class="btn-help"></span>
+                        </li>
+                        <li>
+                            <a tabindex="9" href="#" class="btn-postform" data-label="sup" data-toggle="tooltip" data-first="[sup]" data-last="[/sup]" title="@ResourceManager.GetLocalisedString("btnSuperscript", "labels")">
+                                <span class="fa fa-superscript"></span>&nbsp;&nbsp;<sup>@ResourceManager.GetLocalisedString("btnSuperscript", "labels")</sup>
+                            </a>
+                            <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpSuperscript", "btnHelp"))</span>
+                            <span style="display: none;" class="btn-help"></span>
+                        </li>
+                        <li>
+                            <a tabindex="9" href="#" class="btn-postform" data-label="sub" data-toggle="tooltip" data-first="[sub]" data-last="[/sub]" title="@ResourceManager.GetLocalisedString("btnSubscript", "labels")">
+                                <span class="fa fa-subscript"></span>&nbsp;&nbsp;<sub>@ResourceManager.GetLocalisedString("btnSubscript", "labels")</sub>
+                            </a>
+                            <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpSubscript", "btnHelp"))</span>
+                            <span style="display: none;" class="btn-help"></span>
+                        </li>
+                        <li>
+                            <a tabindex="10" href="#" @( !buttons.Contains("rule") ? Html.Raw("class='btn-postform'") : Html.Raw("class='btn-postform hidden'")) data-label="rule" data-toggle="tooltip" data-first="[hr]" data-last="" title="@ResourceManager.GetLocalisedString("tipRule", "Tooltip")">
+                                <span class="fa fa-ellipsis-h "></span>&nbsp;&nbsp;<span style=""></span>@ResourceManager.GetLocalisedString("tipRule", "Tooltip")
+                            </a>
+                            <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpRule", "btnHelp"))</span>
+                            <span style="display: none;" class="btn-help"></span>
+                        </li>
+                    </ul>
+                    <span style="display: none;" class="btn-help"></span>
+                    <span style="display: none;" class="btn-help"></span>
+                </div>
+            </div>
+            <!-- List styling -->
+            <div @( !buttons.Contains("list") ? Html.Raw("class='btn-group btn-group-sm hidden-xs'") : Html.Raw("class='btn-group btn-group-sm hidden'"))>
+                <button tabindex="10" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="@ResourceManager.GetLocalisedString("tipList", "Tooltip")"> 
+                    <span class="fa fa-list "></span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="#" data-toggle="tooltip" class="btn-postform" data-label="numbered" data-first="[list=1][*]" data-last="[/*][/list=1]" title="@ResourceManager.GetLocalisedString("btnList_Numeric", "labels")"><span class="fa fa-list-ol "></span>&nbsp;@ResourceManager.GetLocalisedString("btnList_Numeric", "labels")</a><span></span><span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpList_Numeric", "btnHelp"))</span></li>
+                    <li><a href="#" data-toggle="tooltip" class="btn-postform" data-label="alpha" data-first="[list=A][*]" data-last="[/*][/list=A]" title="@ResourceManager.GetLocalisedString("btnList_Alphabetic", "labels")"><span class="fa fa-list"></span>&nbsp;@ResourceManager.GetLocalisedString("btnList_Alphabetic", "labels")</a><span></span><span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpList_Alphabetic", "btnHelp"))</span></li>
+                    <li><a href="#" data-toggle="tooltip" class="btn-postform" data-label="unordered" data-first="[list][*]" data-last="[/*][/list]" title="@ResourceManager.GetLocalisedString("btnList_Unordered", "labels")"><span class="fa fa-list-ul"></span>&nbsp;@ResourceManager.GetLocalisedString("btnList_Unordered", "labels")</a><span></span><span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpList_Unordered", "btnHelp"))</span></li>
+                    <li><a href="#" data-toggle="tooltip" class="btn-postform" data-label="listitem" data-first="[*]" data-last="[/*]" title="@ResourceManager.GetLocalisedString("btnList_Item", "labels")">@ResourceManager.GetLocalisedString("btnList_Item", "labels")</a><span></span><span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpList_Item", "btnHelp"))</span></li>
+                </ul>
+            </div>
+            <!-- Tables -->
+            <div @( !buttons.Contains("table") ? Html.Raw("class='btn-group btn-group-sm hidden-xs hidden-sm'") : Html.Raw("class='hidden'"))>
+                <button tabindex="10" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="@ResourceManager.GetLocalisedString("tipTable", "Tooltip")">
+                    <span class="fa fa-table "></span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="#" data-toggle="tooltip" class="btn-postform" data-label="table" data-first='[table class=""]' data-last="[/table]" title="@ResourceManager.GetLocalisedString("tipTable", "Tooltip")"><span class="fa fa-table "></span>@ResourceManager.GetLocalisedString("btnTable", "labels")</a><span></span><span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpTable", "btnHelp"))</span></li>
+                    <li><a href="#" data-toggle="tooltip" class="btn-postform" data-label="trow" data-first="[tr]" data-last="[/tr]" title="@ResourceManager.GetLocalisedString("tipTblRow", "Tooltip")"><span class="fa fa-list-ul"></span>@ResourceManager.GetLocalisedString("btnTableRow", "labels")</a><span></span><span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpTableRow", "btnHelp"))</span></li>
+                    <li><a href="#" data-toggle="tooltip" class="btn-postform" data-label="tcol" data-first="[td]" data-last="[/td]" title="@ResourceManager.GetLocalisedString("tipTblCell", "Tooltip")"><span class="fa fa-square-o"></span>@ResourceManager.GetLocalisedString("btnTableCell", "labels")</a><span></span><span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpTableCell", "btnHelp"))</span></li>
+                    <li><input type="text" dir="ltr" value="3 * 2" class="grid-chooser form-control input-sm" id="grid-sizing" title="@ResourceManager.GetLocalisedString("tipTblGrid", "Tooltip")" data-toggle="tooltip" /><span></span><span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpTableGrid", "btnHelp"))</span></li>
+                </ul>
+            </div>
+        </div>
+
+            <!-- Link code -->
+            <div @( !buttons.Contains("links") ? Html.Raw("class='btn-group btn-group-sm hidden-xs hidden-sm '") : Html.Raw("class='btn-group btn-group-sm hidden'"))>
+                <button tabindex="10" type="button" class="btn btn-default btn-postform" data-label="url" data-toggle="tooltip" data-first="[url]" data-last="[/url]" title="@ResourceManager.GetLocalisedString("tipLink", "Tooltip")">
+                    <span class="fa fa-link "></span>
+                </button>
+                <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpLink", "btnHelp"))</span>
+                <span style="display: none;" class="btn-help"></span>
+                <button tabindex="10" type="button" class="btn btn-default btn-postform" data-label="email" data-toggle="tooltip" data-first="[url]" data-last="[/url]" title="@ResourceManager.GetLocalisedString("tipEmail", "Tooltip")">
+                    <span class="fa fa-envelope "></span>
+                </button>
+                <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpEmail", "btnHelp"))</span>
+                <span style="display: none;" class="btn-help"></span>
+                <button tabindex="10" type="button" class="btn btn-default btn-postform" data-label="image" data-toggle="tooltip" data-first="[img]" data-last="[/img]" title="@ResourceManager.GetLocalisedString("tipImage", "Tooltip")">
+                    <span class="fa fa-image "></span>
+                </button>
+                <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpImage", "btnHelp"))</span>
+                <span style="display: none;" class="btn-help"></span>
+                <button tabindex="10" type="button" class="btn btn-default btn-postform" data-label="" data-toggle="tooltip" data-first="[youtube]" data-last="[/youtube]" title="@ResourceManager.GetLocalisedString("tipYoutubeVid", "Tooltip")">
+                    <span class="fa fa-youtube "></span>
+                </button>
+                <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpYoutube", "btnHelp"))</span>
+                <span style="display: none;" class="btn-help"></span>
+            </div>
+            <!-- Block Tags -->
+            <div @( !buttons.Contains("code") ? Html.Raw("class='btn-group btn-group-sm hidden-xs hidden-sm'") : Html.Raw("class='btn-group btn-group-sm hidden'"))>
+                <div @( !buttons.Contains("code") ? Html.Raw("class='btn-group btn-group-sm '") : Html.Raw("class='btn-group btn-group-sm hidden'"))>
+                    <button tabindex="10" type="button" class="btn btn-default btn-postform" data-label="code" data-toggle="tooltip" data-first="[scrollcode]" data-last="[/scrollcode]" title="@ResourceManager.GetLocalisedString("tipCode", "Tooltip")">
+                        <span class="fa fa-code "></span>
+                    </button>
+                    <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpCode", "btnHelp"))</span>
+                    <span style="display: none;" class="btn-help"></span>
+                </div>
+                <div @( !buttons.Contains("quote") ? Html.Raw("class='btn-group btn-group-sm'") : Html.Raw("class='btn-group btn-group-sm hidden'"))>
+                    <button tabindex="10" type="button" class="btn btn-default btn-postform" data-label="quote" data-toggle="tooltip" data-first="[quote]" data-last="[/quote]" title="@ResourceManager.GetLocalisedString("tipQuote", "Tooltip")">
+                        <span class="fa fa-quote-left"></span>
+                    </button>
+                    <span style="display: none;" class="btn-help">@Html.Raw(ResourceManager.GetLocalisedString("hlpQuote", "btnHelp"))</span>
+                    <span style="display: none;" class="btn-help"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="modal fade" id="modal-gallery-upload" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div id="" class="modal-dialog">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="promptModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div id="" class="modal-dialog">
+        <div class="modal-content" id="prompt-container">
+        </div>
+    </div>
+</div>
+
+
+@using (Html.BeginScripts())
+{
+    @Scripts.Render("~/bundles/post")
+     if (ClassicConfig.GetIntValue("STRPHOTOALBUM") == 1)
+     {
+        <script src="@Url.Content("~/Scripts/snitz.gallery.upload.min.js")" type="text/javascript"></script>
+     }
+    
+    <script>
+        $(window).on("load", function(){
+                $('.dropdown-toggle').tooltip();
+            });
+        if ($('.grid-chooser')) {
+            $('.grid-chooser').gridPicker({
+                rows: 10,
+                cols: 10
+            });
+            $('.grid-chooser')
+                .on('change',
+                function () {
+                    var parentDiv = $(this).closest("[id^=editorDiv]");
+                    var rows = 3;
+                    var cols = 3;
+                        var textId = parentDiv.find(".bbc-code-editor")[0].id;
+                        var res = $(this).val().split("*");
+                        if (res.length === 2) {
+                            rows = parseInt(res[0].trim());
+                            cols = parseInt(res[1].trim());
+                        }
+                        var val1 = '[table class=""]\n';
+                        var val2 = '';
+                        for (var i = 0; i < rows; i++) {
+                            val1 += '[tr]';
+                            for (var ii = 0; ii < cols; ii++) {
+                                val1 += '[td] [/td]';
+                            }
+                            val1 += '[/tr]\n';
+                        }
+                        val2 += '[/table]\n';
+                        $("#" + textId).surroundSelection(val1, val2);
+                    });            
+        }
+
+    </script>
+}
+

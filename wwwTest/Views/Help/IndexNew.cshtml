@@ -1,0 +1,369 @@
+﻿@using System.Configuration
+@using BbCodeFormatter
+@using LangResources.Utility
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model FaqProcessor
+
+@section styles{
+    <style>
+        .modal-content {
+            min-width: 600px;
+            width: 800px
+        }
+        /*body.modal-open div.modal-backdrop {
+            z-index: 0;
+        }*/
+        body.modal-open {
+            overflow: inherit;
+        }
+
+        .faq-nav {
+            flex-direction: column;
+            margin: 0 0 32px;
+            border-radius: 2px;
+            border: 1px solid #ddd;
+            box-shadow: 0 1px 5px rgba(85, 85, 85, 0.15);
+        }
+
+            .faq-nav .nav-link {
+                position: relative;
+                display: block;
+                margin: 0;
+                padding: 13px 16px;
+                background-color: #fff;
+                border: 0;
+                border-bottom: 1px solid #ddd;
+                border-radius: 0;
+                color: #616161;
+                transition: background-color 0.2s ease;
+            }
+
+                .faq-nav .nav-link:hover {
+                    background-color: #f6f6f6;
+                }
+
+                .faq-nav .nav-link.active {
+                    background-color: #f6f6f6;
+                    font-weight: 700;
+                    color: rgba(0, 0, 0, 0.87);
+                }
+
+                .faq-nav .nav-link:last-of-type {
+                    border-bottom-left-radius: 2px;
+                    border-bottom-right-radius: 2px;
+                    border-bottom: 0;
+                }
+
+                .faq-nav .nav-link i.mdi {
+                    margin-right: 5px;
+                    font-size: 18px;
+                    position: relative;
+                }
+
+        .tab-content {
+            box-shadow: 0 1px 5px rgba(85, 85, 85, 0.15);
+        }
+
+            .tab-content .card {
+                border-radius: 0;
+            }
+
+            .tab-content .card-header {
+                padding: 15px 16px;
+                border-radius: 0;
+                background-color: #f6f6f6;
+            }
+
+                .tab-content .card-header h5 {
+                    margin: 0;
+                    width: 99%;
+                }
+
+                    .tab-content .card-header h5 button {
+                        display: inline-block;
+                        width: 80%;
+                        padding: 0;
+                        border: 0;
+                        font-weight: 700;
+                        color: rgba(0, 0, 0, 0.87);
+                        text-align: left;
+                        white-space: normal;
+                    }
+
+                        .tab-content .card-header h5 button:hover,
+                        .tab-content .card-header h5 button:focus,
+                        .tab-content .card-header h5 button:active,
+                        .tab-content .card-header h5 button:hover:active {
+                            text-decoration: none;
+                        }
+
+            .tab-content .card-body p {
+                color: #616161;
+            }
+
+                .tab-content .card-body p:last-of-type {
+                    margin: 0;
+                }
+
+        .accordion > .card:not(:first-child) {
+            border-top: 0;
+        }
+
+        .collapse.show .card-body {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+        }
+    </style>
+}
+@{
+    ViewBag.Title = ResourceManager.GetLocalisedString("pageHelp", "Title") + " | " + (Config.ForumTitle ?? ClassicConfig.ForumTitle);
+}
+@section pageMeta
+{
+    <meta name="description" content="Frequently asked questions about using the forums">
+    <meta name="author" content="@(Config.ForumTitle ?? ClassicConfig.ForumTitle)">
+}
+@section breadcrumb
+{
+    @Html.BuildBreadcrumbNavigation()
+}
+@section sidebox{
+
+    <div class="side-box">
+        @Html.Partial("_RightColumn", new ViewDataDictionary(this.ViewData) {{"show", new List<string>() {"catlist","recent"}}})
+    </div>
+
+}
+<div id="wrap-subhead" class="faq-header">
+    <div class="chunk">
+        <div id="subhead-title" style="float: none;">
+            <h2 class="faq-title"><i id="pagesearch" title="Search @ResourceManager.GetLocalisedString("pageHelp", "Title")" data-toggle="tooltip" class="fa fa-search pull-right flip" style="cursor: pointer"></i>@ResourceManager.GetLocalisedString("pageHelp", "Title")</h2>
+        </div>
+    </div>
+</div>
+
+<div id="wrap-body">
+    <div class="chunk" style="margin-left: 40px; margin-right: 40px;">
+
+        <div class="panel bg2" id="faqlinks">
+            <div class="inner">
+                <div class="column1">
+                    @for (int i = 0; i < Model.Categories().Count(); i += 2)
+                    {
+                        var cat = Model.Categories().ToArray()[i];
+                        List<Question> questions = Model.GetCategoryQuestions(cat.Key);
+                        <dl class="faq">
+                            <dt><strong>@cat.Value</strong></dt>
+                            @foreach (var q in questions)
+                            {
+                                <dd><a href="#@q.Id" class="question-link" data-cat="@cat.Key">@q.Description</a></dd>
+                            }
+                        </dl>
+                    }
+                </div>
+                <div class="column2">
+                    @for (int i = 1; i < Model.Categories().Count(); i += 2)
+                    {
+                        var cat = Model.Categories().ToArray()[i];
+                        List<Question> questions = Model.GetCategoryQuestions(cat.Key);
+                        <dl class="faq">
+                            <dt><strong>@cat.Value</strong></dt>
+                            @foreach (var q in questions)
+                            {
+                                <dd><a href="#@q.Id" class="question-link" data-cat="@cat.Key">@q.Description</a></dd>
+                            }
+                        </dl>
+                    }
+                </div>
+            </div>
+        </div>
+        @if (User.IsAdministrator() || User.IsInRole("FaqModerator"))
+        {
+            <div class="form">
+
+                @using (Ajax.BeginForm("AddCategory", "Help", null, new AjaxOptions
+                {
+                    OnSuccess = "OnCreateSuccess",
+                    OnFailure = "OnFailure",
+                    HttpMethod = "POST",
+                    LoadingElementId = "loading"
+                }))
+                {
+                    <div class="input-group">
+                        <span class="input-group-addon"><label class="control-label" for="Description">@ResourceManager.GetLocalisedString("faqAddCategory", "General")</label></span>
+
+                        <input type="text" class="form-control" id="Description" name="Description" placeholder="Category Name" required="required">
+                        <span class="input-group-btn"><button type="submit" class="btn btn-info">Save</button></span>
+                    </div>
+                }
+            </div>
+
+        }
+        @{
+            var panelbkg = "bg1";
+        }
+        @foreach (var cat in Model.Categories())
+        {
+            List<Question> questions = Model.GetCategoryQuestions(cat.Key);
+            <div class="panel @panelbkg">
+                <div class="inner">
+                    <div class="content" style="min-height: auto;">
+                        <h2 class="faq-title accordion-toggle" href="#cat_@cat.Key" data-toggle="collapse" role="button">
+                            @cat.Value
+                            @if (User.IsAdministrator() || User.IsUserInRole("FaqModerator"))
+                            {
+                                <span class="pull-right flip">
+                                    <a href="@Url.Action("EditCategory", "Help", new {id = @cat.Key})" class="pop-open modal-link" title="@ResourceManager.GetLocalisedString("faqEditCategory", "General")" data-target="tooltip"><i class="fa fa-pencil"></i></a>
+                                    @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("faqDelCategory", "General"), "DelCategory", "Help", new { id = @cat.Key }, "fa fa-trash")
+
+                                    <a href="@Url.Action("Edit", "Help", new {id = -1, category = @cat.Key})" class="pop-open modal-link" title="@ResourceManager.GetLocalisedString("faqAddQuestion", "General")" data-target="tooltip"><i class="fa fa-plus"></i></a>
+                                </span>
+                            }
+                        </h2>
+                        <span class="collapse" id="cat_@cat.Key">
+                            @{ Html.RenderPartial("_HelpCategory", questions); }
+                        </span>
+                    </div>
+                </div>
+            </div>
+            panelbkg = panelbkg == "bg1" ? "bg2" : "bg1";
+        }
+
+    </div>
+</div>
+<!-- Modal form -->
+<div class="modal fade" id="findwindow" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div id="" class="modal-dialog">
+        <div class="modal-content" style="width:150px !important;height: 160px;min-height:150px !important;">
+            <div class="modal-header">
+                <button type="button" class="btn close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                <h4 class="modal-title" id="myModalLabel">Find on page</h4>
+            </div>
+            <div class="modal-body clearfix">
+                <form onsubmit="return false;" class="form-horizontal container-fluid">
+                    <div class="form-group"><input type="search" class="form-control" size="25" maxlength="25" id="fwtext" onchange="resettext();" placeholder="Enter text to find"></div>
+                    <div class="form-group">
+                        <div class="btn-group-sm">
+                            <input type="button" class="btn btn-sm btn-primary" value="Find Prev" onclick="findprev();">
+                            <input id="btn" type="button" class="btn btn-sm btn-primary" value="Find Next" onclick="this.blur(); findit();"><span id="find_msg"></span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    @Scripts.Render("~/Scripts/find5.min.js")
+    @Scripts.Render("~/bundles/post")
+    @if (ClassicConfig.GetIntValue("STRPHOTOALBUM") == 1)
+    {
+        <script src="@Url.Content("~/Scripts/snitz.gallery.upload.min.js")" type="text/javascript"></script>
+    }
+    <script type="text/javascript">
+        function OnCreateSuccess(response) {
+
+            window.location.href = window.SnitzVars.baseUrl + "Help";
+        }
+
+        $(window).on("load",
+            function() {
+                // set nav-link active state when clicked
+                $('body').on("click",
+                    ".nav-item",
+                    function() {
+                        $(".nav").find(".nav-item").removeClass("active");
+                        $(".nav").find(".nav-link").removeClass("active");
+                        $(this).addClass("active");
+                        $(this).parent().next('.nav-link').addClass("active");
+                    });
+                $('.nav-item').hover(//replicate nav-link hover on right column
+                    function() { $(this).parent().next('.nav-link').css("background-color", "#f6f6f6"); },
+                    function() { $(this).parent().next('.nav-link').css("background-color", ""); }
+                );
+                $('body').on('click','.question-link',function(e) {
+                    if ($(this).hasClass("in")) {
+                        return true;
+                    }
+                    var cat = $(this).data("cat");
+                    $("#cat_" + cat).collapse("show");
+                });
+
+                $('body').on('click',
+                    '#pagesearch',
+                    function(evt) {
+                        evt.preventDefault();
+                        $(this).tooltip('hide');
+                        $(this).attr('data-target', '#findwindow');
+                        $(this).attr('data-toggle', 'modal');
+
+                    });
+
+                $('#findwindow').on('hidden.bs.modal',
+                    function() {
+                        $(this).removeData('bs.modal');
+                    });
+
+                $('body').on('click',
+                    '.btn-postform',
+                    function(event) {
+                        var val1 = $(this).attr('data-first');
+                        var val2 = $(this).attr('data-last');
+                        var label = $(this).attr('data-label');
+                        var parentDiv = $(this).closest("[id^=editorDiv]");
+                        var textId = parentDiv.find(".bbc-code-editor")[0].id;
+                        $("#" + textId).surroundSelection(val1, val2);
+                        $("#" + textId).focus();
+                    });
+
+                $('.dropdown-toggle').tooltip();
+
+            });
+        $(document).ajaxComplete(function() {
+            // ready_or_not();
+            if ($('.grid-chooser')) {
+                $('.grid-chooser').gridPicker({
+                    rows: 10,
+                    cols: 10
+                });
+                $('.grid-chooser')
+                    .on('change',
+                        function() {
+                            var parentDiv = $(this).closest("[id^=editorDiv]");
+                            var rows = 3;
+                            var cols = 3;
+                            var textId = parentDiv.find(".bbc-code-editor")[0].id;
+                            var res = $(this).val().split("*");
+                            if (res.length === 2) {
+                                rows = parseInt(res[0].trim());
+                                cols = parseInt(res[1].trim());
+                            }
+                            var val1 = '[table class=""]\n';
+                            var val2 = '';
+                            for (var i = 0; i < rows; i++) {
+                                val1 += '[tr]';
+                                for (var ii = 0; ii < cols; ii++) {
+                                    val1 += '[td] [/td]';
+                                }
+                                val1 += '[/tr]\n';
+                            }
+                            val2 += '[/table]\n';
+                            $("#" + textId).surroundSelection(val1, val2);
+                        });
+            }
+        });
+        if ($('.grid-chooser')) {
+            $('.grid-chooser').gridPicker({
+                rows: 10,
+                cols: 10
+            });
+
+        }
+
+    </script>
+}

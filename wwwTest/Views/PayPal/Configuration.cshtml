@@ -1,0 +1,98 @@
+﻿
+@using WWW.Views.Helpers
+@using SnitzDataModel.Extensions;
+@using SnitzConfig;
+
+@{
+    ViewBag.Title = "Paypal Configuration";
+
+}
+
+<h5>Paypal Configuration</h5>
+<hr class="title" />
+<div class="container-fluid">
+    @using (Html.BeginForm("SaveConfig", "PayPal", new { @class = "form-horizontal" }))
+    {
+        <div class="form-group clearfix">
+            <label for="STRPAYPALBUSINESS" class="control-label col-sm-3">PayPal Email:</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" id="STRPAYPALBUSINESS" name="STRPAYPALBUSINESS" value="@ClassicConfig.GetValue("STRPAYPALBUSINESS")" />
+            </div>
+        </div>
+        <div class="form-group clearfix">
+            <label for="STRPAYPALURL" class="control-label col-sm-3">PayPal Url:</label>
+            <div class="col-sm-4">
+                <input type="text" placeholder="https://www.paypal.com/cgi-bin/webscr" class="form-control" id="STRPAYPALURL" name="STRPAYPALURL" value="@ClassicConfig.GetValue("STRPAYPALURL")" />
+            </div>
+        </div>
+        <div class="form-group clearfix">
+            @Html.ConfigToggle("Show Donate Page:", "INTSHOWDONATE")
+        </div>
+        <hr class="title" />
+        <div class="form-group"><p>You need to have a PayPal sandbox account to use this.</p></div>
+        <div class="form-group clearfix">
+            @Html.ConfigToggle("Use Sandbox:", "INTPAYPALSANDBOX")
+        </div>
+        <div class="form-group clearfix">
+            <label for="STRPAYPALTESTURL" class="control-label col-sm-3">Sandbox Url:</label>
+            <div class="col-sm-4">
+                <input type="text" placeholder="https://www.sandbox.paypal.com/cgi-bin/webscr" class="form-control" id="STRPAYPALTESTURL" name="STRPAYPALTESTURL" value="@ClassicConfig.GetValue("STRPAYPALTESTURL")" />
+            </div>
+        </div>
+
+
+        <div class="form-group padding-md pull-right clearfix">
+            <input type="button" value="Cancel" class="btn btn-sm btn-primary cancel" />
+            <input type="reset" value="Reset" class="btn btn-sm btn-warning " />
+            <input type="submit" id="btn-submit" value="Save" class="btn btn-sm btn-success" />
+        </div>
+    }
+    <div class="form-group clearfix">
+
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            @{ Html.RenderAction("Products", "PayPal"); }
+        </div>
+    </div>
+</div>
+
+<div id='paypalModal' class='modal hide fade in'>
+    <div id='modalContainer'>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $('body').on('click', '.product', function (e) {
+                e.preventDefault();
+                $(this).tooltip('hide');
+
+                $(this).attr('data-target', '#modal-container');
+                $(this).attr('data-toggle', 'modal');
+
+                $('#modal-container')
+                    .on('loaded.bs.modal',
+                        function (e) {
+                            $.validator.unobtrusive.parse($("#frmCreateEditProduct"));
+                        });
+            });
+
+            $("[name='yesno-checkbox']").bootstrapSwitch();
+            $('.yesno-checkbox').bootstrapSwitch();
+        });
+        function OnUpsertSuccess(data) {
+            $('#modal-container').modal('hide');
+            window.location.reload();
+        }
+
+        function OnUpsertFailure(xhr, status) {
+            $('#modal-container').modal('hide');
+            alert('Error: ' + xhr.statusText);
+        }
+    </script>
+}
+
+
+

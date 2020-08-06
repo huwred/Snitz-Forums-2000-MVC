@@ -1,0 +1,72 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+
+@using WWW.Views.Helpers
+@model WWW.Models.LoginModel
+
+@{
+    ViewBag.Title = ResourceManager.GetLocalisedString("SignIn", "General");
+}
+
+<div class="container">
+
+    <div class="login_panel clearfix">
+        <div class="login_panel_left col-sm-4 hidden-sm hidden-xs">
+            <div class="login_panel_left_inner">
+                @if(!String.IsNullOrEmpty(Config.TitleImage)) {@Html.ForumLogo()}
+                <span>
+                    @ResourceManager.GetLocalisedString("SignInPanel", "General")
+                </span>
+            </div>
+        </div>
+        <div class="login_panel_right col-sm-7">
+            @using (Html.BeginForm(new { returnUrl = ViewBag.ReturnUrl }))
+            {
+                @Html.AntiForgeryToken()
+
+                if (Model.IsConfirmed)
+                {
+                    <input data-val="true" data-val-required="@ResourceManager.GetLocalisedString("IsConfirmedRequired", "General")" id="IsConfirmed" name="IsConfirmed" type="hidden" value="true" />
+                }
+                else
+                {
+                    <input data-val="true" data-val-required="@ResourceManager.GetLocalisedString("IsConfirmedRequired", "General")" id="IsConfirmed" name="IsConfirmed" type="hidden" value="false" />;
+                }
+                @Html.ValidationSummary(true, ResourceManager.GetLocalisedString("LoginFailVal", "General"), new { @class = "list-group-item-warning" })
+                <fieldset class="form-signin">
+                    <legend class="form-signin-heading">@ResourceManager.GetLocalisedString("SignIn", "General")</legend>
+                    @Html.LabelFor(m => m.UserName, new { @class = "sr-only" })
+                    @Html.TextBoxFor(m => m.UserName, new { @class = "form-control ltr", placeholder = ResourceManager.GetLocalisedString("UserName", "General") })
+                    @Html.ValidationMessageFor(m => m.UserName)
+                    @if (Model.IsConfirmed)
+                {
+
+                        @Html.LabelFor(m => m.Password, new { @class = "sr-only" })
+                        @Html.PasswordFor(m => m.Password, new { @class = "form-control ltr", placeholder = ResourceManager.GetLocalisedString("Password", "General") })
+                        @Html.ValidationMessageFor(m => m.Password)
+                        <div class="checkbox">
+                            <label>
+                                @Html.CheckBoxFor(m => m.RememberMe)
+                                @Html.LabelFor(m => m.RememberMe)
+                            </label>
+                        </div>
+                            <button class="btn btn-lg btn-primary btn-block" type="submit">@ResourceManager.GetLocalisedString("SignIn", "General")</button>
+                    }
+                    else
+                    {
+                        <br /><button class="btn btn-lg btn-primary btn-block" type="submit">@ResourceManager.GetLocalisedString("ResendRegEmail", "General")</button>
+                    }
+
+                    <p>
+                        <br />@if (!Config.ProhibitNewMembers && Model.IsConfirmed)
+                        {
+                            @Html.Raw(ResourceManager.GetLocalisedString("SignInNoAccount", "General"))@Html.Raw("&nbsp;")@Html.ActionLink(ResourceManager.GetLocalisedString("Register", "General"), "Register")
+                        }
+                    </p>
+                    <p>@Html.ActionLink(ResourceManager.GetLocalisedString("SignInForgotPassword", "General"), "ResetPassword", null, new { @class = "btn-sm btn-warning" })</p>
+                </fieldset>
+            }
+        </div>
+    </div>
+</div>
+

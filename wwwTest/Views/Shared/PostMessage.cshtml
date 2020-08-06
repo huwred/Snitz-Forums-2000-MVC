@@ -1,0 +1,662 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel
+@using SnitzDataModel.Extensions
+@using SnitzDataModel.Models
+@using WWW.ViewModels
+@using WWW.Views.Helpers
+@using Topic = SnitzDataModel.Models.Topic
+@model WWW.ViewModels.PostMessageViewModel
+@section pageMeta
+{
+    <meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
+}
+@section styles{
+
+    @Styles.Render("~/Content/jquery-ui-timepicker-addon.min.css")
+    <style>
+        .ui-wrapper {padding-right: 1px !important;padding-bottom:1px !important;}
+        .ui-wrapper textarea{width:100% !important;height:100% !important;}
+        @if (ViewBag.RequireAuth != null && ViewBag.RequireAuth)
+        {
+            @Html.Raw(".modal-backdrop.in {opacity: 1.0}");
+        }
+    .rotate{
+            -webkit-transform: rotate(90deg);  /* Chrome, Safari, Opera */
+            -moz-transform: rotate(90deg);  /* Firefox */
+            -ms-transform: rotate(90deg);  /* IE 9 */
+            transform: rotate(90deg);  /* Standard syntax */    
+        }
+    </style>
+
+}
+@{
+    ViewBag.Votes = 0;
+    string controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    //string pageno = Request.QueryString["pagenum"];
+    if (Model.IsPoll)
+    {
+        ViewBag.Votes = Model.PollAnswers.Sum(a => a.Votes);
+    }
+
+}
+@section breadcrumb
+{
+    @Html.BuildBreadcrumbNavigation()
+}
+
+<div class="container-fluid">
+    @using (Html.BeginForm("PostMessage", controllerName, FormMethod.Post, new { @class = "form-horizontal col-sm-11 col-md-9 form-post-message", id = "postForm" }))
+    {
+        <h5>@Html.Raw(ViewBag.Title)</h5>
+        <hr class="title" />
+        ViewBag.SubmitButton = ResourceManager.GetLocalisedString("btnPost", "labels");
+        <div id="afToken">@Html.AntiForgeryToken()</div>
+        <input type="hidden" id="pagenum" name="pagenum" value="@Model.pagenum" />
+        @Html.ValidationSummary(false)
+        if (Model.Type == PostType.Topic)
+        {
+            if (User.IsAdministrator() || User.IsForumModerator(Model.ForumId))
+            {
+                <div class="form-group">
+                    <label class="control-label col-xs-2">@ResourceManager.GetLocalisedString("lblForum", "labels")</label>
+                    <div class="col-xs-8">
+                        @Html.DropDownListFor(model => model.ForumId, new SelectList(Model.ForumList, "Key", "Value"), new { @class = "form-control", @tabindex = 1 })
+                    </div>
+                </div>
+            }
+            else
+            {
+                @Html.HiddenFor(model => model.ForumId)
+            }
+            if (User.IsAdministrator() || Model.IsAuthor || User.IsForumModerator(Model.ForumId))
+            {
+                <div class="form-group">
+                    <label class="control-label col-xs-2">@ResourceManager.GetLocalisedString("lblSubject", "labels")</label>
+                    <div class="col-xs-8">
+
+                        <input maxlength="99" type="text" tabindex="2" data-val="true" data-val-required="@String.Format(ResourceManager.GetLocalisedString("PropertyRequired", "ErrorMessage"),ResourceManager.GetLocalisedString("lblSubject", "labels"))" class="form-control" value="@WebUtility.HtmlDecode(Html.CleanBbCode(Model.Subject).ToString())" id="Subject" name="Subject" />
+
+                    </div>
+                </div>
+            }
+            else
+            {
+                @Html.HiddenFor(model => model.Subject)
+            }
+
+        }
+
+        else
+        {
+            @Html.HiddenFor(model => model.ForumId)
+        }
+        <div class="form-group">
+            @Html.ValidationMessageFor(model => model.Message, null, new { @class = "validation-summary-errors" })
+        </div>
+        if (ClassicConfig.GetValue("STRSHOWFORMATBUTTONS") == "1")
+        {
+            <div class="form-group hidden-xs">
+                @Html.LabelFor(model => model.FormatMode, new { @class = "control-label col-xs-2" })
+                <div class="col-sm-2">@Html.EnumDropDownListFor(model => model.FormatMode, new { @class = "form-control", tabindex = "3" }, "")</div>
+                <div class="col-xs-8">&nbsp;</div>
+            </div>
+
+        }
+        <div id="editorDiv">
+            <div name="buttonBar" class="form-group">
+                <div class="col-sm-2 hidden-xs"></div>
+                <div class="col-sm-10 relative paddding-none" >
+                    @{ Html.RenderPartial("_EditorBar"); }
+                    <div id="popup-btns2" class="btn-toolbar editor-buttons hidden-xs" role="toolbar" >
+                        <div class="btn-group btn-group-sm">
+                            <button tabindex="10" id="prev-btn" class="btn btn-default hidden-xs prev-link" title="@ResourceManager.GetLocalisedString("tipPreview", "Tooltip")" data-toggle="tooltip">
+                                <span class="fa fa-eye"></span>
+                            </button>
+                            @if (ClassicConfig.GetValue("STRALLOWUPLOADS") == "1")
+                            {
+                                <button href="@Url.Action("FileUpload", "Home")" class="btn btn-default modal-link" title="@ResourceManager.GetLocalisedString("tipAttach", "Tooltip")"><span class="fa fa-paperclip"></span></button>
+
+                            }
+                            @if (ClassicConfig.GetIntValue("STRPHOTOALBUM") == 1 || ClassicConfig.GetIntValue("INTCOMMONALBUM") == 1)
+                            {
+                            <button href="@Url.Action("UploadFile", "PhotoAlbum",new{fields=false})" class="btn btn-default gallery-link" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipUpload", "PhotoAlbum")"><span class="fa fa-file-image-o"></span></button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-12 col-sm-10 pull-right flip">
+                    <textarea oninput="isTyping()" tabindex="4" rows="12" name="Message" class="bbc-code-editor form-control" id="Message" data-val-required="@ResourceManager.GetLocalisedString("MessageRequired", "General")" data-val="true">@Html.CleanBbCode(Model.Message)</textarea>
+                    <div id="popup-btns" oninput="isTyping()" class="btn-toolbar editor-buttons hidden-sm hidden-md hidden-lg" role="toolbar" style="position: absolute;top:0;right:0;margin-right:15px;">
+                        <div class="btn-group btn-group-sm">
+                            <button tabindex="10" href="#" id="prev-btn" class="btn btn-default hidden-xs prev-link" title="@ResourceManager.GetLocalisedString("tipPreview", "Tooltip")" data-toggle="tooltip">
+                                <span class="fa fa-eye"></span>
+                            </button>
+                            @if (ClassicConfig.GetValue("STRALLOWUPLOADS") == "1")
+                            {
+                                <button href="@Url.Action("FileUpload", "Home")" class="btn btn-default modal-link" title="@ResourceManager.GetLocalisedString("tipAttach", "Tooltip")"><span class="fa fa-paperclip"></span></button>
+
+                            }
+                            @if (ClassicConfig.GetIntValue("STRPHOTOALBUM") == 1 || ClassicConfig.GetIntValue("INTCOMMONALBUM") == 1)
+                            {
+                            <button href="@Url.Action("UploadFile", "PhotoAlbum", new { fields = false })" class="btn btn-default gallery-link" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipUpload", "PhotoAlbum")"><span class="fa fa-file-image-o"></span></button>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-2">
+                    @if (ClassicConfig.EmoticonTable)
+                    {
+                        Html.RenderPartial("_emoticons", Emoticon.Emoticons());
+                    }
+
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 hidden-xs"></div>
+                <div class="col-sm-10">
+                    @{ Html.RenderPartial("_PostOptions"); }
+
+                </div>
+            </div>
+            @if (Model.IsPoll)
+            {
+                <div id="topic-poll-container">
+                    <h5>@ResourceManager.GetLocalisedString("editTitle", "Poll")</h5>
+                    <hr class="title" />
+                    <div class="form-group">
+                        <label class="control-label col-xs-2">@ResourceManager.GetLocalisedString("pollQuestion", "Poll")</label>
+                        <div class="col-sm-7">
+                            @Html.TextBoxFor(m => m.PollQuestion, new { @class = "form-control" })
+                        </div>
+                        <div class="col-sm-3"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-2">@ResourceManager.GetLocalisedString("pollAllowed", "Poll")</label>
+                        <div class="col-sm-3">
+                            <select name="PollRoles" class="form-control">
+                                <option value="members" @if (Model.PollRoles == "members") { @Html.Raw("selected") }>@ResourceManager.GetLocalisedString("pollAllowMember", "Poll")</option>
+                                <option value="everyone" @if (Model.PollRoles == "everyone") { @Html.Raw("selected") }>@ResourceManager.GetLocalisedString("pollAllowAll", "Poll")</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-2">@ResourceManager.GetLocalisedString("pollAnswers", "Poll")</label>
+                        <div class="col-sm-7">
+                            <div class="col-xs-3">@ResourceManager.GetLocalisedString("pollOrder", "Poll")</div>
+                            <div class="col-xs-8">@ResourceManager.GetLocalisedString("lblAnswer", "Poll")</div>
+                        </div>
+                    </div>
+                    @for (int i = 0; i < Model.PollAnswers.Count(); i++)
+                    {
+                        <div class="form-group">
+                            <div class="col-xs-2">&nbsp;</div>
+                            <div class="col-sm-7">
+                                <div class="col-xs-3">@Html.TextBoxFor(x => x.PollAnswers[i].Order, new { @class = "form-control" })</div>
+                                <div class="col-xs-8">@Html.TextBoxFor(x => x.PollAnswers[i].Answer, new { @class = "form-control" })</div>
+                                <div class="col-xs-2">@Html.HiddenFor(x => x.PollAnswers[i].Id)</div>
+                            </div>@Html.HiddenFor(x => x.PollAnswers[i].PollId)@Html.HiddenFor(x => x.PollAnswers[i].Votes)
+                        </div>
+                    }
+                    @Html.HiddenFor(m => m.PollId)
+                </div>
+
+            }
+            <div class="form-group">
+                <div class="col-sm-2 hidden-xs"></div>
+                <div class="col-sm-10">
+                    @{ Html.RenderPartial("_FormButtons"); }
+                </div>
+            </div>
+
+        </div>
+
+        @Html.HiddenFor(model => model.CatId)
+        @Html.HiddenFor(model => model.TopicId)
+        @Html.HiddenFor(model => model.ReplyId)
+        @Html.HiddenFor(model => model.Referrer)
+        @Html.HiddenFor(model => model.IsPoll)
+        @Html.HiddenFor(model => model.Archived)
+        @Html.HiddenFor(model => model.ReplyToId)
+    }
+
+    @if (!Model.IsPoll) /* Dont show event code for Polls */
+    {
+        @* Event Calendar code *@
+        if (Config.TableExists("CAL_EVENTS",Context) && ClassicConfig.GetIntValue("INTCALEVENTS") == 1)
+        {
+            if (Model.Type == PostType.Topic && (User.IsAdministrator() || Model.IsAuthor || User.IsForumModerator(Model.ForumId)))
+            {
+                <div class="col-md-3 pull-right flip hidden-xs hidden-sm" id="cal-container">
+                    @if (Model.TopicId > 0)
+                    {
+                        Html.RenderAction("TopicEventEdit", "Calendar", new { id = Model.TopicId, page = 1 });
+                    }
+                    else
+                    {
+                        if (TempData["Event"] != null)
+                        {
+                            Html.RenderAction("TopicEvent", "Calendar", new { id = Model.ForumId });
+                        }
+
+                    }
+
+                </div>
+            }
+        }
+    }
+
+    <div class="col-md-3 pull-right flip hidden-xs hidden-sm dz-container">
+        @if (ClassicConfig.GetValue("STRALLOWUPLOADS") == "1")
+        {
+            <form action="@Url.Action("Upload","Home")" method="post" enctype="multipart/form-data" class="dropzone" id="dropzoneForm" style="background: none;">
+                <div class="fallback">
+                    Use regular upload buttons
+                </div>
+            </form>
+
+        }
+        @if (ClassicConfig.GetValue("STRPHOTOALBUM") == "1")
+        {
+
+            <form action="@Url.Action("Upload","PhotoAlbum")" method="post" enctype="multipart/form-data" class="dropzone" id="dropzoneForm2" style="background: none;">
+                <div class="fallback">
+                    Use regular upload buttons
+                </div>
+            </form>
+
+        }
+    </div>
+
+
+
+</div>
+@if (Model.TopicId > 1 && Model.Archived != 1)
+{
+    <div class="container-fluid">
+        @{ Html.RenderPartial("_TopicPreview", Topic.WithAuthor(Model.TopicId)); }
+    </div>
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/dropzonejs")
+    @if (ClassicConfig.GetIntValue("STRPHOTOALBUM") == 1)
+    {
+        @Scripts.Render("~/Scripts/jquery.contextMenu.min.js")
+        @Scripts.Render("~/Scripts/snitz.photoalbum.min.js")
+    }
+    @if (ClassicConfig.GetIntValue("INTCALEVENTS") == 1)
+    {
+        @Scripts.Render("~/Scripts/snitz.cal.min.js")
+    }
+
+    <script>
+        $(document).ready(function(){
+            // Add minus icon for collapse element which is open by default
+            $(".collapse.in").each(function(){
+                $(this).siblings(".panel-heading").find(".fa-chevron-right").addClass("rotate");
+            });
+        
+            // Toggle plus minus icon on show hide of collapse element
+            $(".collapse").on('show.bs.collapse', function(){
+                $(this).parent().find(".fa-chevron-right").addClass("rotate");
+            }).on('hide.bs.collapse', function(){
+                $(this).parent().find(".fa-chevron-right").removeClass("rotate");
+            });
+        });
+    </script>
+<script type="text/javascript">
+
+    try {
+        Dropzone.autoDiscover = false;
+    } catch (e) {
+        console.log('Dropzone not loaded');
+    }
+    function displayValidationErrors(errors) {
+        BootstrapDialog.alert(
+            {
+                title: '@ResourceManager.GetLocalisedString("lblError", "labels")',
+                message: errors.errors
+            });
+    }
+
+    $(window).on("load", function(){
+
+        if ('@ViewBag.RequireAuth' === 'True') {
+            window.passwordDialog('', '@Model.ForumId', '0');
+
+        }
+        setRequiredFields();
+        $("#Message").resizable();
+
+        //POST the MESSAGE FORM - use this to hook into the Form post
+        $('input[type="submit"]').on('click', function (event) {
+            $(this).attr('disabled', 'disabled');
+            var serializedForm = $("#postForm").serialize();
+            $("#loading").show();
+            event.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("PostMessage", @controllerName)',
+                data: serializedForm,
+                dataType: "json",
+                success: function (data) {
+
+                    if (data.success) {
+                        postPostMessage(event, data);
+                    } else {
+                        $("#loading").hide();
+                        displayValidationErrors(data);
+                    }
+                },
+                error: function (result) {
+                    $("#loading").hide();
+                    var decoded = JSON.parse(result.responseText);
+                    BootstrapDialog.alert(
+                        {
+                            title: '@ResourceManager.GetLocalisedString("lblError", "labels")',
+                            message: decoded
+                        });
+                }
+            });
+
+        });
+
+        // create the dropzone, and setup the event listeners
+        if ('@ClassicConfig.GetValue("STRALLOWUPLOADS")' === '1') {
+            var fileDropzone = new Dropzone("#dropzoneForm", {
+                autoProcessQueue: true,
+                addRemoveLinks: true,
+                maxFilesize: window.SnitzVars.MaxFileSize,
+                acceptedFiles: "@ClassicConfig.GetValue("STRFILETYPES")",
+                accept: function (file, done) {
+                    if (file.name.length > 255) {
+                        done("Filename exceeds 255 characters!");
+                    }
+                    else { done(); }
+                },
+                paramName: "fileInput",
+                success:function(file, response)
+                {
+                    // Do what you want to do with your response
+                    // This return statement is necessary to remove progress bar after uploading.
+                    return file.previewElement.classList.add("dz-success");
+                },
+                dictDefaultMessage: "@Html.Raw(ResourceManager.GetLocalisedString("AttachFile","Dropzone"))" //+ "<b>Attach file:</b><br/>Click or drop file here to attach to post"
+            });
+
+            fileDropzone.on("complete", function (data) {
+                //File Upload response from the server
+                var arr = data.xhr.responseText.split('|');
+                if (arr[0] === "error") {
+                    BootstrapDialog.alert(
+                        {
+                            title: '@ResourceManager.GetLocalisedString("lblError", "labels")',
+                            message: '@ResourceManager.GetLocalisedString("UploadError", "Dropzone")'
+                        });
+                } else {
+                    var textId = $("#editorDiv").find(".bbc-code-editor")[0].id;
+                    if (arr[1].indexOf("pdf") >= 0) {
+                        $("#" + textId).insertAtCaret("[pdf]" + arr[0].replace('"', '') + "[/pdf]");
+                    } else if (arr[1].indexOf("image") >= 0) {
+
+                        var obj = jQuery.parseJSON(arr[0] + '"}');
+                        $("#" + textId).insertAtCaret("[img]" + obj.responseText.replace('"', '') + "[/img]");
+                    } else if (arr.length === 3) {
+                        var filesize = arr[2].replace('"', '');
+                        $("#" + textId).insertAtCaret("[file " + filesize + "]" + arr[0].replace('"', '') + "[/file]");
+                    } else {
+                        $("#" + textId).insertAtCaret("[file]" + arr[0].replace('"', '') + "[/file]");
+                    };
+                    fileDropzone.removeAllFiles();
+                    $('input[type="submit"]').attr('disabled', false);
+                    $("#" + textId).css('background-color', '#ffffff');
+                }
+            });
+        }
+
+        if ('@ClassicConfig.GetValue("STRPHOTOALBUM")' === '1') {
+            var imgDropzone = new Dropzone("#dropzoneForm2", {
+                autoProcessQueue: true,
+                addRemoveLinks: true,
+                maxFilesize: window.SnitzVars.MaxFileSize,
+                acceptedFiles: window.SnitzVars.allowedimagetypes,
+                accept: function (file, done) {
+                    if (file.name.length > 255) {
+                        done("Filename exceeds 255 characters!");
+                    }
+                    else { done(); }
+                },
+                paramName: "ImageFile",
+                success:function(file, response)
+                {
+                    // Do what you want to do with your response
+                    // This return statement is necessary to remove progress bar after uploading.
+                    return file.previewElement.classList.add("dz-success");
+                },
+                dictDefaultMessage: "@Html.Raw(ResourceManager.GetLocalisedString("UploadImage","Dropzone"))" //"<b>Upload Image:</b><br/>Click or drop image here to add to your album."
+            });
+            imgDropzone.on("sending", function (file, xhr, formData) {
+                // Will send the filesize along with the file as POST data.
+                formData.append("Description", file.name);
+            });
+            imgDropzone.on('error', function (file, response) {
+                $(file.previewElement).find('.dz-error-message').text(response);
+            });
+            imgDropzone.on("complete", function (data) {
+                //File Upload response from the server
+                var arr = data.xhr.responseText.split('|');
+                if (arr[0] === "error") {
+                    BootstrapDialog.alert(
+                        {
+                            title: '@ResourceManager.GetLocalisedString("lblError", "labels") ',
+                            message: "@ResourceManager.GetLocalisedString("UploadError","Dropzone")" //'Error uploading'
+                        });
+                } else {
+
+                    var textId = $("#editorDiv").find(".bbc-code-editor")[0].id;
+                    if (arr[2].replace('"', '')=="true") {
+                        $("#" + textId).insertAtCaret("[cimage=" + arr[1].replace('"', '') + "]");
+                    } else {
+                        $("#" + textId).insertAtCaret("[image=" + arr[1].replace('"', '') + "]");
+                    }
+
+                    imgDropzone.removeAllFiles();
+                    $('input[type="submit"]').attr('disabled', false);
+                    $("#" + textId).css('background-color', '#ffffff');
+                }
+            });
+        }
+
+        //*disable the submit button*/
+        $('input[type="submit"]').prop('disabled', true);
+        //*disable poll editing*/
+        var pollcheck = '@Model.IsPoll';
+        if (pollcheck !== "False" && '@ViewBag.Votes' !== '0') {
+            $("#topic-poll-container :input").attr("readonly", true);
+            $("#topic-poll-container :input").addClass('disabled');
+        }
+
+        //*re-enable submit button if any data changes*/
+        $("#ForumId").on('change', function() {
+            $('input[type="submit"]').attr('disabled', false);
+        });
+        $(".emote").on('mouseup', function() {
+            $('input[type="submit"]').attr('disabled', false);
+            $('textarea').css('background-color', '#ffffff');
+        });
+        $(".btn").on('mouseup', function() {
+            $('input[type="submit"]').attr('disabled', false);
+        });
+        $('input[type="checkbox"]').on('mouseup', function() {
+            $('input[type="submit"]').attr('disabled', false);
+        });
+        $('input[type="text"]').on('keyup', function() {
+            var textValue = $(this).val();
+            $(this).css('background-color', '#ffffff');
+            if (textValue !== '') {
+                $('input[type="submit"]').attr('disabled', false);
+            } else {
+                $('input[type="submit"]').attr('disabled', true);
+            }
+        });
+        $('textarea').on('keyup', function() {
+            var textareaValue = $(this).val();
+            $(this).css('background-color', '#ffffff');
+            if (textareaValue != '') {
+                $('input[type="submit"]').attr('disabled', false);
+            } else {
+                $('input[type="submit"]').attr('disabled', true);
+            }
+        });
+        $(".bbc-code-editor").bind('keydown', function(event) {
+            if (event.ctrlKey || event.metaKey) {
+                var textId = $(this)[0].id;
+                switch (String.fromCharCode(event.which).toLowerCase()) {
+                case 'i':
+                    event.preventDefault();
+                    $("#" + textId).surroundSelection("[i]", "[/i]");
+                    $("#" + textId).removeClass("required-val");
+                    break;
+                case 'b':
+                    event.preventDefault();
+                    $("#" + textId).surroundSelection("[b]", "[/b]");
+                    $("#" + textId).removeClass("required-val");
+                    break;
+                case 'u':
+                    event.preventDefault();
+                    $("#" + textId).surroundSelection("[u]", "[/u]");
+                    $("#" + textId).removeClass("required-val");
+                    break;
+                case 's':
+                    event.preventDefault();
+                    $("#" + textId).surroundSelection("[s]", "[/s]");
+                    $("#" + textId).removeClass("required-val");
+                    break;
+                }
+            }
+        });
+        //* Event Calendar code */
+
+        $(document).on('click', '#cal-nextevent', function (event) {
+            var tId = $('#cal-topicid').val();
+            var fId = $('#cal-forumid').val();
+            var page = parseInt($('#cal-curpage').val());
+
+            event.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: window.SnitzVars.baseUrl + 'Calendar/TopicEventEdit/' + tId + '/?forumid=' + fId + '&page=' + (page+1),
+                success: function (data) {
+                    $('#cal-container').html(data);
+                    if ($('#cal-recur').val() === 'EveryDay') {
+                        $('#cal-dow').show();
+                    }
+                },
+                error: function (result) {
+                    BootstrapDialog.alert(
+                        {
+                            title: '@ResourceManager.GetLocalisedString("lblError", "labels")',
+                            message: result.responseText
+                        });
+                }
+            });
+        });
+        $(document).on('click', '#cal-prevevent', function (event) {
+            var tId = $('#cal-topicid').val();
+            var fId = $('#cal-forumid').val();
+            var page = parseInt($('#cal-curpage').val());
+
+            event.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: window.SnitzVars.baseUrl + 'Calendar/TopicEventEdit/' + tId + '/?forumid=' + fId + '&page=' + (page - 1),
+                success: function (data) {
+                    $('#cal-container').html(data);
+                    if ($('#cal-recur').val() === 'EveryDay') {
+                        $('#cal-dow').show();
+                    }
+                },
+                error: function (result) {
+                    BootstrapDialog.alert(
+                        {
+                            title: '@ResourceManager.GetLocalisedString("lblError", "labels")',
+                            message: result.responseText
+                        });
+                }
+            });
+        });
+        $(document).on('click', '#cal-update', function (event) {
+            var serializedForm = $("#cal-editTopicEvent").serialize();
+            event.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: window.SnitzVars.baseUrl + 'Calendar/EditEvent',
+                processData:false,
+                data: serializedForm,
+                dataType: "json",
+                success: function (result, status, xhr) {
+                    BootstrapDialog.successShow(result.responseText);
+                },
+                error: function (xhr, status, error) {
+                    BootstrapDialog.alert(
+                        {
+                            title: '@ResourceManager.GetLocalisedString("lblError", "labels") ' + status,
+                            message: error
+                        });
+                }
+            });
+        });
+
+        //* Event Calendar code */
+
+        setConditionalValidators();
+
+    });
+
+        // This function is called after a Topic or Reply is posted
+        // data contains topic.Id + ":" + ReferrerUrl
+            function postPostMessage(event, data) {
+
+            var arr = data.responseText.split('|');
+            /* Event Calendar code */
+            //alert(arr[1] + arr[2]);
+            if ($("#cal-addTopicEvent").length > 0) {
+                postEvent(event, arr);
+            } else {
+                if (typeof(arr[2]) == 'undefined') {
+                    window.location.href = arr[1];
+                } else {
+                    window.location.href = arr[1] + arr[2];
+                }
+
+            }
+            /* Event Calendar code */
+                return false;
+        }
+
+        var timer = null;
+        function isTyping() {
+            clearTimeout(timer);
+            var value = $('#Message').val();
+            if (value) {
+                $("#popup-btns").hide();
+                timer = setTimeout(notTyping, 2000);// that's 2 seconds of not typing
+            }
+            else {
+                notTyping();
+            }
+        }
+
+        function notTyping() {
+            $("#popup-btns").show();
+        }
+
+</script>
+
+}

@@ -1,0 +1,58 @@
+﻿@using WWW.Views.Helpers
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@model WWW.Controllers.RssWidgetViewModel
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <span class="fa fa-list-alt"></span>&nbsp;<b>@Model.RssFeed.Title.Text&nbsp;-&nbsp;<span class="numbers">@Model.RssFeed.LastUpdatedTime.UtcDateTime.ToClientTime().ToFormattedString()</span></b>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-xs-12">
+                <ul class="news-demo-down-auto">
+                    @if (String.IsNullOrWhiteSpace(Model.Template))
+                    {
+                        @Html.DisplayFor(m => m.RssFeed.Items)
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(x => x.RssFeed, Model.Template)
+                    }
+
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="panel-footer">
+        <a href='@Model.RssFeed.Links[0].Uri.OriginalString'><b> @Model.RssFeed.Title.Text</b></a>
+    </div>
+</div>
+
+@using (Html.BeginScripts())
+{
+    <script src="~/Scripts/bootstrapnews.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+        $(function () {
+
+            $(".news-demo-down-auto")
+                .bootstrapNews({
+                    newsPerPage: 3,
+                    autoplay: true,
+                    pauseOnHover: true,
+                    navigation: false,
+                    direction: 'up',
+                    animationSpeed: 'slow',
+
+                    newsTickerInterval: 3000,
+                    onToDo: function () {
+
+                    }
+
+                });
+
+        });
+
+    </script>
+}

@@ -1,0 +1,23 @@
+﻿@using LangResources.Utility
+@using WWW.Views.Helpers
+@model dynamic
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
+    <h4 class="modal-title">Add Name</h4>
+</div> 
+    @using (Html.BeginForm("AddNameFilter", "Admin", FormMethod.Post))
+    {
+<div class="modal-body">
+
+
+        <div class="form-group">
+            <label class="control-label">Name</label>
+            <input type="text" name="name-filter" class="form-control"/>
+        </div>
+</div>
+<div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">@ResourceManager.GetLocalisedString("btnCancel", "labels")</button>
+            <button type="submit" id="approve-btn" class="btn btn-success">@ResourceManager.GetLocalisedString("btnSave", "labels")</button>
+</div>
+    }
+

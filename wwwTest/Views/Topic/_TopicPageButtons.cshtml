@@ -1,0 +1,51 @@
+﻿@using Snitz.Base
+@using SnitzConfig
+@using SnitzDataModel.Extensions
+@model WWW.ViewModels.TopicViewModel
+
+@if (ClassicConfig.AllowEmail && WebSecurity.IsAuthenticated && (ClassicConfig.GetIntValue("STRSHOWSENDTOFRIEND") == 1))
+{
+    <a title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipSendTopic", "Tooltip")" data-toggle="tooltip" href="#" data-id="@Model.Id" class="btn btn-sm btn-primary sendto-link">
+        <i class="fa fa-envelope"></i>
+        <span class="hidden-xs hidden-sm">@LangResources.Utility.ResourceManager.GetLocalisedString("btnSendTopic", "labels")</span>
+    </a>
+}
+@if (ClassicConfig.GetIntValue("STRSHOWPRINTERFRIENDLY") == 1)
+{
+    <a title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipPrintTopic", "Tooltip")" data-toggle="tooltip" href="@Url.Action("Print", "Topic", new {id = Model.Id, archived = Model.Topic.Archived})" class="btn btn-sm btn-primary" target="_blank">
+        <i class="fa fa-print"></i>
+        <span class="hidden-xs hidden-sm">@LangResources.Utility.ResourceManager.GetLocalisedString("btnPrintTopic", "labels")</span>
+    </a>
+}
+@if (Model.Forum != null && (WebSecurity.IsAuthenticated && !Config.DisablePosting && Model.Forum.Status == Enumerators.PostStatus.Open))
+{
+    if (Model.Forum.PostAuth == Enumerators.PostAuthType.Anyone || (Model.Forum.PostAuth == Enumerators.PostAuthType.Moderators && User.IsForumModerator(Model.Forum.Id)) || User.IsAdministrator())
+    {
+        if (ClassicConfig.GetIntValue("INTPOLLS") == 1 && Model.Forum.PollsAuth != Enumerators.PollAuth.Disallow)
+        {
+            if ((Model.Forum.PollsAuth == Enumerators.PollAuth.Members && WebSecurity.IsAuthenticated) || (Model.Forum.PollsAuth == Enumerators.PollAuth.AdminModerators && (User.IsAdministrator() || User.IsModerator())))
+            {
+                <a title="Add Poll" data-toggle="tooltip" href="@Url.Action("PostMessage", "Topic", new {id = 0, forumid = Model.Forum.Id, catid = Model.Forum.CatId, ispoll = true})" class="btn btn-sm btn-primary">
+                    <i class="fa fa-bar-chart"></i>
+                    <span class="hidden-xs hidden-sm">@LangResources.Utility.ResourceManager.GetLocalisedString("tipAddPoll", "Poll")</span>
+                </a>
+            }
+        }
+        <a title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipNewTopic", "Tooltip")" data-toggle="tooltip" href="@Url.Action("PostMessage", "Topic", new {id = 0, forumid = Model.Topic.ForumId, catid = Model.Topic.CatId})" class="btn btn-sm btn-primary">
+            <i class="fa fa-comment"></i>
+            <span class="hidden-xs hidden-sm">@LangResources.Utility.ResourceManager.GetLocalisedString("btnNewTopic", "labels")</span>
+        </a>
+
+    }
+    if (Model.Forum.ReplyAuth == Enumerators.PostAuthType.Anyone || (Model.Forum.ReplyAuth == Enumerators.PostAuthType.Moderators && User.IsForumModerator(Model.Forum.Id)) || User.IsAdministrator())
+    {
+        if (Model.Topic.Archived != 1 && Model.Topic.PostStatus == Enumerators.PostStatus.Open)
+        {
+            <a title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipTopicReply", "Tooltip")" data-toggle="tooltip" href="@Url.Action("PostMessage", "Reply", new {id = -1, topicid = Model.Id, forumid = Model.Topic.ForumId, catid = Model.Topic.CatId})" class="btn btn-sm btn-primary">
+                <i class="fa fa-comments"></i>
+                <span class="hidden-xs hidden-sm">@LangResources.Utility.ResourceManager.GetLocalisedString("btnReply", "labels")</span>
+            </a>
+        }
+
+    }
+}

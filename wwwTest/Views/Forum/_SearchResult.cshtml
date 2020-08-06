@@ -1,0 +1,94 @@
+﻿@using System.Linq
+@using System.Web.Mvc.Html
+@using LangResources.Utility
+@using WWW.Views.Helpers
+
+@model SnitzDataModel.Models.SearchResult
+@{
+    Layout = null;
+    ViewBag.Title = @ResourceManager.GetLocalisedString("SearchResults", "Title") + " " + (Model.Archived ? "(Archived)" : "");
+    var topics = Model.Topics;
+    var terms = "";
+
+}
+
+@if (Model.FullParams != null)
+{
+    terms = String.Join("+", Model.FullParams.Terms.Select(i => i));
+}
+
+<div class="chunk-main">
+    <div class="row-fluid">
+        <h5>@ViewBag.Title <small> @(String.IsNullOrWhiteSpace(Model.Params.MemberName) ? Model.Params.Term : Model.Params.Term + " " + ResourceManager.GetLocalisedString("lblSearchFor", "labels") + " " + Model.Params.MemberName)</small></h5>
+    </div>
+    @if (Convert.ToInt32(Model.PageCount) > 1)
+    {
+        <div class="row-fluid">
+            <div class="col-xs-10">@Html.Partial("_SearchPager", Model)</div>
+            <div class="col-xs-2 pull-right flip padding-xs">
+                @{ Html.RenderPartial("_PageSize"); }
+            </div>
+        </div>
+    }
+    @if (topics.Count == 0)
+    {
+        <div class="text-center">@ResourceManager.GetLocalisedString("Search_NoResults", "labels") </div>
+    }
+    else
+    {
+        if (Model.Params.SubjectOnly)
+        {
+            @*@Html.DisplayFor(m => topics)*@
+            <ul class="topiclist topics">
+                @foreach (var topic in Model.Topics)
+                {
+
+                    @Html.DisplayFor(m => topic, "TopicNew", new {Terms = terms})
+                }
+            </ul>
+        }
+        else
+        {
+            <ul class="topiclist topics">
+                @foreach (var topic in Model.Topics)
+                {
+
+                    @Html.DisplayFor(m => topic, "TopicNew", new {Terms = terms})
+                }
+            </ul>
+            //Html.DisplayFor(m => topics, new { Terms = String.Join("+", Model.FullParams.Terms.Select(i => i)) }))
+        }
+    }
+
+    @if (Convert.ToInt32(Model.PageCount) > 1)
+    {
+        <div class="row-fluid">
+            <div class="col-xs-10">@Html.Partial("_SearchPager", Model)</div>
+            <div class="col-xs-2 pull-right flip padding-xs">
+                @{ Html.RenderPartial("_PageSize"); }
+            </div>
+        </div>
+    }
+</div>
+
+
+@using (Html.BeginScripts())
+{
+    <script type="text/javascript">
+        $(document)
+            .ready(function() {
+                var termsArray = [@Html.Raw(terms)];
+                for (var i = 0; i < termsArray.length; i++) {
+                    $('span a.topic-link').highlight(termsArray[i]);
+                }
+                //tooltip initialisers
+                $('.topic-strap').tooltip({
+                    placement: tooltipPos,
+                    html:true,
+                    selector: "a[class=topic-link]",
+                    container: 'body'
+                });
+            });
+
+    </script>
+}

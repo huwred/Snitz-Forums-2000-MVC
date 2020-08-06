@@ -1,0 +1,276 @@
+﻿@using WWW.Views.Helpers
+@using LangResources.Utility
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+
+@model List<SnitzDataModel.Models.DownloadFile>
+@{
+    ViewBag.Title = "Manage Downloads";
+    Layout = "~/Views/Admin/_Layout.cshtml";
+    WebGrid webGrid = new WebGrid(source: Model, ajaxUpdateContainerId: "grid", ajaxUpdateCallback: "setArrows", canPage: false);
+}
+@if (Config.TableExists("FORUM_FILECOUNT"))
+{
+    <div class="form-group clearfix">
+        @using (Ajax.BeginForm("SaveConfig", "Files", null,
+        new AjaxOptions
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            UpdateTargetId = "ForumConfig",
+            HttpMethod = "POST",
+            LoadingElementId = "loading"
+        }, new { @class = "" }))
+        {
+            <fieldset class=" col-xs-9 clearfix">
+                <legend>
+                    Manage Downloads
+                    <span class="pull-right flip">
+                        @*@Html.ConfigToggle(" ", "STRMANAGEFILES", "", "control-label col-xs-8 col-sm-4")*@
+
+                        <input id="strmanagefiles" name="strmanagefiles" type="checkbox" value="1" class="yesno-checkbox" data-size="mini" checked="@(ClassicConfig.GetValue("STRMANAGEFILES") == "1")" />
+                        <input name="strmanagefiles" type="hidden" value="0" />
+                    </span>
+                </legend>
+                <div class="form-group text-center clearfix">@Html.Partial("_FormButtons")</div>
+            </fieldset>
+        }
+    </div>
+    if (Model == null)
+    {
+        <div class="form-group text-center">No Files in Library</div>
+    }
+    else
+    {
+        <div id="grid" class="form-group col-xs-10">
+            <a id="file-upload" href="@Url.Action("UploadFile", "Files")" class="btn btn-default modal-link" title="@ResourceManager.GetLocalisedString("btnUpload", "labels")"><span class="fa fa-paperclip"></span></a>
+
+            @webGrid.GetHtml(
+
+                htmlAttributes: new { @id = "WebGrid", @class = "table table-bordered table-striped table-hover" },
+
+                columns: webGrid.Columns(
+                    webGrid.Column(header: "Id",
+                        format: @<span class="control-label">@item.Id</span>, style: "Id"),
+                             webGrid.Column(columnName: "UploadedDate", header: "Uploaded",
+                                 format: @<span>
+                                    <span class="control-label">@(item.UploadedDate != null ? item.UploadedDate.ToString("dd/MM/yyyy") : "")</span>
+                                    <input class="text form-control date" type="text" value="@(item.UploadedDate != null ? item.UploadedDate.ToString("dd/MM/yyyy") : "")" style="display:none" size="8" />
+                                </span>, style: "Uploaded"),
+                                     webGrid.Column(columnName: "Name", header: "Name",
+                                         format: @<span>
+                                            <span class="control-label">@item.Name</span>
+                                            <input class="text form-control" type="text" value="@item.Name" style="display:none" />
+                                        </span>, style: "Name"),
+                                             webGrid.Column(columnName: "FileName", header: "FileName",
+                                                 format: @<span>
+                                                    <span class="control-label">@item.FileName</span>
+                                                    <input class="text form-control" type="text" value="@item.FileName" style="display:none" />
+                                                </span>, style: "FileName"),
+                                                     webGrid.Column("Downloads", "Downloads"),
+                                                     webGrid.Column(columnName: "Order", header: "Ord.",
+                                                         format: @<span>
+                                                            <span class="control-label">@item.Order</span>
+                                                            <input class="text form-control num" size="2" type="text" value="@item.Order" style="display:none" />
+                                                        </span>, style: "Order"),
+                                                             webGrid.Column(columnName: "Archive", header: "Arch.",
+                                                                 format: @<span>
+                                                                    <span class="control-label">@item.Archive</span>
+                                                                    <input class="text" size="3" type="checkbox" @(item.Archive == 1 ? "Checked" : null) value="@item.Archive" style="display:none" />
+                                                                </span>, style: "Archive"),
+                                                                     webGrid.Column(
+                                                                         format:@<span class="link">
+                                                                            <a class="Edit" href="javascript:;"><i class="fa fa-pencil"></i></a>
+                                                                            <a class="Delete" href="javascript:;"><i class="fa fa-trash-o"></i></a>
+                                                                            <a class="Update" href="javascript:;" style="display:none"><i class="fa fa-check"></i></a>
+                                                                            <a class="Cancel" href="javascript:;" style="display:none"><i class="fa fa-times"></i></a>
+                                                                        </span>)
+                                                                         ))
+            @Html.Hidden("dir", webGrid.SortDirection) @Html.Hidden("col", webGrid.SortColumn)
+        </div>
+    }
+
+}
+else
+{
+    <div class="panel panel-primary panel-body clearfix">
+        Table does not exist, please apply dbs Script
+    </div>
+}
+
+@section Scripts
+{
+    @Scripts.Render("~/bundles/dropzonejs")
+    @Scripts.Render("~/scripts/snitz.upload.min.js")
+    <script type="text/javascript">
+        try {
+            Dropzone.autoDiscover = false;
+        } catch (e) {
+            alert('Dropzone not loaded');
+        }
+
+        //Initialise datepicker
+        $('.date').datetimepicker({
+            dateFormat: 'dd/mm/yy',
+            showTimepicker: false
+        });
+
+        $('.text[type="checkbox"]').on('change', function () {
+            var val = this.checked ? '1' : '0';
+            $(this).val(val);
+        });
+
+        //Edit event handler.
+        $("body").on("click", "#WebGrid TBODY .Edit", function () {
+            var row = $(this).closest("tr");
+            $("td", row).each(function () {
+                $(this).find("div.spinedit").show();
+                if ($(this).find(".text").length > 0) {
+                    $(this).find(".text").show();
+                    $(this).find(".control-label").hide();
+                }
+            });
+            row.find(".Update").show();
+            row.find(".Cancel").show();
+            row.find(".num").spinedit({
+                minimum: 0,
+                maximum: 100,
+                step: 1,
+                value: 0,
+                numberOfDecimals: 0
+            });
+            $(this).hide();
+        });
+
+        //Update event handler.
+        $("body").on("click", "#WebGrid TBODY .Update", function () {
+            var row = $(this).closest("tr");
+            $("td", row).each(function () {
+                $(this).find("div.spinedit").remove();
+                if ($(this).find(".text").length > 0) {
+                    var span = $(this).find(".control-label");
+                    var input = $(this).find(".text");
+                    span.html(input.val());
+                    span.show();
+                    $(this).find("div.spinedit").hide();
+                    input.hide();
+                }
+            });
+            row.find(".Edit").show();
+            row.find(".Cancel").hide();
+            $(this).hide();
+
+            var downloadfile = {};
+            downloadfile.Id = row.find(".Id").find(".control-label").html();
+            downloadfile.UploadedDate = toDate(row.find(".Uploaded").find(".control-label").html()).toJSON();
+            downloadfile.Name = row.find(".Name").find(".control-label").html();
+            downloadfile.FileName = row.find(".FileName").find(".control-label").html();
+            downloadfile.Order = row.find(".Order").find(".control-label").html();
+            downloadfile.Archive = row.find(".Archive").find(".text").prop("checked") ? 1 : 0;
+            downloadfile.Downloads = row.find(".Downloads").find(".control-label").html();
+
+            $.ajax({
+                type: "POST",
+                url: window.SnitzVars.baseUrl + "Files/Edit",
+                data: '{downloadfile:' + JSON.stringify(downloadfile) + '}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    if (response.success) {
+                        BootstrapDialog.successShow(response.responseText);
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
+                    } else {
+                        BootstrapDialog.alert(
+                            {
+                                title: "Downloads Error ",
+                                message: response.responseText
+                            });
+                    }
+                },
+                error: function (response) {
+                    BootstrapDialog.alert(
+                        {
+                            title: "Downloads Error ",
+                            message: response.responseText
+                        });
+                }
+            });
+        });
+
+        //Cancel event handler.
+        $("body").on("click", "#WebGrid TBODY .Cancel", function () {
+            var row = $(this).closest("tr");
+            $("td", row).each(function () {
+                if ($(this).find(".text").length > 0) {
+                    var span = $(this).find(".control-label");
+                    var input = $(this).find(".text");
+                    input.val(span.html());
+                    span.show();
+                    input.hide();
+                    $(this).find("div.spinedit").hide();
+                }
+            });
+
+            row.find(".Edit").show();
+            row.find(".Update").hide();
+            $(this).hide();
+        });
+
+        //Delete event handler.
+        $("body").on("click", "#WebGrid TBODY .Delete", function () {
+            var row = $(this).closest("tr");
+            var FileId = row.find(".Id").find(".control-label").html();
+
+            $.ajax({
+                type: "POST",
+                url: window.SnitzVars.baseUrl + "Files/Delete",
+                data: '{id:' + FileId + '}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    if (response.success) {
+                        BootstrapDialog.successShow(response.responseText);
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
+                    } else {
+                        BootstrapDialog.alert(
+                            {
+                                title: "Downloads Error ",
+                                message: response.responseText
+                            });
+                    }
+                },
+                error: function (response) {
+                    BootstrapDialog.alert(
+                        {
+                            title: "Downloads Error ",
+                            message: response.responseText
+                        });
+                }
+
+
+            });
+        });
+
+        function toDate(dateStr) {
+            var parts = dateStr.split("/")
+            return new Date(parts[2], parts[1] - 1, parts[0])
+        }
+
+        function setArrows() {
+            var dir = $('#dir').val();
+            var col = 'sort=' + $('#col').val();
+            var header = $('th a[href*="' + col + '"]');
+            if (dir == 'Ascending') {
+                header.text(header.text() + ' ▲');
+            }
+            if (dir == 'Descending') {
+                header.text(header.text() + ' ▼');
+            }
+        };
+    </script>
+}

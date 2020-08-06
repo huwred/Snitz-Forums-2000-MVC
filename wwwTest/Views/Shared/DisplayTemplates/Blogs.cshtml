@@ -1,0 +1,59 @@
+﻿@using LangResources.Utility
+@using Snitz.Base
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model SnitzDataModel.Models.Topic
+
+@{
+    ViewBag.RatingSum = Model.Rating();
+    var unmoderatedClass = "";
+    if (Model.PostStatus == Enumerators.PostStatus.UnModerated)
+    {
+        unmoderatedClass = "topic-unmoderated";
+    }
+    else if (Model.PostStatus == Enumerators.PostStatus.OnHold)
+    {
+        unmoderatedClass = "topic-onhold";
+    }
+    int replies = Model.ReplyCount;
+    if (User.IsAdministrator() || User.IsForumModerator(Model.ForumId))
+    {
+        replies += Model.UnmoderatedReplyCount.GetValueOrDefault(0);
+    }    
+}
+   
+<div class="col-xs-9 col-xs-offset-2 blog-container @unmoderatedClass clearfix">
+
+    <div class=''>
+        <div class="blog-strap text ellipsis">
+            <h4>
+                <a href="@Url.Action("Posts", "Topic", new {id = Model.GenerateSlug(), pagenum = 1,archived = Model.Archived})" data-toggle="tooltip" class="topic-link" data-html="true" data-placement="auto" data-title='@Html.FormatBbCode(Model.Subject,false)'>@Html.FormatBbCode(Model.Subject, false)</a> 
+
+            </h4>
+            @Html.Timeago(Model.Date)
+            <div>
+                @Html.Avatar(Model.PostAuthorName, Model.AuthorAvatar, "avatarsmall img-circle").If(Config.ShowAvatar)
+                @Html.ActionLink(" " + Model.PostAuthorName, "UserProfile", "Account", new { id = Model.PostAuthorName }, new { title = ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip"), data_toggle = "tooltip" })
+
+            </div>
+            @if (ViewBag.RatingSum > 0)
+            {
+                <input id="star-rating-demo" value="@ViewBag.RatingSum" type="number" class="rating" min=0 max=5 step=0.1 data-size="xs" />
+            }
+            else if (ViewBag.RatingSum < 0)
+            {
+                <input id="star-rating-demo" value="@ViewBag.RatingSum" type="number" class="rating" min=0 max=5 step=0.1 data-size="xs" />
+            }
+            <br />
+            <span class="text-concat" style="margin-top:11px; padding-bottom: 6px;">@Html.FormatBbCode(Model.Message)</span>
+        </div>
+
+        <a href="@Url.Action("Posts", "Topic", new {id = Model.GenerateSlug(), pagenum = 1,archived = Model.Archived})" data-toggle="tooltip" data-title='@ResourceManager.GetLocalisedString("lblView", "labels") @Html.FormatBbCode(Model.Subject)'>@ResourceManager.GetLocalisedString("blogMore", "BlogPages")</a><br/>
+        <a href="@Url.Action("Posts", "Topic", new {id = Model.Id, pagenum = 1,archived = Model.Archived})#comments" data-toggle="tooltip" data-title='@ResourceManager.GetLocalisedString("lblView", "labels") @Html.FormatBbCode(Model.Subject)'><i class="fa fa-comment-o fa-1_5x"></i> Comments</a>
+        @if (replies > 0)
+        {@Html.Raw("(")@replies@Html.Raw(")")}
+
+    </div>
+</div>

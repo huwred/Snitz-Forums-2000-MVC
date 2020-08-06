@@ -1,0 +1,59 @@
+﻿@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model WWW.Models.ProfileEditModel
+<div class="padding-md container-fluid form-horizontal clearfix ">
+    @if (ClassicConfig.GetIntValue("INTALLOWHIDEONLINE") == 1)
+    {
+        <div class="form-group">
+            <div class="col-sm-2"></div>
+            <div class="col-xs-10">
+                <label>
+                    @Html.CheckBoxFor(model => model.Profile.AnonymousUser) @Html.LabelFor(model => model.Profile.AnonymousUser, DisplayOptions.Humanize)
+                </label>
+            </div>
+        </div>
+    }
+    <div class="form-group">
+        <div class="col-sm-2"></div>
+        <div class="col-xs-10">
+
+            @Html.CheckBoxFor(model => model.Profile.ReceiveEmails) @Html.LabelFor(model => model.Profile.ReceiveEmails, DisplayOptions.Humanize)
+
+        </div>
+        @if (ClassicConfig.GetValue("STRSIGNATURES") == "1")
+        {
+            <div class="col-sm-2"></div>
+            <div class="col-xs-10">
+                <label>
+                    @Html.CheckBoxFor(model => model.Profile.ViewSignatures) @Html.LabelFor(model => model.Profile.ViewSignatures, DisplayOptions.Humanize)
+                </label>
+            </div>
+            <div class="col-sm-2"></div>
+            <div class="col-xs-10">
+                <label>
+                    @Html.CheckBoxFor(model => model.Profile.AlwaysUseSignature) @Html.LabelFor(model => model.Profile.AlwaysUseSignature, DisplayOptions.Humanize)
+                </label>
+            </div>
+        }
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Profile.DefaultView, new { @class = "control-label col-sm-2" })
+        <div class="col-sm-4">
+            @Html.EnumDropDownListFor(model => model.Profile.DefaultView, new { @class = "form-control" }, "")
+        </div>
+    </div>
+    @if (ClassicConfig.GetValue("STRSIGNATURES") == "1")
+    {
+        <div class="form-group">
+            @Html.LabelFor(model => model.Profile.Signature, new { @class = "control-label col-sm-2 flip text-left" })
+            <div class="col-sm-9" id="editorDiv">
+                <div class="hidden-sm">@Html.Partial("_EditorBar", Model)</div>
+                <textarea class="form-control bbc-code-editor" rows="6" id="Signature" name="Profile.Signature">@Html.CleanBbCode(Model.Profile.Signature)</textarea>
+            </div>
+        </div>
+    }
+
+    @{ Html.RenderPartial("_FormButtons"); }
+</div>

@@ -1,0 +1,981 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Tables title="Create Forum Tables" applied="false">
+  <Create>
+    <Table name="FORUM_A_TOPICS">
+      <Column name="CAT_ID" type="int" allownulls="false" />
+      <Column name="FORUM_ID" type="int" allownulls="false" />
+      <Column name="TOPIC_ID" type="int" allownulls="false" />
+      <Column name="T_STATUS" type="smallint" allownulls="true" />
+      <Column name="T_MAIL" type="smallint" allownulls="true" />
+      <Column name="T_SUBJECT" type="nvarchar" size="100" allownulls="true" />
+      <Column name="T_MESSAGE" type="memo" allownulls="true" />
+      <Column name="T_AUTHOR" type="int" allownulls="true" />
+      <Column name="T_REPLIES" type="int" allownulls="true" />
+      <Column name="T_UREPLIES" type="int" allownulls="true" />
+      <Column name="T_VIEW_COUNT" type="int" allownulls="true" />
+      <Column name="T_LAST_POST" type="varchar" size="14" allownulls="true" />
+      <Column name="T_DATE" type="varchar" size="14" allownulls="true" />
+      <Column name="T_LAST_POSTER" type="int" allownulls="true" />
+      <Column name="T_IP" type="varchar" size="50" allownulls="true" />
+      <Column name="T_LAST_POST_AUTHOR" type="int" allownulls="true" />
+      <Column name="T_LAST_POST_REPLY_ID" type="int" allownulls="true" />
+      <Column name="T_ARCHIVE_FLAG" type="int" allownulls="true" />
+      <Column name="T_LAST_EDIT" type="varchar" size="14" allownulls="true" />
+      <Column name="T_LAST_EDITBY" type="int" allownulls="true" />
+      <Column name="T_STICKY" type="smallint" allownulls="true" />
+      <Column name="T_SIG" type="smallint" allownulls="true" />
+      <Column name="T_ISPOLL" type="smallint" default="0" allownulls="false" />
+      <Column name="T_POLLSTATUS" type="smallint" default="0" allownulls="false" />
+      <Column action="ADD" name="T_RATING_TOTAL_COUNT" type="int" default="0" allownulls="false" />
+      <Column action="ADD" name="T_RATING_TOTAL" type="int" default="0" allownulls="false" />
+      <Column action="ADD" name="T_ALLOW_RATING" type="int" default="0" allownulls="false" />
+      <Index name="PK_FORUM_A_TOPICID" columns="TOPIC_ID" direction="ASC" unique="true" />
+      <Index name="PK_FORUM_A_TOPIC" columns="CAT_ID,FORUM_ID,TOPIC_ID" direction="ASC" unique="true" />
+    </Table>
+    <Table name="FORUM_A_REPLY">
+      <Column name="CAT_ID" type="int" allownulls="false" />
+      <Column name="FORUM_ID" type="int" allownulls="false" />
+      <Column name="TOPIC_ID" type="int" allownulls="false" />
+      <Column name="REPLY_ID" type="int" allownulls="false" />
+      <Column name="R_MAIL" type="smallint" allownulls="true" />
+      <Column name="R_AUTHOR" type="int" allownulls="true" />
+      <Column name="R_MESSAGE" type="memo" allownulls="true" />
+      <Column name="R_DATE" type="varchar" size="14" allownulls="true" />
+      <Column name="R_IP" type="varchar" size="50" allownulls="true" />
+      <Column name="R_STATUS" type="smallint" allownulls="true" />
+      <Column name="R_LAST_EDIT" type="varchar" size="14" allownulls="true" />
+      <Column name="R_LAST_EDITBY" type="int" allownulls="true" />
+      <Column name="R_SIG" type="smallint" allownulls="true" />
+      <Column name="R_RATING" type="int" default="0" allownulls="false" />
+      <Index name="PK_FORUM_A_REPLYID" columns="REPLY_ID" direction="ASC" unique="true" />
+      <Index name="PK_FORUM_A_REPLY" columns="CAT_ID,FORUM_ID,TOPIC_ID,REPLY_ID" direction="ASC" unique="true" />
+    </Table>
+    <Table name="FORUM_ALLOWED_MEMBERS">
+      <Column name="MEMBER_ID" type="int" allownulls="false" />
+      <Column name="FORUM_ID" type="int" allownulls="false" />
+      <Index name="PK_FORUM_ALLOWED" columns="MEMBER_ID,FORUM_ID" direction="ASC" unique="true" />
+    </Table>
+    <Table name="FORUM_BADWORDS" idfield="B_ID">
+      <Column name="B_BADWORD" type="varchar" size="50" allownulls="false" />
+      <Column name="B_REPLACE" type="varchar" size="50" allownulls="true" />
+      <Index name="IDX_FORUM_BADWORDS" columns="B_BADWORD" direction="ASC" unique="true" />
+    </Table>
+    <Table name="FORUM_CATEGORY" idfield="CAT_ID">
+      <Column name="CAT_STATUS" type="smallint" default="1" allownulls="true" />
+      <Column name="CAT_NAME" type="nvarchar" size="100" allownulls="true" />
+      <Column name="CAT_MODERATION" type="int" allownulls="true" />
+      <Column name="CAT_SUBSCRIPTION" type="int" allownulls="true" />
+      <Column name="CAT_ORDER" type="int" allownulls="true" />
+      <Index name="PK_FORUM_CATEGORY" columns="CAT_ID" direction="ASC" unique="true" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW" idfield="ID">
+      <Column name="C_VARIABLE" type="varchar" size="255" allownulls="false" />
+      <Column name="C_VALUE" type="nvarchar" size="255" allownulls="true" />
+      <Index name="PK_FORUM_CONFIG_NEW" columns="ID,C_VARIABLE" direction="ASC" unique="true" />
+    </Table>
+    <Table name="FORUM_FORUM" idfield="FORUM_ID">
+      <Column name="CAT_ID" type="int" allownulls="false" />
+      <Column name="F_STATUS" type="smallint" default="1" allownulls="false" />
+      <Column name="F_MAIL" type="smallint" default="0" allownulls="false" />
+      <Column name="F_SUBJECT" type="nvarchar" size="100" allownulls="false" />
+      <Column name="F_URL" type="varchar" size="255" allownulls="true" />
+      <Column name="F_DESCRIPTION" type="memo" allownulls="false" />
+      <Column name="F_TOPICS" type="int" default="0" allownulls="false" />
+      <Column name="F_COUNT" type="int" default="0" allownulls="false" />
+      <Column name="F_LAST_POST" type="varchar" size="14" allownulls="true" />
+      <Column name="F_PASSWORD_NEW" type="varchar" size="255" allownulls="true" />
+      <Column name="F_PRIVATEFORUMS" type="int" default="0" allownulls="false" />
+      <Column name="F_TYPE" type="smallint" default="1" allownulls="false" />
+      <Column name="F_IP" type="varchar" size="50" allownulls="true" />
+      <Column name="F_LAST_POST_AUTHOR" type="int" allownulls="true" />
+      <Column name="F_LAST_POST_TOPIC_ID" type="int" allownulls="true" />
+      <Column name="F_LAST_POST_REPLY_ID" type="int" allownulls="true" />
+      <Column name="F_A_TOPICS" type="int" default="0" allownulls="false" />
+      <Column name="F_A_COUNT" type="int" default="0" allownulls="false" />
+      <Column name="F_MODERATION" type="int" default="0" allownulls="false" />
+      <Column name="F_SUBSCRIPTION" type="int" default="0" allownulls="false" />
+      <Column name="F_ORDER" type="int" default="0" allownulls="false" />
+      <Column name="F_DEFAULTDAYS" type="int" default="30" allownulls="false" />
+      <Column name="F_COUNT_M_POSTS" type="smallint" default="1" allownulls="false" />
+      <Column name="F_L_ARCHIVE" type="varchar" size="14" allownulls="true" />
+      <Column name="F_ARCHIVE_SCHED" type="int" default="30" allownulls="false" />
+      <Column name="F_L_DELETE" type="varchar" size="14" allownulls="true" />
+      <Column name="F_DELETE_SCHED" type="int" default="365" allownulls="false" />
+      <Column name="F_POLLS" type="int" default="0" allownulls="false" />
+      <Column name="F_RATING" type="smallint" default="0" allownulls="false" />
+      <Column action="ADD" name="F_POSTAUTH" type="int" default="0" allownulls="false" />
+      <Column action="ADD" name="F_REPLYAUTH" type="int" default="0" allownulls="false" />
+      <Index name="PK_FORUM_FORUM" columns="CAT_ID,FORUM_ID" direction="ASC" unique="true" />
+    </Table>
+    <Table name="FORUM_TOPICS" idfield="TOPIC_ID">
+      <Column name="CAT_ID" type="int" allownulls="false" />
+      <Column name="FORUM_ID" type="int" allownulls="false" />
+      <Column name="T_STATUS" type="smallint" default="1" allownulls="false" />
+      <Column name="T_MAIL" type="smallint" default="0" allownulls="false" />
+      <Column name="T_SUBJECT" type="nvarchar" size="100" allownulls="false" />
+      <Column name="T_MESSAGE" type="memo" allownulls="false" />
+      <Column name="T_AUTHOR" type="int" allownulls="false" />
+      <Column name="T_REPLIES" type="int" default="0" allownulls="false" />
+      <Column name="T_UREPLIES" type="int" default="0" allownulls="false" />
+      <Column name="T_VIEW_COUNT" type="int" default="0" allownulls="false" />
+      <Column name="T_LAST_POST" type="varchar" size="14" allownulls="true" />
+      <Column name="T_DATE" type="varchar" size="14" allownulls="false" />
+      <Column name="T_LAST_POSTER" type="int" allownulls="true" />
+      <Column name="T_IP" type="varchar" size="50" allownulls="true" />
+      <Column name="T_LAST_POST_AUTHOR" type="int" allownulls="true" />
+      <Column name="T_LAST_POST_REPLY_ID" type="int" allownulls="true" />
+      <Column name="T_ARCHIVE_FLAG" type="int" default="1" allownulls="true" />
+      <Column name="T_LAST_EDIT" type="varchar" size="14" default="" allownulls="true" />
+      <Column name="T_LAST_EDITBY" type="int" allownulls="true" />
+      <Column name="T_STICKY" type="smallint" default="0" allownulls="false" />
+      <Column name="T_SIG" type="smallint" default="1" allownulls="false" />
+      <Column name="T_ISPOLL" type="smallint" default="0" allownulls="false" />
+      <Column name="T_POLLSTATUS" type="smallint" default="0" allownulls="false" />
+      <Column action="ADD" name="T_RATING_TOTAL_COUNT" type="int" default="0" allownulls="false" />
+      <Column action="ADD" name="T_RATING_TOTAL" type="int" default="0" allownulls="false" />
+      <Column action="ADD" name="T_ALLOW_RATING" type="int" default="0" allownulls="false" />
+      <Index name="PK_FORUM_TOPICID" columns="TOPIC_ID" direction="ASC" unique="true" />
+      <Index name="PK_FORUM_TOPICS" columns="CAT_ID,FORUM_ID,TOPIC_ID" direction="ASC" unique="true" />
+      <Index name="IDX_FORUM_TOPIC_AUTHOR" columns="T_AUTHOR" direction="ASC" />
+      <Index name="IDX_FORUM_TOPIC_DATE" columns="T_DATE" direction="DESC" />
+    </Table>
+    <Table name="FORUM_REPLY" idfield="REPLY_ID">
+      <Column name="CAT_ID" type="int" allownulls="false" />
+      <Column name="FORUM_ID" type="int" allownulls="false" />
+      <Column name="TOPIC_ID" type="int" allownulls="false" />
+      <Column name="R_MAIL" type="smallint" default="0" allownulls="false" />
+      <Column name="R_AUTHOR" type="int" allownulls="false" />
+      <Column name="R_MESSAGE" type="memo" allownulls="false" />
+      <Column name="R_DATE" type="varchar" size="14" allownulls="false" />
+      <Column name="R_IP" type="varchar" size="50" allownulls="true" />
+      <Column name="R_STATUS" type="smallint" default="1" allownulls="false" />
+      <Column name="R_LAST_EDIT" type="varchar" size="14" allownulls="true" />
+      <Column name="R_LAST_EDITBY" type="int" allownulls="true" />
+      <Column name="R_SIG" type="smallint" default="1" allownulls="false" />
+      <Column name="R_RATING" type="int" default="0" allownulls="false" />
+      <Index name="PK_FORUM_REPLYID" columns="REPLY_ID" direction="ASC" unique="true" />
+      <Index name="PK_FORUM_REPLY" columns="CAT_ID,FORUM_ID,TOPIC_ID,REPLY_ID" direction="ASC" unique="true" />
+      <Index name="IDX_FORUM_REPLY_AUTHOR" columns="R_AUTHOR" direction="ASC" />
+      <Index name="IDX_FORUM_REPLY_DATE" columns="R_DATE" direction="DESC" />
+    </Table>
+    <Table name="FORUM_GROUP_NAMES" idfield="GROUP_ID">
+      <Column name="GROUP_NAME" type="nvarchar" size="50" allownulls="false" />
+      <Column name="GROUP_DESCRIPTION" type="nvarchar" size="255" allownulls="true" />
+      <Column name="GROUP_ICON" type="nvarchar" size="255" allownulls="true" />
+      <Column name="GROUP_IMAGE" type="nvarchar" size="255" allownulls="true" />
+      <Index name="PK_FORUM_GROUPNAMES" columns="GROUP_ID" direction="ASC" unique="true" />
+      <Index name="IDX_FORUM_GROUPNAMES" columns="GROUP_NAME" direction="ASC" unique="true" />
+    </Table>
+    <Table name="FORUM_GROUPS" idfield="GROUP_KEY">
+      <Column name="GROUP_ID" type="int" allownulls="true" />
+      <Column name="GROUP_CATID" type="int" allownulls="true" />
+      <Index name="PK_FORUM_GROUPS" columns="GROUP_KEY" direction="ASC" unique="true" />
+      <Index name="IDX_FORUM_GROUPNAMES_ID" columns="GROUP_ID" direction="ASC" unique="false" />
+    </Table>
+    <Table name="FORUM_MEMBERS" idfield="MEMBER_ID">
+      <Column name="M_STATUS" type="smallint" default="0" allownulls="false" />
+      <Column name="M_NAME" type="nvarchar" size="75" allownulls="false" />
+      <Column name="M_USERNAME" type="nvarchar" size="150" allownulls="true" />
+      <Column name="M_PASSWORD" type="varchar" size="65" allownulls="false" />
+      <Column name="M_EMAIL" type="varchar" size="50" allownulls="false" />
+      <Column name="M_COUNTRY" type="varchar" size="50" allownulls="true" />
+      <Column name="M_HOMEPAGE" type="varchar" size="255" allownulls="true" />
+      <Column name="M_SIG" type="memo" allownulls="true" />
+      <Column name="M_VIEW_SIG" type="smallint" default="1" allownulls="false" />
+      <Column name="M_SIG_DEFAULT" type="smallint" default="1" allownulls="false" />
+      <Column name="M_DEFAULT_VIEW" type="int" default="0" allownulls="false" />
+      <Column name="M_LEVEL" type="smallint" default="1" allownulls="false" />
+      <Column name="M_AIM" type="varchar" size="150" allownulls="true" />
+      <Column name="M_ICQ" type="varchar" size="150" allownulls="true" />
+      <Column name="M_MSN" type="varchar" size="150" allownulls="true" />
+      <Column name="M_YAHOO" type="varchar" size="150" allownulls="true" />
+      <Column name="M_POSTS" type="int" default="0" allownulls="false" />
+      <Column name="M_DATE" type="varchar" size="14" allownulls="false" />
+      <Column name="M_LASTHEREDATE" type="varchar" size="14" allownulls="true" />
+      <Column name="M_LASTPOSTDATE" type="varchar" size="14" allownulls="true" />
+      <Column name="M_TITLE" type="nvarchar" size="50" allownulls="true" />
+      <Column name="M_SUBSCRIPTION" type="smallint" default="0" allownulls="false" />
+      <Column name="M_HIDE_EMAIL" type="smallint" default="1" allownulls="false" />
+      <Column name="M_RECEIVE_EMAIL" type="smallint" default="1" allownulls="false" />
+      <Column name="M_LAST_IP" type="varchar" size="50" allownulls="true" />
+      <Column name="M_IP" type="varchar" size="50" allownulls="true" />
+      <Column name="M_FIRSTNAME" type="nvarchar" size="100" allownulls="true" />
+      <Column name="M_LASTNAME" type="nvarchar" size="100" allownulls="true" />
+      <Column name="M_OCCUPATION" type="nvarchar" size="255" allownulls="true" />
+      <Column name="M_SEX" type="varchar" size="50" allownulls="true" />
+      <Column name="M_AGE" type="varchar" size="10" allownulls="true" />
+      <Column name="M_DOB" type="varchar" size="8" allownulls="true" />
+      <Column name="M_HOBBIES" type="memo" allownulls="true" />
+      <Column name="M_LNEWS" type="memo" allownulls="true" />
+      <Column name="M_QUOTE" type="memo" allownulls="true" />
+      <Column name="M_BIO" type="memo" allownulls="true" />
+      <Column name="M_MARSTATUS" type="varchar" size="100" allownulls="true" />
+      <Column name="M_LINK1" type="varchar" size="255" allownulls="true" />
+      <Column name="M_LINK2" type="varchar" size="255" allownulls="true" />
+      <Column name="M_CITY" type="varchar" size="100" allownulls="true" />
+      <Column name="M_STATE" type="varchar" size="100" allownulls="true" />
+      <Column name="M_PHOTO_URL" type="nvarchar" size="255" allownulls="true" />
+      <Column name="M_KEY" type="varchar" size="32" allownulls="true" />
+      <Column name="M_NEWEMAIL" type="varchar" size="50" allownulls="true" />
+      <Column name="M_PWKEY" type="varchar" size="32" allownulls="true" />
+      <Column name="M_SHA256" type="smallint" default="1" allownulls="false" />
+      <Column name="M_ALLOWEMAIL" type="smallint" default="0" allownulls="false" />
+      <Column name="M_LASTACTIVITY" type="varchar" size="20" allownulls="true" />
+      <Column name="M_PMEMAIL" type="int" default="0" allownulls="false" />
+      <Column name="M_PMRECEIVE" type="int" default="1" allownulls="false" />
+      <Column name="M_PMSAVESENT" type="smallint" default="0" allownulls="false" />
+      <Column name="M_PRIVATEPROFILE" type="smallint" default="0" allownulls="false" />
+      <Index name="PK_FORUM_MEMBERS" columns="MEMBER_ID" direction="ASC" unique="true" />
+      <Index name="IDX_FORUM_MEMBERS_NAME" columns="M_NAME" direction="ASC" unique="true" />
+      <Index name="IDX_FORUM_MEMBERS_FIRSTNAME" columns="M_FIRSTNAME" direction="ASC" />
+      <Index name="IDX_FORUM_MEMBERS_EMAIL" columns="M_EMAIL" direction="ASC" />
+    </Table>
+    <Table name="FORUM_MODERATOR" idfield="MOD_ID">
+      <Column name="FORUM_ID" type="int" allownulls="false" />
+      <Column name="MEMBER_ID" type="int" allownulls="false" />
+      <Column name="MOD_TYPE" type="smallint" allownulls="true" />
+      <Index name="PK_FORUM_MODERATOR" columns="MOD_ID" direction="ASC" unique="true" />
+      <Index name="IDX_FORUM_MODERATOR" columns="FORUM_ID,MEMBER_ID" direction="ASC" />
+    </Table>
+    <Table name="FORUM_NAMEFILTER" idfield="N_ID">
+      <Column name="N_NAME" type="nvarchar" size="75" allownulls="false" />
+      <Index name="PK_FORUM_NAMEFILTER" columns="N_NAME" direction="ASC" unique="true" />
+    </Table>
+    <Table name="FORUM_SUBSCRIPTIONS" idfield="SUBSCRIPTION_ID">
+      <Column name="MEMBER_ID" type="int" allownulls="false" />
+      <Column name="CAT_ID" type="int" allownulls="false" />
+      <Column name="FORUM_ID" type="int" allownulls="false" />
+      <Column name="TOPIC_ID" type="int" allownulls="false" />
+      <Index name="PK_FORUM_SUBS" columns="SUBSCRIPTION_ID" direction="ASC" unique="true" />
+      <Index name="IDX_FORUM_SUBS_MEMBER" columns="MEMBER_ID" direction="ASC" unique="false" />
+    </Table>
+    <Table name="FORUM_TOTALS">
+      <Column name="COUNT_ID" type="smallint" default="0" allownulls="false" />
+      <Column name="P_COUNT" type="int" default="0" allownulls="false" />
+      <Column name="P_A_COUNT" type="int" default="0" allownulls="false" />
+      <Column name="T_COUNT" type="int" default="0" allownulls="false" />
+      <Column name="T_A_COUNT" type="int" default="0" allownulls="false" />
+      <Column name="U_COUNT" type="int" default="0" allownulls="false" />
+    </Table>
+    <Table name="FORUM_RANKING">
+      <Column name="RANK_ID" type="int" allownulls="false" />
+      <Column name="R_TITLE" type="nvarchar" size="100" allownulls="false" />
+      <Column name="R_IMAGE" type="varchar" size="50" allownulls="false" />
+      <Column name="R_POSTS" type="int" allownulls="true" />
+      <Column name="R_IMG_REPEAT" type="int" allownulls="false" default="1" />
+    </Table>
+    <Table name="FORUM_PM" idfield="M_ID">
+      <Column name="M_SUBJECT" type="nvarchar" size="100" allownulls="false" />
+      <Column name="M_FROM" type="int" allownulls="false" />
+      <Column name="M_TO" type="int" allownulls="false" />
+      <Column name="M_SENT" type="varchar" size="50" allownulls="true" />
+      <Column name="M_MESSAGE" type="nvarchar" size="4000" allownulls="true" />
+      <Column name="M_PMCOUNT" type="varchar" size="50" allownulls="true" />
+      <Column name="M_READ" type="int" allownulls="false" />
+      <Column name="M_MAIL" type="varchar" size="50" allownulls="true" />
+      <Column name="M_OUTBOX" type="smallint" allownulls="false" />
+      <Column name="PM_DEL_FROM" type="int" default="0" allownulls="false" />
+      <Column name="PM_DEL_TO" type="int" default="0" allownulls="false" />
+      <Index name="PK_FORUM_PM" columns="M_ID" direction="ASC" unique="true" />
+      <Index name="PK_FORUM_PM_SENT" columns="M_SENT" direction="ASC" unique="false" />
+    </Table>
+    <Table name="FORUM_PM_BLOCKLIST" idfield="BL_ID">
+      <Column name="BL_MEMBER_ID" type="int" allownulls="false" />
+      <Column name="BL_BLOCKED_ID" type="int" allownulls="false" />
+      <Column name="BL_BLOCKED_NAME" type="nvarchar" size="100" allownulls="false" />
+      <Index name="IDX_PM_BLOCKED" columns="BL_MEMBER_ID" direction="ASC" unique="false" />
+    </Table>
+    <Table name="FORUM_SPAM_MAIL" idfield="SPAM_ID">
+      <Column name="SPAM_SERVER" type="varchar" size="255" allownulls="false" />
+      <Index name="PK_FORUM_SPAM" columns="SPAM_ID" direction="ASC" unique="true" />
+    </Table>
+    <Table name="webpages_Membership">
+      <Column name="UserId" type="int" allownulls="false" />
+      <Column name="CreateDate" type="datetime" allownulls="true" />
+      <Column name="ConfirmationToken" type="nvarchar" size="128" allownulls="true" />
+      <Column name="IsConfirmed" type="bit" allownulls="true" />
+      <Column name="LastPasswordFailureDate" type="datetime" allownulls="true" />
+      <Column name="PasswordFailuresSinceLastSuccess" type="int" allownulls="false" />
+      <Column name="Password" type="nvarchar" size="128" allownulls="false" />
+      <Column name="PasswordChangedDate" type="datetime" allownulls="true" />
+      <Column name="PasswordSalt" type="nvarchar" size="128" allownulls="false" />
+      <Column name="PasswordVerificationToken" type="nvarchar" size="128" allownulls="true" />
+      <Column name="PasswordVerificationTokenExpirationDate" type="datetime" allownulls="true" />
+    </Table>
+    <Table name="webpages_Roles" idfield="RoleId">
+      <Column name="RoleName" type="nvarchar" size="256" allownulls="false" />
+    </Table>
+    <Table name="webpages_UsersInRoles">
+      <Column name="UserId" type="int" allownulls="false" />
+      <Column name="RoleId" type="int" allownulls="false" />
+      <Index name="PK_USER_ROLES" columns="UserId,RoleId" direction="ASC" unique="true" />
+    </Table>
+    <Table name="FORUM_POLLS" idfield="POLL_ID">
+      <Column name="CAT_ID" type="int" allownulls="false" />
+      <Column name="FORUM_ID" type="int" allownulls="false" />
+      <Column name="TOPIC_ID" type="int" allownulls="false" />
+      <Column name="P_WHOVOTES" type="varchar" size="50" default="All" allownulls="true" />
+      <Column name="P_LASTVOTE" type="varchar" size="14" allownulls="true" />
+      <Column name="P_QUESTION" type="nvarchar" size="255" allownulls="false" />
+    </Table>
+    <Table name="FORUM_POLL_ANSWERS" idfield="POLLANSWER_ID">
+      <Column name="POLL_ID" type="int" allownulls="false" />
+      <Column name="POLLANSWER_LABEL" type="nvarchar" size="255" default="" allownulls="false" />
+      <Column name="POLLANSWER_ORDER" type="int" default="0" allownulls="false" />
+      <Column name="POLLANSWER_COUNT" type="int" default="0" allownulls="false" />
+    </Table>
+    <Table name="FORUM_POLL_VOTES" idfield="POLLVOTES_ID">
+      <Column name="POLL_ID" type="int" allownulls="false" />
+      <Column name="CAT_ID" type="int" allownulls="false" />
+      <Column name="FORUM_ID" type="int" allownulls="false" />
+      <Column name="TOPIC_ID" type="int" allownulls="false" />
+      <Column name="MEMBER_ID" type="int" default="0" allownulls="false" />
+      <Column name="GUEST_VOTE" type="int" default="0" allownulls="false" />
+    </Table>
+    <Table name="LANGUAGE_RES" idfield="pk">
+      <Column name="ResourceId" type="varchar" size="100" allownulls="false" />
+      <Column name="Value" type="memo" allownulls="false" />
+      <Column name="Culture" type="varchar" size="6" allownulls="false" />
+      <Column name="Type" type="varchar" size="32" allownulls="true" />
+      <Column name="ResourceSet" type="varchar" size="256" allownulls="false" />
+      <Index name="PK_LANGUAGE_RES" columns="ResourceSet,ResourceId,Culture" direction="ASC" unique="true" />
+    </Table>
+    <Table name="TOPIC_RATINGS" idfield="RATING">
+      <Column name="RATINGS_BYMEMBER_ID" type="int" default="0" allownulls="false" />
+      <Column name="RATINGS_TOPIC_ID" type="int" default="0" allownulls="false" />
+    </Table>
+  </Create>
+  <Insert>
+    <Table name="FORUM_TOTALS">
+      <Column name="COUNT_ID" type="smallint" value="1" />
+      <Column name="P_COUNT" type="int" value="0" />
+      <Column name="P_A_COUNT" type="int" value="0" />
+      <Column name="T_COUNT" type="int" value="0" />
+      <Column name="T_A_COUNT" type="int" value="0" />
+      <Column name="U_COUNT" type="int" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRVERSION" />
+      <Column name="C_VALUE" type="nvarchar" value="1.0.0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRFORUMTITLE" />
+      <Column name="C_VALUE" type="nvarchar" value="Snitz Forums MVC" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRCOPYRIGHT" />
+      <Column name="C_VALUE" type="nvarchar" value="2016-{0} Snitz Communications" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRIMAGEURL" />
+      <Column name="C_VALUE" type="nvarchar" value="/Content/images" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRTITLEIMAGE" />
+      <Column name="C_VALUE" type="nvarchar" value="logo.png" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRHOMEURL" />
+      <Column name="C_VALUE" type="nvarchar" value="../" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRFORUMURL" />
+      <Column name="C_VALUE" type="nvarchar" value="http://www.yourdomain.com/forum/" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRAUTHTYPE" />
+      <Column name="C_VALUE" type="nvarchar" value="db" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRSETCOOKIETOFORUM" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STREMAIL" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRUNIQUEEMAIL" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <!--<Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRMAILMODE" />
+      <Column name="C_VALUE" type="varchar" value="cdonts" />
+    </Table>-->
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRDATETYPE" />
+      <Column name="C_VALUE" type="nvarchar" value="mdy" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRTIMETYPE" />
+      <Column name="C_VALUE" type="nvarchar" value="24" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRTIMEADJUSTLOCATION" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRMOVETOPICMODE" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRPRIVATEFORUMS" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRSHOWMODERATORS" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRSHOWRANK" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRHIDEEMAIL" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRIPLOGGING" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRALLOWFORUMCODE" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRIMGINPOSTS" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRALLOWHTML" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRSECUREADMIN" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRNOCOOKIES" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STREDITEDBYDATE" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRHOTTOPIC" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="INTHOTTOPICNUM" />
+      <Column name="C_VALUE" type="nvarchar" value="20" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRHOMEPAGE" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRAIM" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRICQ" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRMSN" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRYAHOO" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRICONS" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRGFXBUTTONS" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRBADWORDFILTER" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRUSERNAMEFILTER" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRDEFAULTFONTFACE" />
+      <Column name="C_VALUE" type="nvarchar" value="Verdana, Arial, Helvetica" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRDEFAULTFONTSIZE" />
+      <Column name="C_VALUE" type="nvarchar" value="2" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRFOOTERFONTSIZE" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRSIGNATURES" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRDSIGNATURES" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRSHOWSTATISTICS" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRSHOWIMAGEPOWEREDBY" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRLOGONFORMAIL" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRSHOWPAGING" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRSHOWTOPICNAV" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRPAGESIZE" />
+      <Column name="C_VALUE" type="nvarchar" value="15" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRPAGENUMBERSIZE" />
+      <Column name="C_VALUE" type="nvarchar" value="10" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRFULLNAME" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRPICTURE" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRSEX" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRCITY" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRSTATE" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRAGE" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRAGEDOB" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRMINAGE" />
+      <Column name="C_VALUE" type="nvarchar" value="13" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRCOUNTRY" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STROCCUPATION" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRFAVLINKS" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRBIO" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRHOBBIES" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRLNEWS" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRQUOTE" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRMARSTATUS" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRRECENTTOPICS" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRMOVENOTIFY" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRSUBSCRIPTION" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRMODERATION" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRARCHIVESTATE" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRFLOODCHECK" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRFLOODCHECKTIME" />
+      <Column name="C_VALUE" type="nvarchar" value="30" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STREMAILVAL" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRJUMPLASTPOST" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRSTICKYTOPIC" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRSHOWSENDTOFRIEND" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRSHOWPRINTERFRIENDLY" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRPROHIBITNEWMEMBERS" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRREQUIREREG" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRRESTRICTREG" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRGROUPCATEGORIES" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRSHOWSMILIESTABLE" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRSHOWQUICKREPLY" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRREQAIM" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRREQICQ" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRREQMSN" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRREQYAHOO" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRREQFULLNAME" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRREQPICTURE" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRREQCITY" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRREQSTATE" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRREQAGE" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRREQAGEDOB" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRREQHOMEPAGE" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRREQCOUNTRY" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRREQOCCUPATION" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRREQBIO" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRREQHOBBIES" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRREQLNEWS" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRREQQUOTE" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRREQMARSTATUS" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRREQFAVLINKS" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="INTMAXPOSTSTOEMAIL" />
+      <Column name="C_VALUE" type="nvarchar" value="10" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRNOMAXPOSTSTOEMAIL" />
+      <Column name="C_VALUE" type="nvarchar" value="You do not have enough posts to email other members. If you feel that you have received this message in error, please contact the forum administrator." />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRFILTEREMAILADDRESSES" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRPMLIMIT" />
+      <Column name="C_VALUE" type="nvarchar" value="50" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRPMSTATUS" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRSHOWFORMATBUTTONS" />
+      <Column name="C_VALUE" type="nvarchar" value="1" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRREQSEX" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRPMATTACH" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRPMSIG" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="INTMAXIMAGESIZE" />
+      <Column name="C_VALUE" type="nvarchar" value="5" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="INTMAXFILESIZE" />
+      <Column name="C_VALUE" type="nvarchar" value="5" />
+    </Table>
+    <Table name="FORUM_RANKING">
+      <Column name="RANK_ID" value="0" />
+      <Column name="R_TITLE" value="Administrator" type="nvarchar" />
+      <Column name="R_IMAGE" value="icon_star_gold.gif" type="varchar" />
+      <Column name="R_POSTS" value="0" />
+      <Column name="R_IMG_REPEAT" value="5" />
+    </Table>
+    <Table name="FORUM_RANKING">
+      <Column name="RANK_ID" value="1" />
+      <Column name="R_TITLE" value="Moderator" type="nvarchar" />
+      <Column name="R_IMAGE" value="icon_star_silver.gif" type="varchar" />
+      <Column name="R_POSTS" value="0" />
+      <Column name="R_IMG_REPEAT" value="5" />
+    </Table>
+    <Table name="FORUM_RANKING">
+      <Column name="RANK_ID" value="2" />
+      <Column name="R_TITLE" value="Starting Member" type="nvarchar" />
+      <Column name="R_IMAGE" value="icon_star_bronze.gif" type="varchar" />
+      <Column name="R_POSTS" value="0" />
+      <Column name="R_IMG_REPEAT" value="1" />
+    </Table>
+    <Table name="FORUM_RANKING">
+      <Column name="RANK_ID" value="3" />
+      <Column name="R_TITLE" value="New Member" type="nvarchar" />
+      <Column name="R_IMAGE" value="icon_star_orange.gif" type="varchar" />
+      <Column name="R_POSTS" value="50" />
+      <Column name="R_IMG_REPEAT" value="1" />
+    </Table>
+    <Table name="FORUM_RANKING">
+      <Column name="RANK_ID" value="4" />
+      <Column name="R_TITLE" value="Junior Member" type="nvarchar" />
+      <Column name="R_IMAGE" value="icon_star_cyan.gif" type="varchar" />
+      <Column name="R_POSTS" value="100" />
+      <Column name="R_IMG_REPEAT" value="2" />
+    </Table>
+    <Table name="FORUM_RANKING">
+      <Column name="RANK_ID" value="5" />
+      <Column name="R_TITLE" value="Average Member" type="nvarchar" />
+      <Column name="R_IMAGE" value="icon_star_blue.gif" type="varchar" />
+      <Column name="R_POSTS" value="500" />
+      <Column name="R_IMG_REPEAT" value="3" />
+    </Table>
+    <Table name="FORUM_RANKING">
+      <Column name="RANK_ID" value="6" />
+      <Column name="R_TITLE" value="Senior Member" type="nvarchar" />
+      <Column name="R_IMAGE" value="icon_star_purple.gif" type="varchar" />
+      <Column name="R_POSTS" value="500" />
+      <Column name="R_IMG_REPEAT" value="4" />
+    </Table>
+    <Table name="FORUM_RANKING">
+      <Column name="RANK_ID" value="7" />
+      <Column name="R_TITLE" value="Advanced Member" type="nvarchar" />
+      <Column name="R_IMAGE" value="icon_star_silver.gif" type="varchar" />
+      <Column name="R_POSTS" value="2000" />
+      <Column name="R_IMG_REPEAT" value="5" />
+    </Table>
+    <Table name="FORUM_BADWORDS">
+      <Column name="B_BADWORD" value="fuck" type="nvarchar" />
+      <Column name="B_REPLACE" value="****" type="varchar" />
+    </Table>
+    <Table name="FORUM_BADWORDS">
+      <Column name="B_BADWORD" value="wank" type="nvarchar" />
+      <Column name="B_REPLACE" value="****" type="varchar" />
+    </Table>
+    <Table name="FORUM_BADWORDS">
+      <Column name="B_BADWORD" value="shit" type="nvarchar" />
+      <Column name="B_REPLACE" value="****" type="varchar" />
+    </Table>
+    <Table name="FORUM_BADWORDS">
+      <Column name="B_BADWORD" value="pussy" type="nvarchar" />
+      <Column name="B_REPLACE" value="*****" type="varchar" />
+    </Table>
+    <Table name="FORUM_BADWORDS">
+      <Column name="B_BADWORD" value="cunt" type="nvarchar" />
+      <Column name="B_REPLACE" value="****" type="varchar" />
+    </Table>
+    <Table name="FORUM_NAMEFILTER">
+      <Column name="N_NAME" value="Admin" type="nvarchar" />
+    </Table>
+    <Table name="FORUM_NAMEFILTER">
+      <Column name="N_NAME" value="snitz" type="nvarchar" />
+    </Table>
+    <Table name="FORUM_NAMEFILTER">
+      <Column name="N_NAME" value="webmaster" type="nvarchar" />
+    </Table>
+    <Table name="FORUM_NAMEFILTER">
+      <Column name="N_NAME" value="shit" type="nvarchar" />
+    </Table>
+    <Table name="FORUM_NAMEFILTER">
+      <Column name="N_NAME" value="kickass" type="nvarchar" />
+    </Table>
+    <Table name="FORUM_NAMEFILTER">
+      <Column name="N_NAME" value="nigga" type="nvarchar" />
+    </Table>
+    <Table name="FORUM_NAMEFILTER">
+      <Column name="N_NAME" value="nigger" type="nvarchar" />
+    </Table>
+    <Table name="FORUM_NAMEFILTER">
+      <Column name="N_NAME" value="smartass" type="nvarchar" />
+    </Table>
+    <Table name="FORUM_NAMEFILTER">
+      <Column name="N_NAME" value="jackass" type="nvarchar" />
+    </Table>
+    <Table name="FORUM_NAMEFILTER">
+      <Column name="N_NAME" value="dumbass" type="nvarchar" />
+    </Table>
+    <Table name="FORUM_NAMEFILTER">
+      <Column name="N_NAME" value="anal" type="nvarchar" />
+    </Table>
+    <Table name="FORUM_NAMEFILTER">
+      <Column name="N_NAME" value="secretion" type="nvarchar" />
+    </Table>
+    <Table name="FORUM_NAMEFILTER">
+      <Column name="N_NAME" value="microsoft" type="nvarchar" />
+    </Table>
+    <Table name="FORUM_NAMEFILTER">
+      <Column name="N_NAME" value="fart" type="nvarchar" />
+    </Table>
+    <Table name="FORUM_NAMEFILTER">
+      <Column name="N_NAME" value="whore" type="nvarchar" />
+    </Table>
+    <Table name="FORUM_NAMEFILTER">
+      <Column name="N_NAME" value="suck" type="nvarchar" />
+    </Table>
+    <Table name="FORUM_NAMEFILTER">
+      <Column name="N_NAME" value="forum" type="nvarchar" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="INTPOLLS" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="INTFEATUREDPOLL" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="INTFEATUREDPOLLID" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="INTFPOLLWINDOW" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="INTFPOLLTABLE" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="INTHIDEPOLL" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="INTMAXVOTES" />
+      <Column name="C_VALUE" type="nvarchar" value="8" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="INTACTIVETOTAL" />
+      <Column name="C_VALUE" type="nvarchar" value="0" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRACTIVETOTAL" />
+      <Column name="C_VALUE" type="nvarchar" value="" />
+    </Table>
+    <Table name="FORUM_CONFIG_NEW">
+      <Column name="C_VARIABLE" type="varchar" value="STRCAPTCHAOPERATORS" />
+      <Column name="C_VALUE" type="nvarchar" value="Plus;Minus" />
+    </Table>
+  </Insert>
+</Tables>

@@ -1,0 +1,34 @@
+﻿@using LangResources.Utility
+
+@model WWW.ViewModels.AdminModeratorsViewModel
+
+@{
+    ViewBag.PageTitle = "Moderator Configuration";
+    ViewBag.ActivePage = ResourceManager.GetLocalisedString("mnuAdminModerators", "labels");
+    //Layout = "~/Views/Admin/_Layout.cshtml";
+}
+    @using (Html.BeginForm())
+    {
+        <div class="panel panel-primary panel-body clearfix ">
+            <div class="row padding-lg">
+                <div class="col-sm-4">
+                    <div class="form-group padding-lg">
+                        <label class="control-label">Choose forum to view list of moderators</label>
+                        @Html.DropDownListFor(model => model.ForumId, new SelectList(Model.ForumList, "Key", "Value"), new {@class = "form-control getModerators"})
+                    </div>
+                    <div class="form-group padding-lg">
+                            <div class="panel panel-info panel-body text-muted">
+                                <p>Use CTRL + Mouse click to select/deselect users in the list</p>
+                                <p>Use the RESET button to revert back to the current list of moderators for the forum.</p>
+                                <p>When all the moderators for the forum are selected, press the SAVE CHANGES button.</p>
+                            </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-8" id="forum-moderators">
+                    @Html.Partial("_Moderators")
+                </div>
+                    
+            </div>
+        </div>
+    }

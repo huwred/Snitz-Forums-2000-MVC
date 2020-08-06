@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AdCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Advertisements>
+    <Ad>
+      <ID>dbd38eda-cac4-4c30-8da6-a26cb2358bac</ID>
+      <Impressions>425</Impressions>
+      <Width>0</Width>
+      <Height>0</Height>
+      <ImageUrl>banner_240x400.gif</ImageUrl>
+      <NavigateUrl>http://test.com</NavigateUrl>
+      <AlternateText>test 2 </AlternateText>
+      <Keyword>side</Keyword>
+      <Weight>5</Weight>
+      <Clicks>0</Clicks>
+    </Ad>
+    <Ad>
+      <ID>e9af2cb5-389b-4ee2-9171-a5971b6e2fbc</ID>
+      <Impressions>1085</Impressions>
+      <Width>0</Width>
+      <Height>0</Height>
+      <ImageUrl>banner_336x280.gif</ImageUrl>
+      <NavigateUrl>http://test.com</NavigateUrl>
+      <AlternateText>new</AlternateText>
+      <Keyword>side</Keyword>
+      <Weight>10</Weight>
+      <Clicks>1</Clicks>
+    </Ad>
+    <Ad>
+      <ID>b5cd64e9-e244-4463-b3f5-20ff87630532</ID>
+      <Impressions>641</Impressions>
+      <Width>468</Width>
+      <Height>60</Height>
+      <ImageUrl>banner_728x90.gif</ImageUrl>
+      <NavigateUrl>http://test.com</NavigateUrl>
+      <AlternateText>top test</AlternateText>
+      <Keyword>top</Keyword>
+      <Weight>5</Weight>
+      <Clicks>0</Clicks>
+    </Ad>
+    <Ad>
+      <ID>f7f2de76-1d9a-47e6-bb0b-e6fbcc3bc780</ID>
+      <Impressions>1082</Impressions>
+      <Width>0</Width>
+      <Height>0</Height>
+      <ImageUrl>banner.jpg</ImageUrl>
+      <NavigateUrl>http://test.com</NavigateUrl>
+      <Keyword>side</Keyword>
+      <Weight>10</Weight>
+      <Clicks>1</Clicks>
+    </Ad>
+    <Ad>
+      <ID>648daf9d-32d0-4635-a9d7-315d5be52de4</ID>
+      <Impressions>533</Impressions>
+      <Width>0</Width>
+      <Height>0</Height>
+      <ImageUrl>logo_468x60.gif</ImageUrl>
+      <NavigateUrl>http://test.com</NavigateUrl>
+      <Keyword>side</Keyword>
+      <Weight>5</Weight>
+      <Clicks>0</Clicks>
+    </Ad>
+  </Advertisements>
+</AdCollection>

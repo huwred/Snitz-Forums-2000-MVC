@@ -1,0 +1,942 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7D57ED30-D065-4A29-9A59-CACDC3871B54}</ProjectGuid>
+    <ProjectTypeGuids>{349C5851-65DF-11DA-9384-00065B846F21};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <RootNamespace>WWW</RootNamespace>
+    <AssemblyName>WWW</AssemblyName>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <SynchReleaseVersion>false</SynchReleaseVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <Use64BitIISExpress />
+    <IISExpressSSLPort>50093</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
+    <UseGlobalApplicationHostFile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Hangfire.MySql, Version=0.0.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Hangfire.MySql.0.0.7\lib\net45\Hangfire.MySql.dll</HintPath>
+    </Reference>
+    <Reference Include="linq2db, Version=1.0.7.3, Culture=neutral, PublicKeyToken=f19f8aed7feff67e, processorArchitecture=MSIL">
+      <HintPath>..\packages\linq2db.1.0.7.3\lib\net45\linq2db.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data, Version=6.10.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.6.10.9\lib\net452\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data.Entity.EF6, Version=6.10.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.Entity.6.10.9\lib\net452\MySql.Data.Entity.EF6.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Web, Version=6.10.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Web.6.10.9\lib\net452\MySql.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.7\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Cors, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Cors.5.2.7\lib\net45\System.Web.Cors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.7\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.Cors, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Cors.5.2.7\lib\net45\System.Web.Http.Cors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Web.Razor">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.7\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Helpers">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.7\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="WebMatrix.Data">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.Data.3.2.6\lib\net45\WebMatrix.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="WebMatrix.WebData">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.WebData.3.2.6\lib\net45\WebMatrix.WebData.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Antlr3.Runtime">
+      <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="WebGrease">
+      <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="RazorEngine">
+      <HintPath>..\packages\RazorEngine.3.10.0\lib\net45\RazorEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Hangfire.Core">
+      <HintPath>..\packages\Hangfire.Core.1.6.17\lib\net45\Hangfire.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="CreativeMinds.StopForumSpam">
+      <HintPath>..\packages\StopForumSpam.Net.0.5.0\lib\net40\CreativeMinds.StopForumSpam.dll</HintPath>
+    </Reference>
+    <Reference Include="HtmlAgilityPack">
+      <HintPath>..\packages\HtmlAgilityPack.1.8.10\lib\Net45\HtmlAgilityPack.dll</HintPath>
+    </Reference>
+    <Reference Include="Sparc.TagCloud">
+      <HintPath>..\packages\Sparc.TagCloud.0.0.1\lib\net40\Sparc.TagCloud.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="ImageResizer">
+      <HintPath>..\packages\ImageResizer.4.2.5\lib\net45\ImageResizer.dll</HintPath>
+    </Reference>
+    <Reference Include="WebActivatorEx">
+      <HintPath>..\packages\WebActivatorEx.2.2.0\lib\net40\WebActivatorEx.dll</HintPath>
+    </Reference>
+    <Reference Include="RazorGenerator.Mvc">
+      <HintPath>..\packages\RazorGenerator.Mvc.2.0.0\lib\net40\RazorGenerator.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\packages\ICSharpCode.SharpZipLib.dll.0.85.4.369\lib\net20\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Hangfire.SqlServer">
+      <HintPath>..\packages\Hangfire.SqlServer.1.6.17\lib\net45\Hangfire.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin">
+      <HintPath>..\packages\Microsoft.Owin.3.0.0\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.3.0.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Dapper">
+      <HintPath>..\packages\Dapper.1.42\lib\net45\Dapper.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentAssertions.Core">
+      <HintPath>..\packages\FluentAssertions.4.1.0\lib\net45\FluentAssertions.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentAssertions">
+      <HintPath>..\packages\FluentAssertions.4.1.0\lib\net45\FluentAssertions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security">
+      <HintPath>..\packages\Microsoft.Owin.Security.2.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="Newtonsoft.Json.Bson">
+      <HintPath>..\packages\Newtonsoft.Json.Bson.1.0.1\lib\net45\Newtonsoft.Json.Bson.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Annotations">
+      <HintPath>..\packages\System.ComponentModel.Annotations.4.5.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Linq">
+      <HintPath>..\packages\System.Linq.4.3.0\lib\net463\System.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Linq.Expressions">
+      <HintPath>..\packages\System.Linq.Expressions.4.3.0\lib\net463\System.Linq.Expressions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection">
+      <HintPath>..\packages\System.Reflection.4.3.0\lib\net462\System.Reflection.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Data.OracleClient" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="Microsoft.AspNet.SignalR.Core">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.4.1\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.4.1\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Westwind.Utilities">
+      <HintPath>..\packages\Westwind.Utilities.3.0.18\lib\net45\Westwind.Utilities.dll</HintPath>
+    </Reference>
+    <Reference Include="Westwind.Web">
+      <HintPath>..\packages\Westwind.Web.2.80.0\lib\net45\Westwind.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="Westwind.Web.Mvc">
+      <HintPath>..\packages\Westwind.Web.Mvc.2.80.0\lib\net45\Westwind.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="RouteDebugger">
+      <HintPath>..\packages\routedebugger.2.1.5\lib\net40\RouteDebugger.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Content\Avatar\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\RssFeedController.cs" />
+    <Compile Include="Controllers\RssWidgetController.cs" />
+    <Compile Include="Controllers\SiteMapController.cs" />
+    <Compile Include="Controllers\TagCloudController.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\CommonController.cs" />
+    <Compile Include="Controllers\SetupController.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\SetupViewModel.cs" />
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="Controllers\JavaScriptSettingsController.cs" />
+    <Compile Include="Filters\ExternalJavaScriptFileAttribute.cs" />
+    <Compile Include="Filters\CookieConsentAttribute.cs" />
+    <Compile Include="ViewModels\HomeViewModel.cs" />
+    <Compile Include="ViewModels\AdminViewModel.cs" />
+    <Compile Include="ViewModels\AdminRolesViewModel.cs" />
+    <Compile Include="Views\Helpers\HtmlHelpers.cs" />
+    <Compile Include="Views\Helpers\ApplicationHelpers.cs" />
+    <Compile Include="Views\Helpers\RankInfo.cs" />
+    <Compile Include="ViewModels\PostMessageViewModel.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="Filters\HandleErrorShowPopUpFilter.cs" />
+    <Compile Include="Helpers\ILoggercs.cs" />
+    <Compile Include="Helpers\RouteUtils.cs" />
+    <Compile Include="Helpers\CustomAssemblyResolver.cs" />
+    <Compile Include="Helpers\PartialViewSerializer.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="Models\AccountModels.cs" />
+    <Compile Include="ViewModels\ForumViewModel.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AdController.cs" />
+    <Compile Include="Controllers\AvatarController.cs" />
+    <Compile Include="Controllers\CategoryController.cs" />
+    <Compile Include="Controllers\ChartController.cs" />
+    <Compile Include="Controllers\FilesController.cs" />
+    <Compile Include="Controllers\HelpController.cs" />
+    <Compile Include="Controllers\LangResourceController.cs" />
+    <Compile Include="Controllers\PollsController.cs" />
+    <Compile Include="ViewModels\ActiveTopicsViewModel.cs" />
+    <Compile Include="ViewModels\AdminBannersViewModel.cs" />
+    <Compile Include="ViewModels\AdminCreateUserViewModel.cs" />
+    <Compile Include="ViewModels\ArchivesViewModel.cs" />
+    <Compile Include="ViewModels\FilesViewModel.cs" />
+    <Compile Include="ViewModels\LangViewModel.cs" />
+    <Compile Include="ViewModels\PendingMemberViewModel.cs" />
+    <Compile Include="ViewModels\PollViewModel.cs" />
+    <Compile Include="ViewModels\PrivateMessageViewModel.cs" />
+    <Compile Include="ViewModels\ResTranslateViewModel.cs" />
+    <Compile Include="ViewModels\SearchViewModel.cs" />
+    <Compile Include="ViewModels\TopicViewModel.cs" />
+    <Compile Include="ViewModels\UserProfileViewModel.cs" />
+    <Compile Include="Controllers\EmailController.cs" />
+    <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\ForumController.cs" />
+    <Compile Include="Controllers\PrivateMessageController.cs" />
+    <Compile Include="Controllers\ReplyController.cs" />
+    <Compile Include="Filters\HangfireAuthorizationFilter.cs" />
+    <Compile Include="Filters\InitialiseMembershipAttribute.cs" />
+    <Compile Include="Filters\IPBlacklist.cs" />
+    <Compile Include="Filters\IsCurrentDomainAttribute.cs" />
+    <Compile Include="Filters\PreventSpamAttribute.cs" />
+    <Compile Include="Filters\RedirectAspPermanentRoute.cs" />
+    <Compile Include="Filters\RssActionResult.cs" />
+    <Compile Include="Filters\TimingModule.cs" />
+    <Compile Include="Filters\UtilityFilters.cs" />
+    <Compile Include="Models\CategoryFilter.cs" />
+    <Compile Include="Models\OfflineModel.cs" />
+    <Compile Include="Models\RssFeed.cs" />
+    <Compile Include="Controllers\TopicController.cs" />
+    <Compile Include="Models\PayPalListenerModel.cs" />
+    <Compile Include="Models\ExplorerModel.cs" />
+    <Compile Include="App_Start\PluginLoader.cs" />
+    <Compile Include="Controllers\PayPalController.cs" />
+    <Compile Include="Models\PaypalModels.cs" />
+    <Compile Include="Models\PaypalRepository.cs" />
+    <Compile Include="Models\FileManager.cs" />
+    <Compile Include="Controllers\WebFileManager.cs" />
+    <Compile Include="App_Start\startup.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\bootstrapnews.css" />
+    <Content Include="Content\print.css" />
+    <Content Include="Content\print.min.css" />
+    <Content Include="Content\snitz.avatar-rtl.css" />
+    <Content Include="Content\snitz.avatar-rtl.min.css" />
+    <Content Include="Content\snitz.avatar.css" />
+    <Content Include="Content\snitz.avatar.min.css" />
+    <Content Include="Content\stylesheetrtl.css" />
+    <Content Include="Content\stylesheetrtl.min.css" />
+    <Content Include="favicon.ico" />
+    <Content Include="LinqToDB.Templates\CopyMe.MySql.tt.txt" />
+    <Content Include="Scripts\snitz.cal.js" />
+    <Content Include="Scripts\snitz.extendedprofile.js" />
+    <Content Include="Scripts\snitz.photoalbum.min.js" />
+    <Content Include="Views\Web.config" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Global.asax" />
+    <Content Include="packages.config" />
+    <Content Include="web.config" />
+    <Content Include="snitz.config" />
+    <Content Include="Views\Setup\Index.cshtml" />
+    <Content Include="Views\Setup\Upgrade.cshtml" />
+    <Content Include="Views\Setup\Setup.cshtml" />
+    <Content Include="Views\Setup\Finished.cshtml" />
+    <Content Include="Views\Shared\_LayoutNoMenu.cshtml" />
+    <Content Include="Views\Shared\_LeftColumn.cshtml" />
+    <Content Include="Content\animate.css" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap-dialog.css" />
+    <Content Include="Content\bootstrap-responsive.css" />
+    <Content Include="Content\bootstrap-spinedit.css" />
+    <Content Include="Content\bootstrap-switch.css" />
+    <Content Include="Content\dropzone.css" />
+    <Content Include="Content\font-awesome.css" />
+    <Content Include="Content\jquery.grid-picker.css" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap-dialog.js" />
+    <Content Include="Scripts\bootstrap-spinedit.js" />
+    <Content Include="Scripts\bootstrap-switch.js" />
+    <Content Include="Scripts\bootstrap-tabcollapse.js" />
+    <Content Include="Scripts\dropzone.js" />
+    <Content Include="Scripts\jquery.cookie.js" />
+    <Content Include="Scripts\jquery.grid-picker.js" />
+    <Content Include="Scripts\jquery.highlight-5.js" />
+    <Content Include="Scripts\jquery.timeago.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery-2.1.4.js" />
+    <Content Include="Scripts\jquery-ui.js" />
+    <Content Include="Scripts\jquery-ui-timepicker-addon.js" />
+    <Content Include="Scripts\pwstrength.js" />
+    <Content Include="Scripts\snitz.jquery.js" />
+    <Content Include="Views\JavaScriptSettings\Index.cshtml" />
+    <Content Include="Views\JavaScriptSettings\Resources.cshtml" />
+    <Content Include="Views\Shared\_LayoutSetup.cshtml" />
+    <Content Include="App_Data\blockedips.config" />
+    <Content Include="Content\Themes\snitz\snitz-rtl.min.css" />
+    <Content Include="Content\Themes\snitz\highlight.css" />
+    <Content Include="Content\Themes\snitz\snitz-rtl.css" />
+    <Content Include="Content\Themes\snitz\colours.min.css" />
+    <Content Include="Content\Themes\snitz\dbmanager.min.css" />
+    <Content Include="Content\Themes\snitz\fullcalendar.min.css" />
+    <Content Include="Content\Themes\snitz\photoalbum.min.css" />
+    <Content Include="Content\Themes\snitz\dbmanager.css" />
+    <Content Include="Content\Themes\snitz\snitz.css" />
+    <Content Include="Content\Themes\snitz\snitz.min.css" />
+    <Content Include="Content\Themes\snitz\tag_cloud.css" />
+    <Content Include="Content\Themes\snitz\star-rating.min.css" />
+    <Content Include="Content\Themes\snitz\colours.css" />
+    <Content Include="Content\Themes\snitz\star-rating.css" />
+    <Content Include="Content\Themes\snitz\highlight.min.css" />
+    <Content Include="Content\Themes\snitz\images\archived.png" />
+    <Content Include="Content\Themes\snitz\images\onhold.png" />
+    <Content Include="Content\Themes\snitz\images\warning.png" />
+    <Content Include="Content\Themes\snitz\images\link_loader.gif" />
+    <Content Include="Content\Themes\snitz\images\stick.png" />
+    <Content Include="Content\Themes\snitz\images\lock.png" />
+    <Content Include="Content\Themes\snitz\images\logo.png" />
+    <Content Include="Content\Themes\snitz\images\blank.png" />
+    <Content Include="Content\Themes\snitz\images\new.png" />
+    <Content Include="Content\Themes\snitz\images\hot.gif" />
+    <Content Include="Content\Themes\snitz\images\flags\ro.png" />
+    <Content Include="Content\Themes\snitz\images\flags\fa.png" />
+    <Content Include="Content\Themes\snitz\images\flags\no.png" />
+    <Content Include="Content\Themes\snitz\images\flags\en.png" />
+    <Content Include="Content\Themes\snitz\images\Forum\bug.png" />
+    <Content Include="Content\Themes\snitz\images\Forum\default.png" />
+    <Content Include="Content\Themes\vellum\snitz-rtl.min.css" />
+    <Content Include="Content\Themes\vellum\fullcalendar.css" />
+    <Content Include="Content\Themes\vellum\highlight.css" />
+    <Content Include="Content\Themes\vellum\snitz-rtl.css" />
+    <Content Include="Content\Themes\vellum\colours.min.css" />
+    <Content Include="Content\Themes\vellum\dbmanager.min.css" />
+    <Content Include="Content\Themes\vellum\fullcalendar.min.css" />
+    <Content Include="Content\Themes\vellum\photoalbum.min.css" />
+    <Content Include="Content\Themes\vellum\dbmanager.css" />
+    <Content Include="Content\Themes\vellum\snitz.css" />
+    <Content Include="Content\Themes\vellum\snitz.min.css" />
+    <Content Include="Content\Themes\vellum\tag_cloud.css" />
+    <Content Include="Content\Themes\vellum\star-rating.min.css" />
+    <Content Include="Content\Themes\vellum\colours.css" />
+    <Content Include="Content\Themes\vellum\star-rating.css" />
+    <Content Include="Content\Themes\vellum\highlight.min.css" />
+    <Content Include="Content\Themes\vellum\images\archived.png" />
+    <Content Include="Content\Themes\vellum\images\onhold.png" />
+    <Content Include="Content\Themes\vellum\images\warning.png" />
+    <Content Include="Content\Themes\vellum\images\link_loader.gif" />
+    <Content Include="Content\Themes\vellum\images\stick.png" />
+    <Content Include="Content\Themes\vellum\images\lock.png" />
+    <Content Include="Content\Themes\vellum\images\logo.png" />
+    <Content Include="Content\Themes\vellum\images\blank.png" />
+    <Content Include="Content\Themes\vellum\images\new.png" />
+    <Content Include="Content\Themes\vellum\images\hot.gif" />
+    <Content Include="Content\Themes\vellum\images\flags\ro.png" />
+    <Content Include="Content\Themes\vellum\images\flags\fa.png" />
+    <Content Include="Content\Themes\vellum\images\flags\no.png" />
+    <Content Include="Content\Themes\vellum\images\flags\en.png" />
+    <Content Include="Content\Themes\vellum\images\Forum\bug.png" />
+    <Content Include="Content\Themes\vellum\images\Forum\default.png" />
+    <Content Include="Views\Home\_ForumStats.cshtml" />
+    <Content Include="Views\Home\IndexNew.cshtml" />
+    <Content Include="Views\Home\Latest.cshtml" />
+    <Content Include="Views\Home\_RecentTopics.cshtml" />
+    <Content Include="Views\Shared\_AdminMenu.cshtml" />
+    <Content Include="Views\Shared\_Menu.cshtml" />
+    <Content Include="Views\Shared\_RightColumn.cshtml" />
+    <Content Include="Views\Shared\_Search.cshtml" />
+    <Content Include="Views\Shared\_SearchForums.cshtml" />
+    <Content Include="Views\Shared\popupError.cshtml" />
+    <Content Include="Views\Shared\_OnlineUsers.cshtml" />
+    <Content Include="Views\Shared\_OnlineUsersSide.cshtml" />
+    <Content Include="Views\Shared\_CategoryForumList.cshtml" />
+    <Content Include="Views\Shared\_LayoutNew.cshtml" />
+    <Content Include="Views\Shared\_ChangeCulture.cshtml" />
+    <Content Include="Views\Shared\_CookieConsentMessage.cshtml" />
+    <Content Include="Views\Shared\_IconGlossary.cshtml" />
+    <Content Include="Views\Shared\_IconGlossaryForumNew.cshtml" />
+    <Content Include="Views\Shared\_IconGlossaryNew.cshtml" />
+    <Content Include="Views\Shared\Offline.cshtml" />
+    <Content Include="Views\Shared\_ThemeChanger.cshtml" />
+    <Content Include="Views\Shared\_PMNotify.cshtml" />
+    <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Shared\_Footer.cshtml" />
+    <Content Include="Views\Shared\NotFound.cshtml" />
+    <Content Include="Views\Error\NotFound.cshtml" />
+    <Content Include="Views\Error\Forbidden.cshtml" />
+    <Content Include="Views\Error\Error.cshtml" />
+    <Content Include="Views\Error\Status301.cshtml" />
+    <Content Include="Content\fonts\FontAwesome.otf" />
+    <Content Include="Content\fonts\fontawesome-webfont.woff" />
+    <Content Include="Content\fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\fonts\fontawesome-webfont.svg" />
+    <Content Include="Content\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Content\images\link_loader.gif" />
+    <Content Include="Content\images\nophoto100x100.png" />
+    <Content Include="Content\images\notfound_lg.jpg" />
+    <Content Include="Content\images\logo.png" />
+    <Content Include="Content\images\notfound.png" />
+    <Content Include="Content\images\logo_powered_by.gif" />
+    <Content Include="Content\images\animated-overlay.gif" />
+    <Content Include="Content\images\hot.png" />
+    <Content Include="Content\images\notfound_lg.png" />
+    <Content Include="Content\images\aol.png" />
+    <Content Include="Content\images\notfound.jpg" />
+    <Content Include="Content\images\Jcrop.gif" />
+    <Content Include="Content\images\emoticon\icon_smile_clown.gif" />
+    <Content Include="Content\images\emoticon\icon_smile_tongue.gif" />
+    <Content Include="Content\images\emoticon\icon_smile.gif" />
+    <Content Include="Content\images\emoticon\icon_smile_cyclops.gif" />
+    <Content Include="Content\images\emoticon\icon_smile_kisses.gif" />
+    <Content Include="Content\images\emoticon\Lock.png" />
+    <Content Include="Content\images\emoticon\icon_smile_dissapprove.gif" />
+    <Content Include="Content\images\emoticon\heart_icon.png" />
+    <Content Include="Content\images\emoticon\icon_smile_mean.gif" />
+    <Content Include="Content\images\emoticon\icon_smile_cool.gif" />
+    <Content Include="Content\images\emoticon\icon_smile_dead_green.gif" />
+    <Content Include="Content\images\emoticon\icon_smile_approve.gif" />
+    <Content Include="Content\images\emoticon\icon_smile_wink.gif" />
+    <Content Include="Content\images\emoticon\icon_smile_test.gif" />
+    <Content Include="Content\images\emoticon\icon_smile_bigeyes.gif" />
+    <Content Include="Content\images\emoticon\icon_smile_angry2.gif" />
+    <Content Include="Content\images\emoticon\icon_smile_dead.gif" />
+    <Content Include="Content\images\emoticon\icon_smile_question.gif" />
+    <Content Include="Content\images\emoticon\icon_smile_8ball.gif" />
+    <Content Include="Content\images\emoticon\icon_smile_sad.gif" />
+    <Content Include="Content\images\emoticon\icon_smile_shock.gif" />
+    <Content Include="Content\images\emoticon\icon_smile_angry.gif" />
+    <Content Include="Content\images\emoticon\icon_smile_shy.gif" />
+    <Content Include="Content\images\emoticon\icon_smile_sleepy.gif" />
+    <Content Include="Content\images\emoticon\icon_thumb.gif" />
+    <Content Include="Content\images\emoticon\icon_smile_blackeye.gif" />
+    <Content Include="Content\images\emoticon\icon_smile_evil.gif" />
+    <Content Include="Content\images\emoticon\icon_smile_boggled.gif" />
+    <Content Include="Content\images\emoticon\icon_smile_blush.gif" />
+    <Content Include="Content\images\emoticon\icon_smile_big.gif" />
+    <Content Include="Content\images\icon\upload.gif" />
+    <Content Include="Content\images\icon\copy.gif" />
+    <Content Include="Content\images\icon\rename.png" />
+    <Content Include="Content\images\icon\rename.gif" />
+    <Content Include="Content\images\icon\move.gif" />
+    <Content Include="Content\images\icon\zip.gif" />
+    <Content Include="Content\images\icon\newfolder.gif" />
+    <Content Include="Content\images\icon\delete.gif" />
+    <Content Include="Content\images\icon\folderup.gif" />
+    <Content Include="Content\rankimages\icon_star_gold.gif" />
+    <Content Include="Content\rankimages\icon_star_purple.gif" />
+    <Content Include="Content\rankimages\icon_star_red.gif" />
+    <Content Include="Content\rankimages\icon_star_orange.gif" />
+    <Content Include="Content\rankimages\icon_star_blue.gif" />
+    <Content Include="Content\rankimages\icon_star_green.gif" />
+    <Content Include="Content\rankimages\icon_star_silver.gif" />
+    <Content Include="Content\rankimages\icon_star_bronze.gif" />
+    <Content Include="Content\rankimages\icon_star_cyan.gif" />
+    <Content Include="Content\stylesheet.css" />
+    <Content Include="Content\stylesheet.min.css" />
+    <Content Include="Views\Shared\DisplayTemplates\Member.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Blogs.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\SyndicationItem.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Short.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\TopicNew.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\YesNo.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\ActiveTopic.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Forum.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Poll.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Topic.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\ForumNew.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\ActiveTopicNew.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\SpamFilter.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Category.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\CategoryNew.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\UserProfile.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\MemberNew.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\GoogleFeed.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\MyView.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Emoticon.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Poll.cshtml" />
+    <Content Include="Views\Shared\_SocialMedia.cshtml" />
+    <Content Include="Views\Emails\Web.config" />
+    <Content Include="Views\Account\popEmailMember.cshtml" />
+    <Content Include="Views\Account\ChangeEmailSuccess.cshtml" />
+    <Content Include="Views\Account\LockedAccount.cshtml" />
+    <Content Include="Views\Account\_MemberSearch.cshtml" />
+    <Content Include="Views\Account\MySubscriptions.cshtml" />
+    <Content Include="Views\Account\popChangePassword.cshtml" />
+    <Content Include="Views\Account\Index.cshtml" />
+    <Content Include="Views\Account\popUserIP.cshtml" />
+    <Content Include="Views\Account\popChangeUsername.cshtml" />
+    <Content Include="Views\Account\UserProfileEdit.cshtml" />
+    <Content Include="Views\Account\popChangeEmail.cshtml" />
+    <Content Include="Views\Account\Manage.cshtml" />
+    <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\Account\_MemberPager.cshtml" />
+    <Content Include="Views\Account\popViewProfile.cshtml" />
+    <Content Include="Views\Account\_SetPasswordPartial.cshtml" />
+    <Content Include="Views\Account\_ChangePasswordPartial.cshtml" />
+    <Content Include="Views\Account\UserProfile.cshtml" />
+    <Content Include="Views\Account\ResetPassword.cshtml" />
+    <Content Include="Views\Account\_ChangeUsernamePartial.cshtml" />
+    <Content Include="Views\Account\UnApprovedAccount.cshtml" />
+    <Content Include="Views\Account\_ChangeEmailPartial.cshtml" />
+    <Content Include="Views\Account\Register\ConfirmationFailure.cshtml" />
+    <Content Include="Views\Account\Register\Register.cshtml" />
+    <Content Include="Views\Account\Register\_MemberConfig.cshtml" />
+    <Content Include="Views\Account\Register\RegisterEmailVal.cshtml" />
+    <Content Include="Views\Account\Register\RegisterApproval.cshtml" />
+    <Content Include="Views\Account\Register\ConfirmationSuccess.cshtml" />
+    <Content Include="Views\Account\Register\_BotChecker.cshtml" />
+    <Content Include="Views\Account\Register\_Policy.cshtml" />
+    <Content Include="Views\Account\Tabs\_TabSubs.cshtml" />
+    <Content Include="Views\Account\Tabs\_TabEditProfile.cshtml" />
+    <Content Include="Views\Account\Tabs\_TabCookies.cshtml" />
+    <Content Include="Views\Account\Tabs\_TabOptions.cshtml" />
+    <Content Include="Views\Account\Tabs\_TabAccount.cshtml" />
+    <Content Include="Views\Account\Tabs\_TabEditExtendedProfile.cshtml" />
+    <Content Include="Views\Account\Tabs\_TabEditAccount.cshtml" />
+    <Content Include="Views\Account\Tabs\_TabEditOptions.cshtml" />
+    <Content Include="Views\Account\Tabs\_TabEditAdmin.cshtml" />
+    <Content Include="Views\Account\Tabs\_TabAdmin.cshtml" />
+    <Content Include="Views\Account\Tabs\_TabProfile.cshtml" />
+    <Content Include="Views\Account\Tabs\_TabExtendedProfile.cshtml" />
+    <Content Include="Views\Admin\_AdminOnlineUsers.cshtml" />
+    <Content Include="Views\Admin\ManageGroups.cshtml" />
+    <Content Include="Views\Admin\MergeMembers.cshtml" />
+    <Content Include="Views\Admin\EmailServer.cshtml" />
+    <Content Include="Views\Admin\FeatureConfig.cshtml" />
+    <Content Include="Views\Admin\_ForumSubs.cshtml" />
+    <Content Include="Views\Admin\StopForumSpamCheck.cshtml" />
+    <Content Include="Views\Admin\WordFilter.cshtml" />
+    <Content Include="Views\Admin\_Layout.cshtml" />
+    <Content Include="Views\Admin\ManageAvatars.cshtml" />
+    <Content Include="Views\Admin\popArchiveForum.cshtml" />
+    <Content Include="Views\Admin\_BoardSubs.cshtml" />
+    <Content Include="Views\Admin\_CreateUser.cshtml" />
+    <Content Include="Views\Admin\popAddNameFilter.cshtml" />
+    <Content Include="Views\Admin\_CategorySubs.cshtml" />
+    <Content Include="Views\Admin\ManageRoles.cshtml" />
+    <Content Include="Views\Admin\MemberConfig.cshtml" />
+    <Content Include="Views\Admin\_LayoutEmbedded.cshtml" />
+    <Content Include="Views\Admin\Online.cshtml" />
+    <Content Include="Views\Admin\BbCodes.cshtml" />
+    <Content Include="Views\Admin\_RoleView.cshtml" />
+    <Content Include="Views\Admin\_TopicSubs.cshtml" />
+    <Content Include="Views\Admin\GoOffline.cshtml" />
+    <Content Include="Views\Admin\ManagePolls.cshtml" />
+    <Content Include="Views\Admin\DateConfig.cshtml" />
+    <Content Include="Views\Admin\ManageArchives.cshtml" />
+    <Content Include="Views\Admin\ManageEvents.cshtml" />
+    <Content Include="Views\Admin\Subscriptions.cshtml" />
+    <Content Include="Views\Admin\_Moderators.cshtml" />
+    <Content Include="Views\Admin\RankingConfig.cshtml" />
+    <Content Include="Views\Admin\ManageBanners.cshtml" />
+    <Content Include="Views\Admin\ManageModerators.cshtml" />
+    <Content Include="Views\Admin\popAddBBCodeFilter.cshtml" />
+    <Content Include="Views\Admin\PendingMembers.cshtml" />
+    <Content Include="Views\Admin\Tools.cshtml" />
+    <Content Include="Views\Admin\_AddEditGroup.cshtml" />
+    <Content Include="Views\Admin\popAddWordFilter.cshtml" />
+    <Content Include="Views\Admin\UserFilter.cshtml" />
+    <Content Include="Views\Admin\ForumConfig.cshtml" />
+    <Content Include="Views\Admin\ModConfiguration.cshtml" />
+    <Content Include="Views\Shared\_FormButtons.cshtml" />
+    <Content Include="Views\Help\popEditCategory.cshtml" />
+    <Content Include="Views\Help\Index.cshtml" />
+    <Content Include="Views\Help\popEdit.cshtml" />
+    <Content Include="Views\Help\IndexNew.cshtml" />
+    <Content Include="Views\Help\_HelpCategory.cshtml" />
+    <Content Include="Views\Help\Admin.cshtml" />
+    <Content Include="Views\LangResource\_ResourceKeys.cshtml" />
+    <Content Include="Views\LangResource\Index.cshtml" />
+    <Content Include="Views\LangResource\popResourceEditor.cshtml" />
+    <Content Include="Views\LangResource\_ResourceEditor.cshtml" />
+    <Content Include="Views\LangResource\popResourceTranslate.cshtml" />
+    <Content Include="Views\LangResource\popExportCsv.cshtml" />
+    <Content Include="Views\LangResource\_ResourceSet.cshtml" />
+    <Content Include="Views\LangResource\_ResourcePanel.cshtml" />
+    <Content Include="Views\LangResource\_ResourceItem.cshtml" />
+    <Content Include="Views\LangResource\_EditGrid.cshtml" />
+    <Content Include="Views\LangResource\GridView.cshtml" />
+    <Content Include="Views\LangResource\_ResourceGrid.cshtml" />
+    <Content Include="Views\Forum\_SearchResult.cshtml" />
+    <Content Include="Views\Forum\Details.cshtml" />
+    <Content Include="Views\Forum\Search.cshtml" />
+    <Content Include="Views\Forum\Posts.cshtml" />
+    <Content Include="Views\Forum\PostsNew.cshtml" />
+    <Content Include="Views\Forum\SearchResult.cshtml" />
+    <Content Include="Views\Forum\_SearchPager.cshtml" />
+    <Content Include="Views\Forum\_MyViewList.cshtml" />
+    <Content Include="Views\Forum\SearchNew.cshtml" />
+    <Content Include="Views\Forum\Blog\Posts.cshtml" />
+    <Content Include="Views\Forum\Blog\PostsNew.cshtml" />
+    <Content Include="Views\Forum\MyView\Posts.cshtml" />
+    <Content Include="Views\Forum\MyView\MyView.cshtml" />
+    <Content Include="Views\Shared\_TopicButtons.cshtml" />
+    <Content Include="Views\Shared\_TopicButtonsUser.cshtml" />
+    <Content Include="Views\Topic\_Topic.cshtml" />
+    <Content Include="Views\Topic\popSendTo.cshtml" />
+    <Content Include="Views\Topic\_TopicPageButtons.cshtml" />
+    <Content Include="Views\Topic\_Reply.cshtml" />
+    <Content Include="Views\Topic\SplitTopic.cshtml" />
+    <Content Include="Views\Topic\_ActivePager.cshtml" />
+    <Content Include="Views\Topic\Active.cshtml" />
+    <Content Include="Views\Topic\_QuickReply.cshtml" />
+    <Content Include="Views\Topic\UnSubscribe.cshtml" />
+    <Content Include="Views\Topic\Posts.cshtml" />
+    <Content Include="Views\Topic\_MessageButtons.cshtml" />
+    <Content Include="Views\Topic\SearchResult.cshtml" />
+    <Content Include="Views\Topic\_TopicNew.cshtml" />
+    <Content Include="Views\Topic\_MessageUserProfile.cshtml" />
+    <Content Include="Views\Topic\PostBugReport.cshtml" />
+    <Content Include="Views\Topic\Print.cshtml" />
+    <Content Include="Views\Topic\_ReplyNew.cshtml" />
+    <Content Include="Views\Topic\TopicNav.cshtml" />
+    <Content Include="Views\Topic\popPromptDialog.cshtml" />
+    <Content Include="Views\Topic\Blog\_Topic.cshtml" />
+    <Content Include="Views\Topic\Blog\_Reply.cshtml" />
+    <Content Include="Views\Topic\Blog\_QuickReply.cshtml" />
+    <Content Include="Views\Topic\Blog\Posts.cshtml" />
+    <Content Include="Views\Topic\Blog\_TopicNew.cshtml" />
+    <Content Include="Views\Topic\Blog\Print.cshtml" />
+    <Content Include="Views\Topic\Blog\_ReplyNew.cshtml" />
+    <Content Include="Views\Avatar\popUploadAvatar.cshtml" />
+    <Content Include="Views\Category\Details.cshtml" />
+    <Content Include="Views\Category\Index.cshtml" />
+    <Content Include="Views\Category\IndexNew.cshtml" />
+    <Content Include="Views\Category\Categories.cshtml" />
+    <Content Include="Views\Charts\Index.cshtml" />
+    <Content Include="Views\Charts\PostsByUser.cshtml" />
+    <Content Include="Views\Charts\PostsByYear.cshtml" />
+    <Content Include="Views\Charts\PostsByMonth.cshtml" />
+    <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="Views\Shared\_LayoutAdmin.cshtml" />
+    <Content Include="Views\Shared\_LayoutEmbeded.cshtml" />
+    <Content Include="Views\Shared\_TagCloud.cshtml" />
+    <Content Include="Views\Shared\_BlogList.cshtml" />
+    <Content Include="Views\Shared\_Captcha.cshtml" />
+    <Content Include="Views\Shared\_CookiePolicy.cshtml" />
+    <Content Include="Views\Shared\Donate.cshtml" />
+    <Content Include="Views\Shared\_EditorBar.cshtml" />
+    <Content Include="Views\Shared\_emoticons.cshtml" />
+    <Content Include="Views\Shared\_FeaturedPoll.cshtml" />
+    <Content Include="Views\Shared\Forbidden.cshtml" />
+    <Content Include="Views\Shared\_html5shiv.cshtml" />
+    <Content Include="Views\Shared\_JumpTo.cshtml" />
+    <Content Include="Views\Shared\_ModalPopups.cshtml" />
+    <Content Include="Views\Shared\_MyCookies.cshtml" />
+    <Content Include="Views\Shared\_Pager.cshtml" />
+    <Content Include="Views\Shared\_PageSize.cshtml" />
+    <Content Include="Views\Shared\popAbout.cshtml" />
+    <Content Include="Views\Shared\popFileUpload.cshtml" />
+    <Content Include="Views\Shared\popImportCsv.cshtml" />
+    <Content Include="Views\Shared\popLicense.cshtml" />
+    <Content Include="Views\Shared\popModerate.cshtml" />
+    <Content Include="Views\Shared\popPreviewPost.cshtml" />
+    <Content Include="Views\Shared\PostMessage.cshtml" />
+    <Content Include="Views\Shared\_PostOptions.cshtml" />
+    <Content Include="Views\Shared\Subscription.cshtml" />
+    <Content Include="Views\Shared\_TopicPreview.cshtml" />
+    <Content Include="Views\Shared\_UpcomingEvents.cshtml" />
+    <Content Include="Content\snitzlayout.css" />
+    <Content Include="Scripts\jquery.form.js" />
+    <Content Include="Scripts\jquery.Jcrop.js" />
+    <Content Include="Scripts\snitz.avatar.js" />
+    <Content Include="Scripts\snitz.editor.js" />
+    <Content Include="Scripts\snitz.upload.js" />
+    <Content Include="Views\PrivateMessage\_PrivateMessages.cshtml" />
+    <Content Include="Views\PrivateMessage\_Blocklist.cshtml" />
+    <Content Include="Views\PrivateMessage\_SearchResult.cshtml" />
+    <Content Include="Views\PrivateMessage\_MemberPM.cshtml" />
+    <Content Include="Views\PrivateMessage\_Settings.cshtml" />
+    <Content Include="Views\PrivateMessage\Index.cshtml" />
+    <Content Include="Views\PrivateMessage\_MessageForm.cshtml" />
+    <Content Include="Views\PrivateMessage\popMemberPM.cshtml" />
+    <Content Include="Views\PrivateMessage\_Search.cshtml" />
+    <Content Include="Views\PrivateMessage\Print.cshtml" />
+    <Content Include="Views\PrivateMessage\_PrivateMessageView.cshtml" />
+    <Content Include="Scripts\Chart.min.js" />
+    <Content Include="Scripts\Chart.js" />
+    <Content Include="Content\Chart.min.css" />
+    <Content Include="Content\Chart.css" />
+    <Content Include="Views\Charts\RepliesByUser.cshtml" />
+    <Content Include="Views\Admin\DbsFile.cshtml" />
+    <Content Include="Views\PayPal\Donations.cshtml" />
+    <Content Include="Views\PayPal\DonateNow.cshtml" />
+    <Content Include="Views\PayPal\Subscribe.cshtml" />
+    <Content Include="Views\PayPal\ValidateCommand.cshtml" />
+    <Content Include="Views\PayPal\Products.cshtml" />
+    <Content Include="Views\PayPal\Configuration.cshtml" />
+    <Content Include="Views\PayPal\CreateEditProduct.cshtml" />
+    <Content Include="Views\PayPal\CreateEditDonation.cshtml" />
+    <Content Include="Views\PayPal\Confirmation.cshtml" />
+    <Content Include="Views\PayPal\Cancel.cshtml" />
+    <Content Include="Views\PayPal\NotifyFromPaypal.cshtml" />
+    <Content Include="Views\PayPal\Index.cshtml" />
+    <Content Include="Views\WebFileManager\Index.cshtml" />
+    <Content Include="Views\WebFileManager\WriteFileRows.cshtml" />
+    <Content Include="Scripts\snitz.admin.js" />
+    <Content Include="Scripts\snitz.admin.min.js" />
+    <Content Include="Scripts\jquery.numeric.min.js" />
+    <Content Include="Content\jquery.ui.datepicker.min.css" />
+    <Content Include="connectionstrings.config" />
+    <Content Include="Views\Emails\ApprovedEmail.cshtml" />
+    <Content Include="Views\Emails\ApprovedRegEmail.cshtml" />
+    <Content Include="Views\Emails\ChangeEmail.cshtml" />
+    <Content Include="Views\Emails\DefEmail.cshtml" />
+    <Content Include="Views\Emails\ImageCommentEmail.cshtml" />
+    <Content Include="Views\Emails\ImageCommentEmail.Html.cshtml" />
+    <Content Include="Views\Emails\PMEmail.cshtml" />
+    <Content Include="Views\Emails\PMEmail.Html.cshtml" />
+    <Content Include="Views\Emails\RegEmail.cshtml" />
+    <Content Include="Views\Emails\ResetPassword.cshtml" />
+    <Content Include="Views\Emails\Subscription.cshtml" />
+    <Content Include="Views\Emails\Subscription.Html.cshtml" />
+    <Content Include="Views\Emails\TaggedEmail.cshtml" />
+    <Content Include="Views\Emails\TaggedEmail.Html.cshtml" />
+    <Content Include="Views\Emails\TopicModerateEmail.cshtml" />
+    <Content Include="Views\Emails\TopicMoveEmail.cshtml" />
+    <Content Include="Views\Emails\TopicSend.cshtml" />
+    <Content Include="Views\Emails\TopicSend.Html.cshtml" />
+    <Content Include="Views\Emails\TopicSubscription.cshtml" />
+    <Content Include="Views\Emails\TopicSubscription.Html.cshtml" />
+    <Content Include="Views\Emails\_ViewStart.cshtml" />
+    <Content Include="Views\Emails\DefEmail.Html.cshtml" />
+    <Content Include="Scripts\snitz.register.min.js" />
+    <Content Include="Content\jquery.jcrop.min.css" />
+    <Content Include="Scripts\cshtml-razor.min.js" />
+    <Content Include="Scripts\datatable-moment.min.js" />
+    <Content Include="Scripts\dropzone.min.js" />
+    <Content Include="Scripts\find5.min.js" />
+    <Content Include="Scripts\forum.details.js" />
+    <Content Include="Scripts\fullcalendar-year.min.js" />
+    <Content Include="Scripts\highlight.pack.min.js" />
+    <Content Include="Scripts\jquery.contextMenu.min.js" />
+    <Content Include="Scripts\jquery.dataTables.min.js" />
+    <Content Include="Scripts\jquery.twosidedmultiselect.js" />
+    <Content Include="Scripts\jquery.twosidedmultiselect.min.js" />
+    <Content Include="Scripts\moment.min.js" />
+    <Content Include="Scripts\snitz.cal.min.js" />
+    <Content Include="Scripts\snitz.editor.min.js" />
+    <Content Include="Scripts\snitz.gallery.upload.min.js" />
+    <Content Include="Scripts\snitz.pm.js" />
+    <Content Include="Scripts\snitz.pm.min.js" />
+    <Content Include="Scripts\snitz.sitemanage.min.js" />
+    <Content Include="Scripts\snitz.upload.min.js" />
+    <Content Include="Scripts\star-rating.min.js" />
+    <Content Include="mail.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BbCodeFormatter\BbCodeFormatter.csproj">
+      <Project>{9FB6A878-7FF1-49EC-8172-371EF94567B1}</Project>
+      <Name>BbCodeFormatter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LangResources\LangResources.csproj">
+      <Project>{CC53562A-AD0E-4354-A036-858C47DCFC1C}</Project>
+      <Name>LangResources</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Snitz.Base\Snitz.Base.csproj">
+      <Project>{48355CCF-D5AB-48A7-AA8C-25BF581D1737}</Project>
+      <Name>Snitz.Base</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SnitzCore\SnitzCore.csproj">
+      <Project>{1AECEA23-B1DC-47C5-8A13-2A3CBF11BE13}</Project>
+      <Name>SnitzCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SnitzDataModel\SnitzDataModel.csproj">
+      <Project>{879E284F-A8AD-4D0C-BFD3-329FDD077B10}</Project>
+      <Name>SnitzDataModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SnitzMembership\SnitzMembership.csproj">
+      <Project>{ABF9C840-6A07-4E5E-A4D2-29045E4AB063}</Project>
+      <Name>SnitzMembership</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App_Data\adrotator.xml" />
+    <None Include="App_Data\updatecountSPMySql.sql" />
+    <None Include="App_Data\stopwords-en.txt" />
+    <None Include="App_Data\countries.xml" />
+    <None Include="App_Data\Upgrade.xml" />
+    <None Include="App_Data\base.xml" />
+    <None Include="App_Data\updatecountSP.sql" />
+    <None Include="App_Data\stopwords-no.txt" />
+    <None Include="App_Data\emoticons.xml" />
+    <None Include="App_Data\faq.category.no.xml" />
+    <None Include="App_Data\faq.category.en.xml" />
+    <None Include="App_Data\robots.txt" />
+    <None Include="App_Data\faq.category.fa.xml" />
+    <None Include="App_Data\dbsTemplate.xml" />
+    <None Include="App_Data\dbsTemplate.xsd" />
+    <None Include="App_Data\language_en.csv" />
+    <None Include="Content\fonts\fontawesome-webfont.woff2" />
+    <Content Include="LinqToDB.Templates\LinqToDB.MySql.Tools.ttinclude" />
+    <Content Include="Views\RssWidget\RSSView.cshtml" />
+    <Content Include="Views\Static\Template.cshtml" />
+    <Content Include="Views\Polls\Delete.cshtml" />
+    <Content Include="Views\Polls\Index.cshtml" />
+    <Content Include="Views\Polls\Results.cshtml" />
+    <Content Include="Views\Files\Index.cshtml" />
+    <Content Include="Views\Files\_Downloads.cshtml" />
+    <Content Include="Views\Common\ShuttingDown.cshtml" />
+    <Content Include="Views\Ad\Index.cshtml" />
+    <Content Include="Views\Ad\popAddEditBanner.cshtml" />
+    <Content Include="LinqToDB.Templates\Validation.ttinclude" />
+    <Content Include="LinqToDB.Templates\T4Model.ttinclude" />
+    <Content Include="LinqToDB.Templates\ReadMe.LinqToDB.md" />
+    <Content Include="LinqToDB.Templates\PluralizationService.ttinclude" />
+    <Content Include="LinqToDB.Templates\NotifyPropertyChanged.ttinclude" />
+    <Content Include="LinqToDB.Templates\LinqToDB.ttinclude" />
+    <Content Include="LinqToDB.Templates\LinqToDB.Tools.ttinclude" />
+    <Content Include="LinqToDB.Templates\LinqToDB.Sybase.ttinclude" />
+    <Content Include="LinqToDB.Templates\LinqToDB.SqlServer.ttinclude" />
+    <Content Include="LinqToDB.Templates\LinqToDB.SqlServer.SqlTypes.ttinclude" />
+    <Content Include="LinqToDB.Templates\LinqToDB.SQLite.ttinclude" />
+    <Content Include="LinqToDB.Templates\LinqToDB.SqlCe.ttinclude" />
+    <Content Include="LinqToDB.Templates\LinqToDB.PostgreSQL.ttinclude" />
+    <Content Include="LinqToDB.Templates\LinqToDB.Oracle.ttinclude" />
+    <Content Include="LinqToDB.Templates\LinqToDB.MySql.ttinclude" />
+    <Content Include="LinqToDB.Templates\LinqToDB.Informix.ttinclude" />
+    <Content Include="LinqToDB.Templates\LinqToDB.Firebird.ttinclude" />
+    <Content Include="LinqToDB.Templates\LinqToDB.DB2.ttinclude" />
+    <Content Include="LinqToDB.Templates\LinqToDB.Access.ttinclude" />
+    <Content Include="LinqToDB.Templates\EditableObject.ttinclude" />
+    <Content Include="LinqToDB.Templates\DataModel.ttinclude" />
+    <Content Include="LinqToDB.Templates\DataAnnotations.ttinclude" />
+    <Content Include="Views\Shared\_AntiForgeryToken.cshtml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <XspParameters Port="0" Address="127.0.0.1" SslMode="None" SslProtocol="Default" KeyType="None" CertFile="" KeyFile="" PasswordOptions="None" Password="" Verbose="True" />
+      </Properties>
+    </MonoDevelop>
+    <VisualStudio>
+      <FlavorProperties GUID="{349C5851-65DF-11DA-9384-00065B846F21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>50643</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>https://localhost:44393/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v16.0\WebApplications\Microsoft.WebApplication.targets" />
+</Project>

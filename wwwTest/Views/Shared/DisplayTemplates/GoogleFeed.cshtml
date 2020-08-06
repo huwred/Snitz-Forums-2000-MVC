@@ -1,0 +1,13 @@
+﻿@using BbCodeFormatter
+@model System.ServiceModel.Syndication.SyndicationFeed
+
+                        @foreach (var item in Model.Items.Take(10))
+                        {
+<li class="news-item clearfix">
+
+    @Html.Raw(BbCodeProcessor.RemoveHtmlTags(item.Summary.Text))
+</li>
+                        }
+
+
+

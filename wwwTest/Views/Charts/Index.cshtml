@@ -1,0 +1,46 @@
+﻿
+@using WWW.Views.Helpers
+@model WWW.Controllers.ChartModel
+<div class="row-fluid">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Posts By Year
+
+        </div>
+        <div class="panel-body">
+            @Html.Action("PostsByYear","Charts",new{page="test"})
+            @*<img id="posts-year" src="@Url.Action("PostsByYear","Charts",new{page="test"})" alt="Chart" style="max-width:100%"/>*@
+        </div>
+    </div>
+
+    <div class="panel panel-primary">
+        <div class="panel-heading form-inline">
+            <label>Posts By Month</label>
+            <div class="input-group input-group-sm col-xs-2 pull-right">
+                <select id="year-select" class="form-control">
+                    @for (int i = Convert.ToInt32(Model.MinYear); i < Convert.ToInt32(Model.MaxYear) + 1; i++)
+                    {
+                        <option value="@i" @if(i==Convert.ToInt32(Model.MaxYear)){@Html.Raw("selected")}>@i</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="panel-body">
+            @Html.Action("PostsByMonth","Charts",new {id=Convert.ToInt32(Model.MaxYear) })
+            
+        </div>
+    </div>
+</div>
+
+
+@using (Html.BeginScripts())
+{
+
+    <script type="text/javascript">
+        $("#year-select").on("change",
+            function () {
+                var id = this.value;
+                $("#posts-month").attr("src", window.SnitzVars.baseUrl + "Charts/PostsByMonth/" + id);
+            });
+    </script>
+}

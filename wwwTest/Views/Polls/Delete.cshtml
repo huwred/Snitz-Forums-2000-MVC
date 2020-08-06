@@ -1,0 +1,6 @@
+﻿@model FormCollection
+
+            @foreach (var key in Model.AllKeys.Where(k => k == "delete-me"))
+            {
+                @key @Model[key] <br/>
+            }

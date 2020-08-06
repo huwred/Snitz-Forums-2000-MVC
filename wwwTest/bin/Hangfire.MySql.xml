@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Hangfire.MySql</name>
+    </assembly>
+    <members>
+        <member name="F:Hangfire.MySql.src.DatabaseActor.DataProvider">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Hangfire.MySql.src.Entities.Counter">
+                 
+                 * CREATE TABLE [HangFire].[Counter](
+            			[Id] [int] IDENTITY(1,1) NOT NULL,
+            			[Key] [nvarchar](100) NOT NULL,
+            			[Value] [tinyint] NOT NULL,
+            			[ExpireAt] [datetime] NULL,
+            
+                 * 
+        </member>
+    </members>
+</doc>

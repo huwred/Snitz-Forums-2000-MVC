@@ -1,0 +1,39 @@
+﻿@using LangResources.Utility
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
+                <h4 class="modal-title" id="myModalLabel">@ViewBag.Title @ResourceManager.GetLocalisedString("TagPrompt", "Title")</h4>
+            </div>
+<div class="modal-body clearfix">
+    <div id="editor-label">
+        @ViewBag.Prompt
+    </div>
+    <div>
+        @if (ViewBag.Textarea)
+        {
+            <textarea name="prompt-input" class="form-control" id="prompt-input" rows="5" style="@ViewBag.Style"></textarea>
+        }
+        else
+        {
+            <input type="text" name="prompt-input" id="prompt-input" placeholder="" class="form-control" />
+        }
+        
+    </div>
+    @if (ViewBag.Url)
+    {
+    <div class="editor-label">
+        @ViewBag.UrlPrompt
+    </div>
+    <div>
+        <input type="text" name="prompt-url" id="prompt-url" value="@ViewBag.Placeholder" class="form-control"/>
+    </div>        
+    }
+
+    <input type="hidden" name="val1" id="val1"/>
+    <input type="hidden" name="val2" id="val2"/>
+    <input type="hidden" name="process" id="process" value="@ViewBag.Process"/>
+    <br/>
+    <p class="pull-right flip">
+        <input type="button" value="@ResourceManager.GetLocalisedString("btnCancel", "labels")" id="btncancel" class="btn btn-warning modal-close-btn" />
+        <input name="submitPrompt" type="button" id="submitPrompt" value="@ResourceManager.GetLocalisedString("btnOk", "labels")" class="btn btn-primary prompt-sub-btn" />
+    </p>
+</div>

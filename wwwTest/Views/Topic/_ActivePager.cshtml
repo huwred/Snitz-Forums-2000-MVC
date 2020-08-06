@@ -1,0 +1,48 @@
+﻿@using LangResources.Utility
+@using SnitzCore.Extensions
+<div>
+
+    @{
+        string controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+        int pagecount = Convert.ToInt32(ViewBag.PageCount);
+        int page = ViewBag.Page;
+        int intLow = page - 1;
+        int intHigh = page + 3;
+        if (intLow < 1) {intLow = 1;}
+        if (intHigh > pagecount) {intHigh = pagecount;}
+        if (intHigh - intLow < 5) {while ((intHigh < intLow + 4) && intHigh < pagecount) {intHigh++;}}
+        if (intHigh - intLow < 5) {while ((intLow > intHigh - 4) && intLow > 1) {intLow--;}}
+    }
+    @if (pagecount > 1)
+    {
+        <ul class="pager">
+            @if (page > 1)
+            {
+                <li><span class="pager-link">@Html.ActionLink("<<", "Active", controllerName, new { pagenum = 1,activesince = Model.ActiveSince, groupresults= ViewBag.GroupResults }, new{title=LangResources.Utility.ResourceManager.GetLocalisedString("tipFirstPage", "Tooltip"),data_toggle="tooltip"})</span></li>
+                <li><span class="pager-link">@Html.ActionLink("<", "Active", controllerName, new {pagenum = page - 1,activesince = Model.ActiveSince, groupresults = ViewBag.GroupResults }, new{title=LangResources.Utility.ResourceManager.GetLocalisedString("tipPreviousPage", "Tooltip"),data_toggle="tooltip"})</span></li>
+            }
+
+
+            @for (int i = intLow; i < intHigh + 1; i++)
+            {
+                if (i == page)
+                {
+                    <li><span class="pager-link-current">@i.ToLangNum()</span></li>
+                }
+                else
+                {
+                    <li><span class="pager-link">@Html.ActionLink(i.ToLangNum() + "", "Active", controllerName, new { pagenum = i,activesince = Model.ActiveSince, groupresults = ViewBag.GroupResults }, new{title=String.Format(LangResources.Utility.ResourceManager.GetLocalisedString("tipGotoPage", "Tooltip"), i.ToLangNum()),data_toggle="tooltip"})</span></li>
+                }
+            }
+            @if (page < pagecount)
+            {
+                <li><span class="pager-link">@Html.ActionLink(">", "Active", controllerName, new { pagenum = page + 1,activesince = Model.ActiveSince, groupresults = ViewBag.GroupResults }, new{title=LangResources.Utility.ResourceManager.GetLocalisedString("tipNextPage", "Tooltip"),data_toggle="tooltip"})</span></li>
+                <li><span class="pager-link">@Html.ActionLink(">>", "Active", controllerName, new { pagenum = pagecount,activesince = Model.ActiveSince, groupresults = ViewBag.GroupResults }, new{title=LangResources.Utility.ResourceManager.GetLocalisedString("tipLastPage", "Tooltip"),data_toggle="tooltip"})</span></li>
+            }<span class="text-muted"> @String.Format(ResourceManager.GetLocalisedString("lblTotalPages", "labels"), pagecount.ToLangNum())</span>
+        </ul>
+    }
+    else
+    {
+        <p></p>
+    }
+</div>

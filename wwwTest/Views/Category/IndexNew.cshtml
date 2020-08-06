@@ -1,0 +1,174 @@
+﻿@using LangResources.Utility
+@using Snitz.Base
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzCore.Utility
+@using SnitzDataModel.Extensions
+@using SnitzDataModel.Models
+@using WWW.Views.Helpers
+@model SnitzDataModel.Models.Category
+
+@{
+    ViewBag.Title = Model.Title;
+
+}
+@section styles{
+
+    @Styles.Render("~/Content/bootstrapnews.css")
+
+}
+@section breadcrumb
+{
+    @Html.BuildBreadcrumbNavigation()
+}
+@section sidebox{
+    <div class="side-box">
+        @{ Html.RenderPartial("_SearchForums", new ViewDataDictionary(this.ViewData) { { "Category", Model.Id }, { "ForumId", -1 }, { "langStr", "SearchCategoryPosts" } }); }
+    </div>
+    @Html.Partial("_RightColumn", new ViewDataDictionary(this.ViewData) { { "show", new List<string>() { "calendar", "recent" } } })
+
+}
+
+<div id="wrap-subhead">
+    <div class="chunk">
+        <div id="subhead-title">
+            <h4 class="forum-title"><a href="@Url.Action("Index","Category", new {id=Model.Id})">@Model.Title</a></h4>
+        </div>
+        <div class="search-box">
+            <form id="forum-search">
+                <fieldset>
+                    @if (User.IsAdministrator())
+                    {
+                        if (Model.Status == Enumerators.Status.Open)
+                        {
+                            @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfLockCategory", "labels"), "Lock", "Category", new { id = Model.Id, @lock = true }, "fa fa-lock fa-1_5x")
+                        }
+                        else
+                        {
+                            @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfUnlockCategory", "labels"), "Lock", "Category", new { id = Model.Id, @lock = false }, "fa fa-unlock-alt fa-1_5x")
+                        }
+                        @Html.ActionLink(" ", "CreateEdit", "Category", new { id = Model.Id }, new { @class = "fa fa-edit fa-1_5x modal-link", title = ResourceManager.GetLocalisedString("tipEditCategory", "Tooltip"), data_toggle = "tooltip", data_id = Model.Id })
+                        @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfDeleteCategory", "labels"), "Delete", "Category", new { id = Model.Id }, "fa fa-trash-o fa-1_5x")
+                        @Html.ActionLink(" ", "CreateEdit", "Forum", new { id = 0, catid = Model.Id }, new { @class = "fa fa-folder-o fa-1_5x", title = ResourceManager.GetLocalisedString("tipNewForum", "Tooltip"), data_toggle = "tooltip" })
+
+
+                    }
+
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="wrap-body">
+    <div class="chunk-main">
+        <div class="forabg">
+            <div class="inner">
+                <ul class="topiclist">
+                    <li class="header">
+
+
+                        <dl class="icon">
+                            <dt><div class="list-inner">@ResourceManager.GetLocalisedString("ttlForums", "Title")</div></dt>
+                        </dl>
+
+
+                    </li>
+                </ul>
+                <ul class="topiclist forums">
+                    @for (int i = 0; i < Model.Forums.Count; i++)
+                    {
+                        var forumid = Model.Forums[i].Id;
+                        switch (Model.Forums[i].PrivateForums)
+                        {
+                            case Enumerators.ForumAuthType.All:
+                                @Html.DisplayFor(x => x.Forums[i], "ForumNew")
+                                break;
+                            case Enumerators.ForumAuthType.AllowedMembers:
+                            case Enumerators.ForumAuthType.AllowedMemberPassword:
+                                if (User.IsInRole("FORUM_" + forumid) || User.IsAdministrator() || User.IsForumModerator(forumid))
+                                {
+                                    @Html.DisplayFor(x => x.Forums[i], "ForumNew")
+                                }
+                                break;
+                            case Enumerators.ForumAuthType.Members:
+                            case Enumerators.ForumAuthType.MembersPassword:
+                                @Html.DisplayFor(x => x.Forums[i], "ForumNew")
+                                break;
+                            case Enumerators.ForumAuthType.PasswordProtected:
+                                @Html.DisplayFor(x => x.Forums[i], "ForumNew")
+                                break;
+                        }
+
+                    }
+
+                </ul>
+
+            </div>
+        </div>
+    </div>
+    <div class="chunk-main">
+        <div class="panel panel-body">
+            <div class="col-xs-12 col-md-6 col-lg-5 padding-none">
+                @{ Html.RenderPartial("_IconGlossaryForumNew"); }
+            </div>
+            <div class="hidden-xs hidden-sm hidden-md col-lg-1">
+            </div>
+            <div class="hiddden-xs hidden-sm col-md-6">
+                @{ Html.RenderAction("OnlineUsers", new { sidebar = false }); }
+            </div>
+        </div>
+    </div>
+    <div class="chunk-main">
+        <p class="jumpbox-return"><a class="left-box arrow-left" accesskey="r" href="~/">@ResourceManager.GetLocalisedString("returnAll", "labels")</a></p>
+        <div class="dropdown-container dropdown-container-right dropdown-up dropdown-left dropdown-button-control" id="jumpbox">
+            @{ Html.RenderPartial("_JumpTo"); }
+        </div>
+    </div>
+</div>
+
+<div id='editModal' class='modal fade in' aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
+                <h4 class="modal-title" id="myModalLabel">Edit Category</h4>
+            </div>
+            <div id='editContainer' class="modal-body" style="height: 420px;">
+                <div class="container text-center">
+                    <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script src="@Url.Content("~/Scripts/snitz.editor.min.js")" type="text/javascript"></script>
+    <script>
+            $(document).ready(function() {
+
+                $('.admin-btns').each(function () {
+                    if ($(this).is(':empty') || !$(this).html().trim()) {
+                        var parent = $(this).closest('dl');
+                        $("dt", parent).attr("class", "col-xs-10 col-md-7");
+                    }
+                });
+                //$('.edit-cat').on('click', function(e) {
+                //    e.preventDefault();
+                //    var catid = $(this).data('id');
+                //    $.get(SnitzVars.baseUrl + 'Category/CreateEdit/' + catid, function(data) {
+                //        $('#editContainer').html(data);
+                //        $.validator.unobtrusive.parse($("#categoryPropertiesForm"));
+                //        $('.cancel').on('click', function(e2) {
+                //            e2.preventDefault();
+                //            $('#editModal').modal('hide');
+                //        });
+                //        $('#editModal').modal('show');
+                //    });
+                //});
+
+            });
+
+    </script>
+}

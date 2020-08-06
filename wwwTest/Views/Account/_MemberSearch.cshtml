@@ -1,0 +1,71 @@
+﻿@using LangResources.Utility
+@using SnitzDataModel.Extensions
+@model WWW.ViewModels.ListUserViewModel
+
+@{
+    char[] alpha = ResourceManager.GetLocalisedString("memberSearchInitials").ToCharArray();
+}
+    <div class="hidden-xs hidden-sm col-md-12">
+        @using (Html.BeginForm("Search", "Account", new { pagenum = ViewBag.Page, sortOrder = ViewBag.SortDir, sortCol = ViewBag.SortCol }, FormMethod.Post, new { id = "search-form" }))
+        {
+            <div class="form-inline">
+                <label class="radio-inline">
+                    @ResourceManager.GetLocalisedString("Search_Term", "labels")&nbsp;&nbsp;<input type="text" class="form-control" placeholder="@ResourceManager.GetLocalisedString("UserName","General")" name="Username" value="@Model.SearchForm.Username" /> <input type="text" class="form-control" name="Firstname" placeholder="@ResourceManager.GetLocalisedString("ProfileFirstname","General")" value="@Model.SearchForm.Firstname" /> <input type="text" class="form-control" name="Lastname" placeholder="@ResourceManager.GetLocalisedString("ProfileLastname","General")" value="@Model.SearchForm.Lastname" />
+                    @if (User.IsAdministrator())
+                    {<input type="text" class="form-control ltr" name="Email" placeholder="@ResourceManager.GetLocalisedString("Email","General")" value="@Model.SearchForm.Email" /><input type="text" class="form-control" name="Title" placeholder="@ResourceManager.GetLocalisedString("ProfileTitle","General")" value="@Model.SearchForm.Title" />}
+                    <button class="btn btn-primary" title="@ResourceManager.GetLocalisedString("Search_Members","labels")" data-toggle="tooltip"><i class="fa fa-search"></i></button>
+                </label>
+            </div>
+            if (User.IsAdministrator())
+            {
+                <div class="form-inline">
+                    <label class="radio-inline">
+                        @ResourceManager.GetLocalisedString("DateFilter", "labels")&nbsp;&nbsp;
+                        <select type="text" class="form-control" name="LastPost">
+
+                            <option value="">- @ResourceManager.GetLocalisedString("ProfileLastPost", "General")</option>
+                            <option value="0" @if (Model.LastPost == 0) { @Html.Raw("selected") }>@ResourceManager.GetLocalisedString("Never", "General")</option>
+                            <option value="1" @if (Model.LastPost == 1) { @Html.Raw("selected") }>@ResourceManager.GetLocalisedString("OlderThanOneYear", "labels")</option>
+                            <option value="2" @if (Model.LastPost == 2) { @Html.Raw("selected") }>@String.Format(ResourceManager.GetLocalisedString("OlderThanXYears", "labels"), 2)</option>
+                            <option value="5" @if (Model.LastPost == 5) { @Html.Raw("selected") }>@String.Format(ResourceManager.GetLocalisedString("OlderThanXYears", "labels"), 5)</option>
+                        </select>
+                        <select type="text" class="form-control" name="LastVisit">
+                            <option value="">- @ResourceManager.GetLocalisedString("ProfileLastVisit", "General")</option>
+                            <option value="0" @if (Model.LastVisit == 0) { @Html.Raw("selected") }>@ResourceManager.GetLocalisedString("Never", "General")</option>
+                            <option value="1" @if (Model.LastVisit == 1) { @Html.Raw("selected") }>@ResourceManager.GetLocalisedString("OlderThanOneYear", "labels")</option>
+                            <option value="2" @if (Model.LastVisit == 2) { @Html.Raw("selected") }>@String.Format(ResourceManager.GetLocalisedString("OlderThanXYears", "labels"), 2)</option>
+                            <option value="5" @if (Model.LastVisit == 5) { @Html.Raw("selected") }>@String.Format(ResourceManager.GetLocalisedString("OlderThanXYears", "labels"), 5)</option>
+                        </select>
+                        <select type="text" class="form-control" name="Registered">
+                            <option value="">- @ResourceManager.GetLocalisedString("ProfileDate", "General")</option>
+                            <option value="1" @if (Model.Registered == 1) { @Html.Raw("selected") }>@ResourceManager.GetLocalisedString("OlderThanOneYear", "labels")</option>
+                            <option value="2" @if (Model.Registered == 2) { @Html.Raw("selected") }>@String.Format(ResourceManager.GetLocalisedString("OlderThanXYears", "labels"), 2)</option>
+                            <option value="5" @if (Model.Registered == 5) { @Html.Raw("selected") }>@String.Format(ResourceManager.GetLocalisedString("OlderThanXYears", "labels"), 5)</option>
+                        </select>
+                        @if (User.IsAdministrator())
+                        {
+                            <input type="checkbox" class="checkbox" name="confirmed" id="email-confirmed" @if (Model.Confirmed) { @Html.Raw("checked") } />@Html.Raw("&nbsp;Show Unconfirmed Emails")
+                        }
+
+                    </label>
+                </div>
+                <input type="hidden" value="" id="mail-subject" name="EmailSubject" />
+                <input type="hidden" value="" id="mail-message" name="EmailMessage" />
+            }
+            <input type="hidden" value="" id="new-page" name="new-page" />
+            <input type="hidden" value="@ViewBag.SortDir" id="sortOrder" name="sortOrder" />
+            <input type="hidden" value="@ViewBag.SortCol" id="sortCol" name="sortCol" />
+            <input type="hidden" value="@Model.Initial" id="Initial" name="Initial" />
+        }
+    </div>
+
+<div class="col-xs-12">
+    <ul class="list-inline list-unstyled h4">
+        <li>@Html.ActionLink(ResourceManager.GetLocalisedString("Search_All", "labels"), "Index", new { pagenum=1, sortOrder = ViewBag.SortDir, sortCol="posts" })</li>
+        @foreach (var ch in alpha)
+        {
+            <li>@Html.ActionLink("" + ch, "Index", new { pagenum=1, sortOrder = ViewBag.SortDir, sortCol="user",initial=ch })</li>
+        }
+    </ul>
+</div>
+

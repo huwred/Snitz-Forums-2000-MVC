@@ -31,6 +31,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
 using LangResources.Models;
+using MySql.Data;
 using MySql.Data.MySqlClient;
 using PetaPoco;
 using Snitz.Base;

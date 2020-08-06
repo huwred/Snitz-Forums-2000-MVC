@@ -1,0 +1,108 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+
+@model WWW.Models.OnlineUserViewModel
+@{
+    Layout = null;
+
+}
+
+<div id="online-users" class="topic-strap">
+
+        <span>@Html.Raw(String.Format(ResourceManager.GetLocalisedString("lblOnlineUsersDesc", "labels"), SnitzMembership.OnlineUsersInstance.OnlineUsers.UsersCount, SnitzMembership.OnlineUsersInstance.OnlineUsers.RegisteredUsersCount, SnitzMembership.OnlineUsersInstance.OnlineUsers.HiddenUsersCount, SnitzMembership.OnlineUsersInstance.OnlineUsers.GuestUsersCount, ClassicConfig.GetIntValue("INTACTIVETOTAL"), Html.Timeago(ClassicConfig.GetValue("STRACTIVETOTAL").ToDateTime())))<br/></span>
+
+
+    @if (Model.Members.Count > 0)
+    {
+        bool first = true;
+        foreach (var item in Model.Members)
+        {
+            string cssusername = "member";
+            if (Roles.IsUserInRole(item.Key, "Administrator"))
+            {
+                cssusername = "administrator";
+            }
+            else if (Roles.IsUserInRole(item.Key, "Moderator"))
+            {
+                cssusername = "moderator";
+            }
+            if (Config.ShowAvatar)
+            {
+                <a href="@Url.Action("UserProfile", "Account", new {id = item.Key})" class="cssusername">
+                    @Html.Avatar(item.Key, item.Value, "small img-circle ").If(!Config.AnonymousMembers.Contains(item.Value))
+                </a>
+            }
+            else
+            {
+                if (!first)
+                {
+                    @Html.Raw(",")
+                }
+                @Html.ActionLink(item.Key, "UserProfile", "Account", new { id = item.Key }, new { title = ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip"), @class = cssusername, data_toggle = "tooltip" })
+                first = false;
+            }
+        }
+
+    }
+    else
+    {
+        bool first = true;
+        foreach (var item in Model.Usernames)
+        {
+            string cssusername = "member";
+            if (Roles.IsUserInRole(item, "Administrator"))
+            {
+                cssusername = "administrator";
+            }
+            else if (Roles.IsUserInRole(item, "Moderator"))
+            {
+                cssusername = "moderator";
+            }
+            if (!first)
+            {
+                @Html.Raw(",")
+                @Html.ActionLink(item, "UserProfile", "Account", new { id = item }, new { @title = ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip"), @class = cssusername, data_toggle = "tooltip" })
+            }
+            else
+            {
+                @Html.Raw("Online: ")
+                @Html.ActionLink(item, "UserProfile", "Account", new { id = item }, new { @title = ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip"), @class = cssusername, data_toggle = "tooltip" })
+            }
+            first = false;
+        }
+    }
+    @if (Model.RecentMembers.Count > 0)
+    {
+        bool first = true;
+        <hr class="title" style="margin: 0px; padding: 2px;margin-top:3px;" />
+        foreach (var item in Model.RecentMembers)
+        {
+            string cssusername = "member";
+            if (Roles.IsUserInRole(item.Key, "Administrator"))
+            {
+                cssusername = "administrator";
+            }
+            else if (Roles.IsUserInRole(item.Key, "Moderator"))
+            {
+                cssusername = "moderator";
+            }
+            if (!first)
+            {
+                @Html.Raw(", ")
+                @Html.ActionLink(item.Key, "UserProfile", "Account", new { id = item.Key }, new { @title = ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip"), @class = cssusername, data_toggle = "tooltip" })
+                @Html.Raw(" (")@Html.Timeago(item.Value.ToDateTime())@Html.Raw(")")
+            }
+            else
+            {
+                <span>@Html.Raw(ResourceManager.GetLocalisedString("lblRecent", "labels") + ": ")</span>
+                @Html.ActionLink(item.Key, "UserProfile", "Account", new { id = item.Key }, new { @title = ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip"), @class = cssusername, data_toggle = "tooltip" })
+                @Html.Raw(" (")@Html.Timeago(item.Value.ToDateTime())@Html.Raw(")")
+            }
+            first = false;
+        }
+    }
+</div>
+

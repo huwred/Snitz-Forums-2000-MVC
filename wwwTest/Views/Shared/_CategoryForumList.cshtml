@@ -1,0 +1,80 @@
+﻿@using LangResources.Utility
+@using Snitz.Base
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel
+@using SnitzDataModel.Database
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@using Category = SnitzDataModel.Models.Category
+@using Forum = SnitzDataModel.Models.Forum
+
+@{
+    List<Category> catList;
+    using (var db = new SnitzDataContext())
+    {
+        catList = db.FetchCategoryForumList(User).ToList();
+    }
+}
+<div id="content">
+    <h5>@ResourceManager.GetLocalisedString("lblCategories", "labels") @Html.ActionLink(" ", "CreateEdit", "Category", new { id = 0}, new { @class = "fa fa-folder-open-o", title=ResourceManager.GetLocalisedString("tipNewCategory", "Tooltip"),data_toggle="tooltip" }).If(User.IsAdministrator())</h5>
+    <hr class="title" style="margin:0px;padding:1px;" />
+    <div class="accordion" id="accordianParent">
+        @foreach (Category cat in catList)
+        {
+            var catlink = "#c_" + cat.Id;
+            bool hasMatch = User.CanViewCategory(cat.Id, null);
+            if (hasMatch)
+            {
+                <div class="accordion">
+                    <div class="category">
+                        <a class="accordion-toggle collapsed" data-toggle="collapse" href="@catlink">
+                            @cat.Title
+                        </a>
+                        @if (User.IsAdministrator()) 
+                        {
+                            @Html.ActionLink(" ", "CreateEdit", "Forum", new {id = 0, catid = cat.Id}, new {@class = "fa fa-folder-o fa-fw", data_title = ResourceManager.GetLocalisedString("tipNewForum", "Tooltip"), data_toggle = "tooltip"})@Html.Raw("&nbsp;")
+                            @Html.ActionLink(" ", "CreateEdit", "Category", new {id = cat.Id}, new {@class = "fa fa-edit fa-fw modal-link", data_title = ResourceManager.GetLocalisedString("tipEditCategory", "Tooltip"), data_toggle = "tooltip", data_id=cat.Id})
+                            @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfDeleteCategory", "labels"), "Delete", "Category", new {id = cat.Id}, "fa fa-trash-o fa-fw")
+                        }
+                    </div>
+                    <div id="c_@cat.Id" class="collapse">
+                        <div class="accordion-inner-small">
+                            @foreach (Forum f in cat.Forums)
+                            {
+                                bool ismoderator = User.ModeratedForums().Contains(f.Id);
+                                switch (f.Type)
+                                {
+                                    case Enumerators.ForumType.WebLink:
+                                        <span class="web-link"><span class="fa fa-globe" aria-hidden="true"></span><a href="@f.Url" title="" >@f.Subject</a></span>
+                                        break;
+                                    default:
+                                        <span>
+                                        @Html.ShowHideForums(f, null)
+                                        @Html.ActionLink(" ", "CreateEdit", "Forum", new {id = f.Id, catid = cat.Id}, new {@class = "fa fa-edit", data_title = ResourceManager.GetLocalisedString("tipEditForum", "Tooltip"), data_toggle = "tooltip"}).If(User.IsAdministrator() || ismoderator)
+                                        
+                                        @if (User.IsAdministrator())
+                                        {
+                                            if (ClassicConfig.GetValue("STRARCHIVESTATE") == "1")
+                                            {
+                                                @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfArchiveForum", "labels"), "ArchiveForum", "Forum", new {id = f.Id}, "fa fa-archive")
+                                            }
+                                            @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfDeleteForum", "labels"), "Delete", "Forum", new {id = f.Id, catid = cat.Id}, "fa fa-trash-o")
+                                        }
+                                        
+                                    </span>
+                                        break;
+                                }
+
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+</div>
+
+
+

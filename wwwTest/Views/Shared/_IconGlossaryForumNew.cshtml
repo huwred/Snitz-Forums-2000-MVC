@@ -1,0 +1,54 @@
+﻿@using SnitzConfig
+@using LangResources.Utility
+@using SnitzCore.Utility
+@using SnitzDataModel.Extensions
+@using SnitzDataModel.Models
+@{
+    var themepath = Common.RootFolder + Config.ThemeFolder();
+}
+    <ul class="topiclist forums icons glossary">
+
+        <li><dl class="icon "><dt class="col-xs-2"><span class="ico_forum_read" style="width: 37px"></span></dt><dd style="padding-top: 12px;"> @ResourceManager.GetLocalisedString("lblOldPosts", "labels")</dd> </dl></li>
+        <li>
+            <dl class="icon ">
+                <dt class="col-xs-2"><span class="ico_forum_unread" style="width: 37px"></span><div class="list-inner"></div> </dt>
+                <dd style="padding-top: 12px;">@ResourceManager.GetLocalisedString("lblNewPosts", "labels")</dd>
+            </dl>
+        </li>
+        <li>
+            <dl class="icon ">
+                <dt class="col-xs-2"><span class="ico_forum_read_locked" style="width: 37px"></span> </dt>
+                <dd style="padding-top: 12px;">@ResourceManager.GetLocalisedString("lblLockedForum", "labels")</dd>
+            </dl>
+        </li>
+        <li>
+            <dl class="icon ">
+                <dt class="col-xs-2"><span class="ico_forum_unread_locked" style="width: 37px"></span> </dt>
+                <dd style="padding-top: 12px;">@ResourceManager.GetLocalisedString("lblLockedForum", "labels") @ResourceManager.GetLocalisedString("lblNewPosts", "labels")</dd>
+            </dl>
+        </li>
+        @if (User.IsAdministrator() || User.IsModerator())
+        {
+            <li><dl class="icon "><dt class="col-xs-2"><span class="ico_forum_unmoderated" style="width: 37px"></span></dt><dd style="padding-top: 12px;"> @ResourceManager.GetLocalisedString("tipTopicUnmoderatedReplies", "Tooltip") </dd> </dl></li>
+        }
+        @if (ClassicConfig.GetIntValue("INTPOLLS",0) == 1 && Forum.Query("WHERE F_POLLS>0").Any())
+        {
+            <li>
+                <dl class="icon ">
+                    <dt class="col-xs-2"><span class="ico_forum_poll" style="width: 37px"></span> </dt>
+                    <dd style="padding-top: 12px;">@ResourceManager.GetLocalisedString("lblPollForum", "labels")</dd>
+                </dl>
+            </li>
+        }
+        @if (ClassicConfig.GetIntValue("INTCALEVENTS",0) == 1 && Forum.Query("WHERE F_ALLOWEVENTS>0").Any())
+        {
+            <li>
+                <dl class="icon ">
+                    <dt class="col-xs-2"><span class="ico_forum_event" style="width: 37px"></span> </dt>
+                    <dd style="padding-top: 12px;">@ResourceManager.GetLocalisedString("lblEventForum", "labels")</dd>
+                </dl>
+            </li>
+        }
+    </ul>
+
+

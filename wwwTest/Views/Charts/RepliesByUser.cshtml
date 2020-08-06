@@ -1,0 +1,64 @@
+﻿@using WWW.Views.Helpers
+
+@{
+    Layout=null;
+}
+<canvas id="rbuChart" width="400" height="200"></canvas>
+
+@using(Html.BeginScripts()){
+
+<script type="text/javascript">
+
+var GetReplyData = function() {
+
+            $.ajax({  
+                type: "POST",  
+                url: "/Charts/RepliesByUser",  
+                contentType: "application/json; charset=utf-8",  
+                dataType: "json",  
+                success: function (chData) { 
+                var aData = chData;  
+                var aLabels = aData[0];  
+                var aDatasets1 = aData[1];  
+  
+                var ctx = $("#rbuChart");  
+                var myNewChart = new Chart(ctx, {  
+                    type: 'bar',  
+                    autoSkip: false,
+                    animation:false,
+                    showDataPoints:true,
+                    responsive: true,
+                    data: {
+                        labels: aLabels,  
+                        datasets: [{  
+                            label: "Replies by User",  
+                            data: aDatasets1,   
+                            backgroundColor: 'blue'
+                            }]
+                    },  
+                    options: {
+                        scaleShowValues: true,
+                        scales: {
+                            yAxes: [{
+                                ticks: { beginAtZero: true}
+                            }],
+                            xAxes: [{
+                                ticks: {autoSkip: false }
+                            }]
+                        }
+                    }
+                });  
+            }  
+        });      
+    }
+$(document).ready(function() {
+
+    GetReplyData();
+
+});        
+</script>  
+
+}
+
+
+        

@@ -1,0 +1,22 @@
+﻿@using LangResources.Utility
+@{
+    string placeholderText = "SearchForumPosts";
+    if (Model.TopicId != null)
+    { placeholderText = "SearchTopicPosts"; }
+}
+<form action="@Url.Action("Search","Topic",new{})" method="post">
+    <div class="input-group">
+        <input type="hidden" id="Category" name="Category" value="@Model.Category" />
+        <input type="hidden" id="ForumId" name="ForumId" value="@Model.ForumId" />
+        <input type="hidden" id="TopicId" name="TopicId" value="@Model.TopicId" />
+        <input name="term" data-val="true" id="term" data-val-length-min="3" data-val-length="@string.Format(ResourceManager.GetLocalisedString("strMinLength", "ErrorMessage"), "", 3)" data-val-required="@string.Format(ResourceManager.GetLocalisedString("Validation_Required", "ErrorMessage"), "")" class="form-control" type="text" placeholder="@ResourceManager.GetLocalisedString(placeholderText, "Title")" value="">
+        <span class="input-group-btn">
+            <button class="btn btn-info" type="submit"><i class="fa fa-search"></i></button>
+        </span>
+    </div>
+    <div class="form-group">
+        @Html.ValidationSummary(false, "", new { @class = "list-group-item-info" })
+    </div>
+</form>
+
+

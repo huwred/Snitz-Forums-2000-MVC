@@ -1,0 +1,195 @@
+﻿@using LangResources.Utility
+@using Snitz.Base
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using SnitzDataModel.Models
+@using WWW.Helpers
+@using WWW.Views.Helpers
+@model SnitzDataModel.Models.Forum
+
+@{
+    var auth = Session["Forum_" + Model.Id] == null ? "" : Session["Forum_" + Model.Id].ToString();
+    bool requireauth = auth != Model.PasswordNew;
+    string postsclass = "ico_forum_read";
+    string forumtitle = ResourceManager.GetLocalisedString("lblOldPosts", "labels");
+    bool newPosts = (DateTime)ViewData["LastVisitDateTime"] < Model.LastPostDate;
+    if (newPosts)
+    {
+        postsclass = "ico_forum_unread";
+        forumtitle = ResourceManager.GetLocalisedString("lblNewPosts", "labels");
+    }
+    if (Model.PollsAuth != Enumerators.PollAuth.Disallow)
+    {
+        postsclass = "ico_forum_poll";
+        if (newPosts)
+        {
+            postsclass += "_unread";
+        }
+    }
+    if (Config.TableExists("CAL_EVENTS"))
+    {
+        if ((int)CustomAssemblyResolver.ExecuteMethod("SnitzEvents", "SnitzEvents.Helpers.Methods", "ForumAuth", new object[] { Model.Id }) > 0)
+        {
+            if (Model.PollsAuth != Enumerators.PollAuth.Disallow)
+            {
+                postsclass = postsclass.Replace("_unread", "") + "_event";
+            }
+            else
+            {
+                postsclass = "ico_forum_event";
+            }
+
+            if (newPosts)
+            {
+                postsclass += "_unread";
+            }
+        }
+    }
+
+    if (Model.Status == Enumerators.PostStatus.Closed)
+    {
+        postsclass += "_locked";
+    }
+    if(Model.UnmoderatedPosts(Model.Id) > 0 && (User.IsAdministrator() || User.IsForumModerator(Model.Id)))
+    {
+        postsclass = "ico_forum_unmoderated";
+    }
+}
+
+@if (User.IsAdministrator() || User.CanViewForum(Model, null))
+{
+
+    if (Model.Type != Enumerators.ForumType.WebLink)
+    {
+
+        <li class="row">
+            <dl class="@postsclass">
+                <dt data-title="@ResourceManager.GetLocalisedString(postsclass, "icoTooltip")" class="col-xs-9 col-md-6" data-toggle="tooltip">
+                    <span class="@postsclass"></span>
+                    <div class="list-inner">
+                        @Html.ActionLink("" + Model.Subject, "Posts", "Forum", new { id = Model.GenerateSlug(), pagenum = 1 }, new { @class = "forumtitle" })
+
+                        <br>@Html.FormatBbCode(Model.Description)<br />
+                        <!-- Add forum options here ? -->
+                        @if (Model.ReplyAuth != Enumerators.PostAuthType.Anyone || Model.PostAuth != Enumerators.PostAuthType.Anyone)
+                        {
+                            <label class='small'>@ResourceManager.GetLocalisedString("lblRestricted", "labels")</label>
+                        }
+                        @if (Model.Moderation != Enumerators.Moderation.UnModerated && ClassicConfig.GetIntValue("STRMODERATION",0) == 1)
+                        {
+                            if (Model.ReplyAuth != Enumerators.PostAuthType.Anyone || Model.PostAuth != Enumerators.PostAuthType.Anyone)
+                            {
+                                @Html.Raw(": ")
+                            }
+                    <label class='small'>@ResourceManager.GetLocalisedString("lblModeration", "labels")</label>
+                        }
+                    <div class="responsive-show" style="display: none;">
+                        @ResourceManager.GetLocalisedString("lblTopics", "labels"): <strong>@Model.TopicCount</strong>
+                    </div>
+                    </div>
+                </dt>
+                <dd class="topics hidden-xs hidden-sm col-md-1">@Model.TopicCount<dfn>@ResourceManager.GetLocalisedString("lblTopics", "labels")</dfn></dd>
+                <dd class="posts hidden-xs hidden-sm col-md-1">@Model.PostCount<dfn>@ResourceManager.GetLocalisedString("lblPosts", "labels")</dfn></dd>
+                @if (Model.PrivateForums.In(Enumerators.ForumAuthType.AllowedMemberPassword, Enumerators.ForumAuthType.MembersPassword, Enumerators.ForumAuthType.PasswordProtected) && requireauth && (!User.IsAdministrator() || User.IsForumModerator(Model.Id)))
+                {
+                    <dd class="lastpost hidden-xs hidden-sm col-md-2">&nbsp;</dd>
+                }
+                else
+                {
+                    <dd class="lastpost col-xs-3">
+                        <dfn>@ResourceManager.GetLocalisedString("lblLastPost", "labels")</dfn>
+                        @if (Model.LastPostDate.HasValue && Model.LastPostAuthorName != null)
+                        {
+                            var topic = Topic.FetchTopic(Model.LastPostTopicId.Value);
+                            <a class="lastsubject" href="@Url.Action("Posts", "Topic", new {id = topic.GenerateSlug(), pagenum = -1, archived = 0})#@Model.LastPostReplyId" data-toggle="tooltip" data-title="@Html.FormatBbCodeTitle(Model.LastTopicSubject,false)">@Html.FormatBbCode(Model.LastTopicSubject,false)</a>
+                            <br />
+
+                            <span class="text-muted hidden-xs">@ResourceManager.GetLocalisedString("lblPostedBy", "labels")</span>
+                            @Html.ActionLink(Model.LastPostAuthorName, "UserProfile", "Account", new { id = Model.LastPostAuthorName }, new { title = ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip"),  data_toggle = "tooltip", @class = Roles.IsUserInRole(Model.LastPostAuthorName, "Administrator") ? "administrator" : "member" })
+                    <span>
+                        @Html.Timeago(Model.LastPostDate.Value)
+                    </span>
+
+                        }
+                        else
+                        {
+                            @Html.Raw("&nbsp;")
+                        }
+                    </dd>
+                }
+
+            <dd class="mark hidden-xs hidden-sm admin-btns">
+                @if (Model.Status == Enumerators.PostStatus.Open && User.Identity.IsAuthenticated)
+                {
+                    @Html.ForumSubscriptionLink(Model.CatId, Model.Id, User)
+                    if (ClassicConfig.GetIntValue("INTFORUMRSS") == 1)
+                    {
+                        @Html.ActionLink(" ", "Forum", "RssFeed", new { id = Model.Id }, new { @class = "fa fa-rss fa-1_5x", title = ResourceManager.GetLocalisedString("tipForumRss", "Tooltip"), data_toggle = "tooltip" })
+                    }
+                    <!-- Who can post -->
+                    if (Model.PostAuth == Enumerators.PostAuthType.Anyone || (Model.PostAuth == Enumerators.PostAuthType.Moderators && User.IsForumModerator(Model.Id)) || User.IsAdministrator())
+                    {
+                        @Html.ActionLink(" ", "PostMessage", "Topic", new { id = 0, forumid = Model.Id, catid = Model.CatId }, new { @class = "fa fa-comment-o fa-1_5x", data_title = ResourceManager.GetLocalisedString("tipNewTopic", "Tooltip"), data_toggle = "tooltip" })
+                    }
+                    if (ClassicConfig.GetIntValue("INTPOLLS") == 1 && Model.PollsAuth != Enumerators.PollAuth.Disallow)
+                    {
+
+                        if ((Model.PollsAuth == Enumerators.PollAuth.Members && WebSecurity.IsAuthenticated) || (Model.PollsAuth == Enumerators.PollAuth.AdminModerators && (User.IsAdministrator() || User.IsModerator())))
+                        {
+                            <a title="@ResourceManager.GetLocalisedString("tipAddPoll", "Poll")" data-toggle="tooltip" href="@Url.Action("PostMessage", "Topic", new {id = 0, forumid = Model.Id, catid = Model.CatId, ispoll = true})">
+                                <i class="fa fa-bar-chart fa-1_5x"></i>
+                                @*<span class="hidden-xs hidden-sm">New Poll</span>*@
+                            </a>
+                        }
+
+                    }
+
+                    if (ClassicConfig.GetIntValue("INTCALEVENTS", 0) == 1)
+                    {
+                        int authlevel = 0;
+                        if (ClassicConfig.GetIntValue("INTCALEVENTS") == 1)
+                        {
+                            authlevel = (int)CustomAssemblyResolver.ExecuteMethod("SnitzEvents", "SnitzEvents.Helpers.Methods", "ForumAuth", new object[] { Model.Id });
+                        }
+                        if (authlevel == 2 || authlevel == 3 && (User.IsAdministrator() || User.IsModerator()) || authlevel == 4 && User.IsAdministrator())
+                        {
+                            <a title="@ResourceManager.GetLocalisedString("tipAddEvent", "Event")" data-toggle="tooltip" href="@Url.Action("PostMessage", "Topic", new {id = 0, forumid = Model.Id, catid = Model.CatId, isevent = true})">
+                                <i class="fa fa-calendar-plus-o fa-1_5x"></i>
+                                @*<span class="hidden-xs hidden-sm">New Poll</span>*@
+                            </a>
+                        }
+
+                    }
+                }
+            </dd>
+            </dl>
+        </li>
+
+    }
+    else
+    {
+<li class="row">
+    <dl class="ico_forum_link">
+        <dt title="@ResourceManager.GetLocalisedString("ico_forum_link", "labels")" class="col-xs-10">
+
+            <span class="ico_forum_link"></span>
+
+            <div class="list-inner">
+
+                <a class="forumtitle" href="@Model.Url" title="@Html.FormatBbCode(Model.Subject, false)" target="_blank">@Html.FormatBbCode(Model.Subject, false)</a>
+                <br>@Html.FormatBbCode(Model.Description)
+
+            </div>
+        </dt>
+ 
+        <dd>                    @if (User.IsAdministrator() || User.IsForumModerator(Model.Id))
+                                {
+                                    @Html.ActionLink(" ", "CreateEdit", "Forum", new { id = Model.Id, catid = Model.CatId }, new { @class = "fa fa-edit fa-1_5x", title = ResourceManager.GetLocalisedString("tipEditWeblink", "Tooltip"), data_toggle = "tooltip" })
+                                    @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfDeleteWeblink", "labels"), "Delete", "Forum", new { id = Model.Id, catid = Model.CatId }, "fa fa-trash-o fa-1_5x")
+                                }
+        </dd>
+    </dl>
+</li>
+    }
+}

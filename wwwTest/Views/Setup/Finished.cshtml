@@ -1,0 +1,31 @@
+﻿@using SnitzConfig
+@using SnitzCore.Utility
+@model dynamic
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Mvc Setup Finished</title>
+    @Styles.Render("~/bundles/sitecss")
+    @Styles.Render("~/Content/stylesheet.min.css")
+    @Styles.Render("~/Content/Themes/Snitz/snitz.min.css")
+
+</head>
+<body>
+    <div class="container text-center">
+        <h3>@ViewBag.Title</h3>
+    </div>
+    <div class="container text-center">
+        <h5>@ViewBag.Message</h5>
+        <hr class="title" />
+
+        <p><h4>The Forum has been started in offline mode</h4>Only users from @Common.GetUserIP(System.Web.HttpContext.Current) will have access to the forum in this state. If you are unable to log back in, you can put the forum back online by deleting the <b>offline_file.txt</b> file in the forum's App_Data folder. </p>
+        <p><br />@Html.ActionLink("Go to Forum", "Index", "Home", null, new { @class = "btn btn-primary" })</p>
+    </div>
+</body>
+</html>

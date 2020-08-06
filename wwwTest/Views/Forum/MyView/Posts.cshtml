@@ -1,0 +1,122 @@
+﻿@using System.Web.Mvc.Html
+@using LangResources.Utility
+@using Snitz.Base
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@using Topic = SnitzDataModel.Models.Topic
+
+
+@model WWW.ViewModels.MyTopicsViewModel
+
+@section pageMeta
+{
+    @*<meta name="description" content="@BbCodeProcessor.StripTags(Model.Forum.Description).TruncateLongString(360)">*@
+    <meta name="author" content="@(Config.ForumTitle ?? ClassicConfig.ForumTitle)">
+}
+@section styles
+{
+    @Html.Raw(Config.ThemeCss("star-rating.min.css"))
+    @Html.Raw(Config.ThemeCss("tag_cloud.css"))
+}
+
+@section breadcrumb
+{
+    @Html.BuildBreadcrumbNavigation()
+
+}
+
+@section sidebox
+{
+    <div class="panel-group">
+        <div class="side-box">
+            @Html.Action("Index", "TagCloud", new { id = -1 })
+        </div>
+        <div class="side-box">
+            @{ Html.RenderPartial("_MyViewList"); }
+        </div>
+    </div>
+
+}
+
+
+<div id="topic-panel">
+    <div id="docsContainer">
+
+        @foreach (Topic topic in Model.Topics)
+        {
+            @Html.DisplayFor(m => topic, "MyView")
+        }
+
+    </div>
+
+    <div id="progress" class="align-center" style="display: none;">
+        <i class="fa fa-3x fa-spinner"></i>
+    </div>
+
+</div>
+
+@section scripts
+{
+    @Scripts.Render("~/Scripts/star-rating.min.js")
+    <script type="text/javascript">
+        /*
+                This is not necessary, but gives the tag-cloud a nice fade-in effect.
+        */
+        var page = 2;
+
+        $(document).ready(function onPageLoad() {
+            var animatedProperties = {
+                paddingLeft: '30px',
+                paddingTop: '40px',
+                paddingBottom: '55px',
+                paddingRight: '45px',
+                opacity: 1
+            };
+
+            $('.tag-cloud').animate(animatedProperties, 500);
+        });
+        $(document).ready(function() {
+            $(window).bind('scroll', loadTopics);
+            
+        });
+        var loadTopics = function() {
+            //console.log('loadTopics');
+            //console.log($(window).scrollTop() + $(window).height());
+            //console.log('doc height:' + $(document).height());
+            if ($(window).scrollTop() + $(window).height() >= $(document).height() - 40) {
+                $(window).unbind('scroll');
+                console.log("page: " + page);
+                GetMyTopics();
+            }
+        };
+
+        $("#docsContainer ul .fa").removeClass("fa-2x");
+
+        function GetMyTopics() {
+            $.ajax({
+                type: 'GET',
+                url: window.SnitzVars.baseUrl + 'Forum/MyViewNext/' + page + '/?nextpage=' + page + '&refresh=YES',
+                success: function(data) {
+                    if (data != null) {
+                        $("#docsContainer").append(data);
+                        page++;
+                        $("#docsContainer ul .fa").removeClass("fa-2x");
+                    }
+                },
+                beforeSend: function() {
+                    $("#progress").show();
+                },
+                complete: function() {
+                    $("#progress").hide();
+                    $(window).bind('scroll', loadTopics);
+                    $("time.timeago").timeago();
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert("Error while retrieving data! " + errorThrown);
+                }
+            });
+        }
+    </script>
+}

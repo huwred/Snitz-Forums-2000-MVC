@@ -1,0 +1,61 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using SnitzDataModel.Models
+@using WWW.Views.Helpers
+@using System.Configuration
+
+
+@{
+    ViewBag.PageTitle = "Plugin Configuration";
+    ViewBag.ActivePage = "Mod Config";
+    ViewBag.SubmitButton = "";
+
+}
+
+<div class="panel panel-primary panel-body clearfix">
+    <div class="col-sm-11 flip text-left">
+        @using (Html.BeginForm("ModConfig", "Admin", FormMethod.Post, new { @class = "form-horizontal" }))
+        {
+            ViewBag.SubmitButton = ResourceManager.GetLocalisedString("btnSave", "labels");
+            if (Config.TableExists("FORUM_BOOKMARKS"))
+            {
+                <div class="form-group">
+                    @Html.ConfigToggle("Bookmarks", "STRBOOKMARKS", "", "control-label col-xs-3")
+                </div>
+            }
+            <div class="form-group"></div>
+            if (Config.TableExists("FORUM_THANKS"))
+            {
+                <div class="form-group">
+                    @Html.ConfigToggle(ResourceManager.GetLocalisedString("AdminLabel", "Thanks"), "STRTHANKS", "", "control-label col-xs-3")
+                </div>
+            }
+            if (Config.TableExists(ConfigurationManager.AppSettings["memberTablePrefix"] + "USERFIELDS"))
+            {
+                <div class="form-group">
+                    @Html.ConfigToggle(ResourceManager.GetLocalisedString("usrAdmin", "ExtProfile"), "STREXTENDPROFILE", "", "control-label col-xs-3")
+                </div>
+            }
+            @Html.Hidden("ControllerView", "ModConfiguration");
+            Html.RenderPartial("_FormButtons");
+        }
+        @if (Config.TableExists(ConfigurationManager.AppSettings["memberTablePrefix"] + "USERFIELDS") && ClassicConfig.GetIntValue("STREXTENDPROFILE") == 1)
+        {
+            <div class="form-group">
+                <hr class="title" />
+                @{
+                    Html.RenderAction("MemberFieldsAdmin", "MemberFields");
+                }
+            </div>
+        }
+
+    </div>
+</div>
+
+@using (Html.BeginScripts())
+{
+    <script src="@Url.Content("~/Scripts/snitz.extendedprofile.js")"></script>
+
+}

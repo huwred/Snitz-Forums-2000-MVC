@@ -1,0 +1,91 @@
+﻿
+@using LangResources.Utility
+@model WWW.Models.ChangeEmailModel
+@{
+    ViewBag.SubmitButton = LangResources.Utility.ResourceManager.GetLocalisedString("btnChange", "labels");
+}
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
+    <h4 class="modal-title">@LangResources.Utility.ResourceManager.GetLocalisedString("ProfileChangeEmailTitle", "General")</h4>
+</div> 
+
+@using (Html.BeginForm("ChangeEmail", "Account", FormMethod.Post, new { id = "changeEmailForm" }))
+{
+    
+    
+    @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary()
+    <span class="text-success">@ViewBag.Message</span>
+<div class="modal-body ltr">
+
+    <div class="container-fluid form-horizontal">
+        <div class="form-group">
+            @Html.LabelFor(model => model.OldEmail, new { @class = "control-label col-sm-4 hidden-xs" })
+            <div class="col-sm-7">
+                @Html.TextBoxFor(model => model.OldEmail, new { @class = "form-control ltr", @placeholder = LangResources.Utility.ResourceManager.GetLocalisedString("CurrentEmail", "General") })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.NewEmail, new { @class = "control-label col-sm-4 hidden-xs" })
+            <div class="col-sm-7">
+                @Html.TextBoxFor(model => model.NewEmail, new { @class = "form-control ltr", @placeholder = LangResources.Utility.ResourceManager.GetLocalisedString("NewEmail", "General") })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Password, new { @class = "control-label col-sm-4 hidden-xs" })
+            <div class="col-sm-7">
+                @Html.PasswordFor(model => model.Password, new { @class = "form-control", placeholder = ResourceManager.GetLocalisedString("plhEnterPassword", "labels") })
+            </div>
+        </div>
+        @Html.HiddenFor(model => model.Username)
+        @Html.HiddenFor(model => model.CurrentEmail)
+
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-danger" data-dismiss="modal">@ResourceManager.GetLocalisedString("btnCancel", "labels")</button>
+    <button type="submit" id="approve-btn" class="btn btn-success">@ResourceManager.GetLocalisedString("btnChange", "labels")</button>
+</div>
+}
+
+<script type="text/javascript">
+    $(window).on("load", function(){
+
+        $("#changeEmailForm")
+                    .removeData("validator") /* added by the raw jquery.validate plugin */
+                    .removeData("unobtrusiveValidation");  /* added by the jquery unobtrusive plugin */
+        setRequiredFields();
+        
+
+        $("#changeEmailForm").submit(function (e) {
+            e.preventDefault();
+            $.validator.unobtrusive.parse($("#changeEmailForm"));
+            $('input[type="submit"]').attr('disabled', 'disabled');
+            if ($("#changeEmailForm").valid()) {
+
+                $.post(SnitzVars.baseUrl + 'Account/ChangeEmail', $(this).serialize(), function (data) {
+                    if (data != null && data.success) {
+                        $('#modal-container').modal('hide');
+                        BootstrapDialog.show({
+                            type: BootstrapDialog.TYPE_INFO,
+                            title: '@LangResources.Utility.ResourceManager.GetLocalisedString("ProfileChangeEmailTitle", "General")',
+                            message: data.responseText
+                        });
+                    } else {
+                        BootstrapDialog.show({
+                            type: BootstrapDialog.TYPE_WARNING,
+                            title: 'Change Email Error',
+                            message: data.responseText
+                        });
+                    }
+                    
+                });
+
+            } else {
+                $('input[type="submit"]').removeAttr('disabled');
+            }
+        });
+
+    });
+</script>   

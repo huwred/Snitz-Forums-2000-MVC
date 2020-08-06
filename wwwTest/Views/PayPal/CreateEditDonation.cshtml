@@ -1,0 +1,72 @@
+﻿
+@using WWW.Views.Helpers;
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions;
+@model SiteManage.Models.PayPalDonation
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
+    <h4 class="modal-title" id="myModalLabel">PayPal Donation</h4>
+</div>
+<div class="modal-body">
+    @using (Ajax.BeginForm("UpsertDonation", "PayPal", null,
+        new AjaxOptions
+        {
+            OnSuccess = "OnUpsertSuccess",
+            OnFailure = "OnUpsertFailure",
+            UpdateTargetId = "info-panel",
+            HttpMethod = "POST",
+            LoadingElementId = "loading"
+        }, new { @class = "form-horizontal", @id= "frmCreateEditDonation" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => model.Id)
+            <div class="form-group">
+                @Html.LabelFor(model => model.MemberId, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    <input type="text" name="MemberName" id="MemberName" placeholder="Find by username or email" class="form-control MemberLookup" value="@Model.Username" />
+                    <input type="text" name="MemberId" id="MemberId" style="display:none;" value="@Model.MemberId" />
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    @Html.TextBoxFor(model => model.Name, new { @class = "form-control", placeholder="Enter name/description of donor if non member" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Amount, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-3">
+                    @Html.TextBoxFor(model => model.Amount, new { @class = "form-control" } )
+                </div>
+                <div class="col-md-6">@Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })</div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.DonatedOn, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    @Html.TextBoxFor(m => m.DonatedDate,
+                    new { @Value = Model.DonatedDate.HasValue? Model.DonatedDate.Value.ToString("dd MMM yyyy"):"", @class= "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Anon, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-3">
+                    <input type="checkbox" class="checkbox" name="Anon" @if (Model.Anon == 1) { @Html.Raw("checked") } value="1" />
+                    <input type="checkbox" class="checkbox" name="Anon" @if (Model.Anon == 0) { @Html.Raw("checked") } value="0" style="display:none" />
+                </div>
+                <div class="col-md-6">
+                    @Html.ValidationMessageFor(model => model.DonatedDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="button" value="Cancel" class="btn btn-sm btn-primary cancel" data-dismiss="modal" />
+                    <input type="reset" value="Reset" class="btn btn-sm btn-warning " />
+                    <input type="submit" id="btn-submit" value="Save" class="btn btn-sm btn-success" />
+                </div>
+            </div>
+        </div>
+    }
+</div>

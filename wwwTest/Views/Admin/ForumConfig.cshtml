@@ -1,0 +1,121 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model WWW.ViewModels.AdminViewModel
+@{
+    ViewBag.PageTitle = "Forum Configuration";
+    ViewBag.ActivePage = ResourceManager.GetLocalisedString("mnuAdminForum", "labels");
+    //Layout = "~/Views/Admin/_Layout.cshtml";
+    ViewBag.SubmitButton = ResourceManager.GetLocalisedString("btnSave", "labels");
+}
+
+<div class="panel panel-primary panel-body clearfix">
+    @using (Ajax.BeginForm("SaveForumConfig", "Admin", null,
+                    new AjaxOptions
+                    {
+                        OnSuccess = "OnSuccess",
+                        OnFailure = "OnFailure",
+                        UpdateTargetId = "ForumConfig",
+                        HttpMethod = "POST",
+                        LoadingElementId = "loading"
+                    }, new { @class = "" }))
+    {
+
+        <div class="form-group">
+            <label for="strForumTitle" class="control-label col-sm-3">
+                Forum Title:        @Html.HelpLink("STRFORUMTITLE", "pull-right")
+            </label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" id="strForumTitleMvc" name="forumTitleMvc" value="@Config.ForumTitle" />
+            </div>
+            <div class="col-sm-4">
+                <input type="text" disabled="disabled" class="form-control disabled" name="forumTitle" id="strForumTitle" value="@Model.Config["STRFORUMTITLE"]" />
+            </div>
+        </div>
+        <div class="form-group clearfix">
+            <label for="strcopyright" class="control-label col-sm-3">Forum Copyright:@Html.HelpLink("STRCOPYRIGHT", "pull-right")</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" id="strcopyright" name="strcopyright" value="@Model.Config["STRCOPYRIGHT"]" />
+            </div>
+        </div>
+        <div class="form-group clearfix">
+            <label for="forumDescription" class="control-label col-sm-3">Forum Description:@Html.HelpLink("STRFORUMDESC", "pull-right")</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="forumDescription" name="forumDescription" value="@Config.ForumDescription" />
+            </div>
+        </div>
+        <div class="form-group clearfix">
+            <label for="strDefaultTheme" class="control-label col-sm-3">Default Theme:@Html.HelpLink("STRDEFAULTTHEME", "pull-right")</label>
+            <div class="col-sm-4">
+                <select id="strDefaultTheme" class="form-control" title="Change Theme" data-toggle="tooltip" name="defaultTheme">
+                    @foreach (var theme in Model.Themes)
+                    {
+
+                        <option name="theme" value="@theme.ToLower()" id="@theme" @if (Config.DefaultTheme == theme.ToLower()) { @Html.Raw("selected") }>@theme Theme</option>
+                    }
+
+                </select>
+            </div>
+        </div>
+        <div class="form-group clearfix">
+            <label for="intthemechange" class="control-label col-xs-7 col-sm-3">Allow Theme Change:</label>
+            <div class="col-xs-4">
+                <input class="yesno-checkbox" id="intthemechange" type="checkbox" name="intthemechange" data-size="mini" data-on-text="Yes" data-off-text="No" checked="@( ClassicConfig.GetIntValue("INTTHEMECHANGE",0)== 1)" />
+            </div>
+        </div>
+        <div class="form-group clearfix">
+            <label for="strhomeurl" class="control-label col-sm-3">Home URL:@Html.HelpLink("STRHOMEURL", "pull-right")</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" id="strhomeurl" name="strhomeurl" value="@Model.Config["STRHOMEURL"]" />
+            </div><div class="col-sm-4 hidden-xs"></div>
+        </div>
+        <div class="form-group">
+            <label for="strforumurl" class="control-label col-sm-3">Forum URL:@Html.HelpLink("STRFORUMURL", "pull-right")</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" id="strForumMvc" name="urlForumMvc" value="@Config.ForumUrl" />
+            </div>
+            <div class="col-sm-4">
+                <input type="text" disabled="disabled" class="form-control disabled" id="strforumurl" name="strforumurl" value="@Model.Config["STRFORUMURL"]" />
+            </div>
+        </div>
+        <div class="form-group clearfix">
+            <label for="stradminuser" class="control-label col-xs-3">Main Admin account:@Html.HelpLink("STRADMINUSER", "pull-right")</label>
+            <div class="col-xs-4">
+                <input class="form-control" id="stradminuser" type="text" name="stradminuser" data-val-required="Admin account is Required" data-val="true" value="@ClassicConfig.GetValue("STRADMINUSER")" />
+            </div>
+            <div class="col-xs-4">
+                
+            </div>
+        </div>
+        <div class="form-group clearfix">
+            <label for="strsetcookietoforum" class="control-label col-xs-7 col-sm-3">Set cookie to:@Html.HelpLink("STRSETCOOKIETOFORUM", "pull-right")</label>
+            <div class="col-xs-4">
+                <input class="yesno-checkbox" id="strsetcookietoforum" type="checkbox" name="strsetcookietoforum" data-size="mini" data-on-text="Website" data-off-text="Forum" checked="@(Model.Config["STRSETCOOKIETOFORUM"] == "0")" />
+            </div>
+        </div>
+
+        <div class="form-group clearfix">
+            @Html.ConfigToggle("Prohibit new Members:", "STRPROHIBITNEWMEMBERS", "", "control-label col-xs-8 col-sm-3", "col-xs-4 col-sm-1", false)
+        </div>
+        <div class="form-group clearfix">
+            @Html.ConfigToggle("Require registration:", "STRREQUIREREG", "", "control-label col-xs-8 col-sm-3", "col-xs-4 col-sm-1", false)
+        </div>
+        <div class="form-group clearfix">
+            @Html.ConfigToggle("Restrict registration:", "STRRESTRICTREG", "", "control-label col-xs-8 col-sm-3", "col-xs-4 col-sm-1", false)
+        </div>
+        <div class="form-group clearfix">
+            @Html.ConfigToggle("Username filter:", "STRUSERNAMEFILTER", "", "control-label col-xs-8 col-sm-3", "col-xs-4 col-sm-1", false)
+        </div>
+        <div class="form-group clearfix">
+            @Html.ConfigToggle("Show Page Timer:", "INTPAGETIMER", "", "control-label col-xs-8 col-sm-3", "col-xs-4 col-sm-1", false)
+        </div>
+        <span class="help-block">If you use tracking cookies, this option may be required. It will display a cookie consent form at the bottom of the page.</span>
+        <div class="form-group clearfix">
+            @Html.ConfigToggle("Require Cookie consent:", "INTREQUIRECONSENT", "", "control-label col-xs-8 col-sm-3", "col-xs-4 col-sm-1", false)
+        </div>
+
+        Html.RenderPartial("_FormButtons");
+    }
+
+</div>

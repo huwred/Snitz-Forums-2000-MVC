@@ -1,0 +1,14 @@
+﻿@using LangResources.Utility
+@{
+    ViewBag.Title = ResourceManager.GetLocalisedString("approveTitle", "Registration");
+}
+
+<div class="container-fluid small col-md-6 col-md-offset-3">
+    <h5>@ResourceManager.GetLocalisedString("approveTitle", "Registration")</h5>
+    <hr class="title" />
+    <p>
+        @Html.Raw(ResourceManager.GetLocalisedString("approveMessage", "Registration"))
+
+    </p>
+    <p>@Html.ActionLink(ResourceManager.GetLocalisedString("gotoHomeUrl", "General"), "Index", "Home")</p>
+</div>

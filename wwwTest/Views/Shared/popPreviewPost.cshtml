@@ -1,0 +1,31 @@
+﻿@using SnitzConfig
+@using WWW.Views.Helpers
+@model WWW.ViewModels.PreviewPostViewModel
+@{
+    string subject = Model.Subject;
+    string message = Model.Message;
+    string signature = Model.Signature;
+}
+
+<div class="modal-body">
+    <div class="no-padding message-container clearfix">
+        <div class="message-reply col-xs-12">
+            <div class="messagebar messagebar-reply">
+                @Html.FormatBbCode(subject,false)
+            </div>
+            <div class="message clearfix">
+                @Html.Raw(Html.FormatBbCode(HttpUtility.HtmlEncode(message)))
+            </div>
+            @if (ClassicConfig.GetValue("STRSIGNATURES") == "1" && ClassicConfig.GetValue("STRDSIGNATURES") == "1" && Model.ShowSig && !String.IsNullOrEmpty(signature))
+            {
+                if (!String.IsNullOrEmpty(signature.Trim()))
+                {
+                    <div class="message-footer">
+                        @Html.FormatBbCode(signature)
+                    </div>                
+                }
+            }
+        </div>
+    </div>
+
+</div>

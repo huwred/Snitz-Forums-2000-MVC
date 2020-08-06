@@ -1,0 +1,133 @@
+﻿@using WebMatrix.WebData
+@using LangResources.Utility
+@using SnitzConfig
+@using SnitzDataModel.Extensions
+
+<ul class="nav navbar-nav">
+    <li><a href="@ClassicConfig.HomeUrl">@ResourceManager.GetLocalisedString("mnuHome", "Menu")</a></li>
+    <li role="presentation" class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">@ResourceManager.GetLocalisedString("mnuForum", "Menu")<span class="caret"></span></a>
+        <ul class="dropdown-menu" role="menu">
+            <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuForumHome", "Menu"), "Index", "Home")</li>
+            <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuForumActive", "Menu"), "Active", "Topic")</li>
+            @if (ClassicConfig.GetIntValue("INTPOLLS") == 1 && ClassicConfig.GetIntValue("INTACTIVEPOLLS") == 1)
+            {
+                <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuActivePolls", "Menu"), "Index", "Polls")</li>
+            }
+            @* Event Calendar code *@
+            @if (ClassicConfig.GetIntValue("INTCALEVENTS") == 1 && (User.Identity.IsAuthenticated || ClassicConfig.GetIntValue("INTCALPUBLIC") == 1))
+            {
+                <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuCalendar", "Menu"), "Index", "Calendar")</li>
+            }
+            @if (ClassicConfig.GetIntValue("INTCLUBEVENTS") == 1 && (User.Identity.IsAuthenticated))
+            {
+                <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuEvents", "Menu"), "Index", "Events")</li>
+            }
+            @* Event Calendar code *@
+
+            <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuForumMembers", "Menu"), "Index", "Account", null, new { rel = "nofollow" })</li>
+            <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuForumSearch", "Menu"), "Search", "Forum")</li>
+
+            @if (ClassicConfig.GetIntValue("INTSHOWDONATE") == 1)
+            {
+                <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuDonate", "Menu"), "Index", "PayPal", null, new { rel = "nofollow" })</li>
+            }
+            <li role="presentation" class="dropdown-submenu">
+                <a tabindex="-1" href="#">@ResourceManager.GetLocalisedString("mnuAbout", "Menu")</a>
+                <ul class="dropdown-menu multi-level" role="menu">
+                    <li><a href="#" id="show-license">@ResourceManager.GetLocalisedString("mnuAboutLicense", "Menu")</a></li>
+                    <li><a href="#" id="show-about">@ResourceManager.GetLocalisedString("mnuAbout", "Menu")</a></li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        <li role="presentation" class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                @ResourceManager.GetLocalisedString("mnuAccount", "Menu")
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" role="menu">
+                <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAccountProfile", "Menu"), "UserProfileEdit", "Account", new { id = WebSecurity.CurrentUserId }, new{rel="nofollow"})</li>
+                @if (WebSecurity.IsAuthenticated && User.ForumSubscriptions().Count > 0)
+                {
+                    <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuMyView", "Menu"), "MyView", "Forum")</li>
+
+                }
+                @if (ClassicConfig.GetValue("STRBOOKMARKS") == "1")
+                {
+                    <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuBookmarks", "Menu"), "Index", "Bookmark", null, new { rel = "nofollow" })</li>
+                }
+                @if (ClassicConfig.GetValue("STRALLOWUPLOADS") == "1" && Config.FolderExists(SnitzMembership.WebSecurity.CurrentUserId))
+                {
+                    <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAccountFiles", "Menu"), "Index", "WebFileManager", new { path = "~/" + Config.ContentFolder + "/Members/" + SnitzMembership.WebSecurity.CurrentUserId }, new { rel = "nofollow" })</li>
+                }
+                @if (ClassicConfig.GetValue("STRPHOTOALBUM") == "1")
+                {
+                    <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuMyAlbum", "Menu"), "Member", "PhotoAlbum", new { id = SnitzMembership.WebSecurity.CurrentUserName, pagenum = 1, sortby = "date", sortorder = "desc" }, new { rel = "nofollow" })</li>
+                }
+                @if (ClassicConfig.GetValue("STRPMSTATUS") == "1")
+                {
+                    <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAccountPM", "Menu"), "Index", "PrivateMessage",null, new { rel = "nofollow" })</li>
+                }
+                @if (User.IsUserInRole("LanguageEditor"))
+                {
+                    <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminLangResources", "Menu"), "Index", "LangResource", null, new { rel = "nofollow" })</li>
+
+                }
+                <li class="divider"></li>
+                <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuChangeEmail", "Menu"), "ChangeEmail", "Account", new { id = SnitzMembership.WebSecurity.CurrentUserId }, new { data_target = "#modal-container", data_toggle = "modal", rel = "nofollow" })</li>
+                <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuChangeUsername", "Menu"), "ChangeUsername", "Account", new { id = SnitzMembership.WebSecurity.CurrentUserId }, new { data_target = "#modal-container", data_toggle = "modal", rel = "nofollow" })</li>
+                <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuChangePassword", "Menu"), "ChangePassword", "Account", null, new { data_target = "#modal-container", data_toggle = "modal", rel = "nofollow" })</li>
+                <li class="divider"></li>
+                @if (ClassicConfig.GetIntValue("INTALLOWCHAT") == 1)
+                {
+                    <li><a href="~/Chat/Chat" id="showChat">Chat Test</a></li>
+                }
+
+                <li><a href="javascript:document.getElementById('logoutForm').submit()">@(ResourceManager.GetLocalisedString("SignOut", "General"))</a></li>
+            </ul>
+        </li>
+        if (ClassicConfig.GetValue("STRPHOTOALBUM") == "1")
+        {
+            <li role="presentation" class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    @ResourceManager.GetLocalisedString("mnuAlbums", "Menu")
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                    <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuMemberAlbums", "PhotoAlbum"), "Index", "PhotoAlbum", new { sortOrder = "desc", sortCol = "count" }, new { rel = "nofollow" })</li>
+                    @if (ClassicConfig.GetIntValue("INTCOMMONALBUM") == 1)
+                    {
+                        <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuCommonAlbum", "PhotoAlbum"), "Album", "PhotoAlbum")</li>
+                    }
+                    <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuMyAlbum", "Menu"), "Member", "PhotoAlbum", new { id = SnitzMembership.WebSecurity.CurrentUserName, pagenum = 1, sortby = "date", sortorder = "desc" }, new { rel = "nofollow" })</li>
+                </ul>
+            </li>
+
+        }
+    }
+    <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuForumFAQ", "Menu"), "Index", "Help")</li>
+    @if (User.IsAdministrator())
+    {
+        <li role="presentation" class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                @ResourceManager.GetLocalisedString("mnuAdmin", "Menu")
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu multi-level" role="menu">
+                @{ Html.RenderPartial("_AdminMenu"); }
+            </ul>
+        </li>
+
+    }
+    @if (User.Identity.IsAuthenticated && ClassicConfig.GetIntValue("INTTHEMECHANGE",0)==1)
+    {
+        <li class="hidden-sm">@Html.Action("ThemeChanger", "Common")</li>
+    }
+    @{ Html.RenderPartial("_ChangeCulture"); }
+
+</ul>
+

@@ -1,0 +1,32 @@
+﻿
+@model SiteManage.Models.PayPalProduct
+
+
+@using (Html.BeginForm("ValidateCommand", "PayPal"))
+{
+<div class="panel panel-paypal">
+    <div class="panel-heading"><i class="fa fa-1_5x fa-paypal"></i> @Model.Name</div>
+    <div class="panel-body">
+        <div class="formgroup clearfix">
+            @Model.Description
+        </div>
+        <div class="formgroup clearfix">
+            @Model.Amount @Model.Currency<br />
+        </div>
+
+    </div>
+    <div class="panel-footer text-center">
+        <input type="hidden" name="product" value="subscription">
+        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model => model.Name)
+        @Html.HiddenFor(model => model.Mode)
+        @Html.HiddenFor(model => model.RecurLength)
+        @Html.HiddenFor(model => model.RecurPeriod)
+        @Html.HiddenFor(model => model.Amount)
+        @Html.HiddenFor(model => model.Currency)
+        <input type="image" src="https://www.paypalobjects.com/en_US/GB/i/btn/btn_subscribeCC_LG.gif" border="0" name="submit" alt="PayPal – The safer, easier way to pay online!">
+        <img alt="" src="https://www.paypalobjects.com/en_GB/i/scr/pixel.gif" width="1" height="1">
+
+    </div>
+</div>
+}

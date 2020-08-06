@@ -1,0 +1,68 @@
+﻿@using System.Globalization
+@using LangResources.Utility
+@using SnitzConfig
+@using SnitzCore.Utility
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model SnitzDataModel.Models.PrivateMessage
+@{
+    //check the culture so we can set the page direction and language
+    CultureInfo ci = SessionData.Get<CultureInfo>("Culture");
+    string clang = ci.TwoLetterISOLanguageName;
+
+    string[] rtlLangs = new string[] { "ar", "arc", "dv", "fa", "ha", "khw", "ks", "ku", "ps", "ur", "yi", "he" };
+    string[] arabic = new string[] { "ar", "arc", "dv", "fa", "ha", "khw", "ks", "ku", "ps", "ur" }; //Cairo
+    string[] aramaic = new string[] { "yi", "he" }; //Tinos
+
+    bool isRighToLeft = (rtlLangs.Contains(clang));
+
+}
+@{
+    Layout = null;
+    ViewBag.Title = ResourceManager.GetLocalisedString("pmPrint", "Title") + Model.Subject;
+}
+
+<!DOCTYPE html>
+
+<html lang="@clang" dir="@(isRighToLeft ?  "rtl" : "ltr" )">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/bundles/sitecss")
+
+    @Styles.Render("~/Content/stylesheet.min.css")
+    @Styles.Render("~" + Config.ThemeFolder() + "/snitz.min.css")
+    @Styles.Render("~/Content/print.min.css")
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    @Scripts.Render("~/bundles/oldIEBrowsersSupport")
+    <![endif]-->
+
+</head>
+<body>
+    <span class="button pull-right flip"><button class="btn btn-sm btn-primary" onclick="javascript:window.print();">Print</button><button class="btn btn-sm btn-default" onclick="javascript:window.close();">Close</button></span>
+    <div class="title">
+        <h4>@Html.FormatBbCode(WebUtility.HtmlDecode(Model.Subject), false)</h4>
+        <label>@ResourceManager.GetLocalisedString("lblPrintedFrom", "labels"):</label> @ClassicConfig.ForumTitle<br />
+        <label>URL:</label> @String.Format("{0}PrivateMessage", Config.ForumUrl) <br />
+        <label>@ResourceManager.GetLocalisedString("lblPrinted", "labels"):</label> @DateTime.Now.ToFormattedString()<br />
+        <div class="title">
+            <hr />
+        </div>
+
+        <div class="message-reply">
+            <label>@ResourceManager.GetLocalisedString("From", "PrivateMessage") :</label> @Model.FromUsername <br />
+            <label>@ResourceManager.GetLocalisedString("Subject", "PrivateMessage") :</label> @Model.Subject <br />
+            <label>@ResourceManager.GetLocalisedString("Received", "PrivateMessage") :</label> @Model.SentDate.Value.ToFormattedString() <br />
+            <label>@ResourceManager.GetLocalisedString("Message", "General") :</label> <br /><br />
+            <div class="message clearfix">
+                @Html.FormatBbCode(Model.Message)
+            </div>
+        </div>
+    </div>
+    <span class="small pull-right flip">&copy; @ClassicConfig.Copyright</span>
+</body>
+</html>
+

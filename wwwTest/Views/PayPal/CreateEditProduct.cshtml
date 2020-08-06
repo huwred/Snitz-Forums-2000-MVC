@@ -1,0 +1,98 @@
+﻿
+@model SiteManage.Models.PayPalProduct
+@{
+    Layout = null;
+}
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
+    <h4 class="modal-title" id="myModalLabel">PayPal Product</h4>
+</div>
+<div class="modal-body">
+    @using (Ajax.BeginForm("UpsertProduct", "PayPal", null,
+        new AjaxOptions
+        {
+            OnSuccess = "OnUpsertSuccess",
+            OnFailure = "OnUpsertFailure",
+            UpdateTargetId = "info-panel",
+            HttpMethod = "POST",
+            LoadingElementId = "loading"
+        }, new { @class = "form-horizontal",@id= "frmCreateEditProduct" }))
+    {
+
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.Id)
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Amount, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Mode, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                <select name="Mode" class="form-control">
+                    <option value="donation" @if (Model.Mode == "donation") { Html.Raw("selected"); }>donation</option>
+                    <option value="subscription" @if (Model.Mode == "subscription") { Html.Raw("selected"); }>subscription</option>
+                </select>
+                @Html.ValidationMessageFor(model => model.Mode, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.RecurPeriod, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                <select name="RecurPeriod" class="form-control">
+                    <option value="M" @if (Model.Mode == "M") { Html.Raw("selected"); }>Month</option>
+                    <option value="Y" @if (Model.Mode == "Y") { Html.Raw("selected"); }>Year</option>
+                </select>
+                @Html.ValidationMessageFor(model => model.RecurPeriod, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.RecurLength, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.EditorFor(model => model.RecurLength, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.RecurLength, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Currency, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                <select name="Currency" class="form-control">
+                    <option value="GBP" @if (Model.Mode == "GBP") { Html.Raw("selected"); }>Pound Sterling</option>
+                    <option value="USD" @if (Model.Mode == "USD") { Html.Raw("selected"); }>U.S. Dollar</option>
+                    <option value="EUR" @if (Model.Mode == "EUR") { Html.Raw("selected"); }>Euro</option>
+                    <option value="NOK" @if (Model.Mode == "NOK") { Html.Raw("selected"); }>Norwegian Krone</option>
+                    <option value="DKK" @if (Model.Mode == "DKK") { Html.Raw("selected"); }>Danish Krone</option>
+                    <option value="SEK" @if (Model.Mode == "SEK") { Html.Raw("selected"); }>Swedish Krone</option>
+                    <option value="AUD" @if (Model.Mode == "AUD") { Html.Raw("selected"); }>Australian Dollar</option>
+                    <option value="CAD" @if (Model.Mode == "CAD") { Html.Raw("selected"); }>Canadian Dollar</option>
+                </select>
+                @Html.ValidationMessageFor(model => model.Currency, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-3 col-md-9">
+                <input type="button" value="Cancel" class="btn btn-sm btn-primary cancel" data-dismiss="modal" />
+                <input type="reset" value="Reset" class="btn btn-sm btn-warning " />
+                <input type="submit" id="btn-submit" value="Save" class="btn btn-sm btn-success" />
+            </div>
+        </div>
+    </div>
+    }
+</div>

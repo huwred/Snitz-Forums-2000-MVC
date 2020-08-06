@@ -1,0 +1,19 @@
+@using SnitzConfig
+Content-Type: text/html; charset=utf-8
+<html>
+<body>
+    <p>Hello @Html.Raw(Model.UserName),</p>
+    <p>
+        @Html.Raw(Model.FromUser)  has sent you a private message.
+    </p>
+    <hr />
+    <p>@Html.Raw(Model.Message)</p>
+    <p>&nbsp;</p>
+    <p>Sent from @Html.Raw(Config.ForumTitle) by @Html.Raw(Model.FromUser)</p>
+</body>
+</html>
+
+
+
+
+

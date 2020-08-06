@@ -1,0 +1,69 @@
+﻿
+@using LangResources.Utility
+@using SnitzDataModel.Extensions
+@model SnitzDataModel.Models.Poll
+@{
+    List<string> roles = new List<string>();
+    bool votingAllowed = false;
+    if (!String.IsNullOrEmpty(Model.AllowedRoles))
+    {
+        votingAllowed = Model.AllowedRoles == "everyone";
+    }
+
+    if (WebSecurity.IsAuthenticated)
+    {
+        if (Model.AllowedRoles=="members")
+        {
+            votingAllowed = true;
+        }
+    }
+
+}
+@using (Ajax.BeginForm("Vote", "Polls", null,
+    new AjaxOptions
+    {
+        OnSuccess = "OnSuccess",
+        OnFailure = "OnFailure",
+        UpdateTargetId = "PollPanel", HttpMethod = "POST",
+        LoadingElementId = "loading"
+    }, new {@class = "form-horizontal"}))
+{
+        <input type="hidden" name="PollId" value="@Model.Id"/>
+        <div class="user-poll-section">
+            <div class="panel @ViewData["panel"]">
+                <div class="panel-heading">
+                    <strong>@ResourceManager.GetLocalisedString("pollQuestion", "Poll") : </strong>@Model.Question ?
+                    @if( User.IsAdministrator() && Model.Active==1)
+    {
+        <span class="pull-right flip"><a href="@Url.Action("MakeFeaturedPoll","Polls",new{id=Model.Id})" title="@ResourceManager.GetLocalisedString("MakeFeaturedPoll", "Poll")" data-toggle="tooltip"><i class="fa fa-bar-chart"></i></a></span>
+    }
+                    
+                </div>
+                
+                <div class="panel-body">
+                    @foreach (var ans in Model.Answers.OrderBy(a=>a.Order))
+                    {
+                        <div class="radio">
+                            <label>
+                                <input name="voteid" type="radio" value="@ans.Id">
+                                @ans.Answer
+                            </label>
+                        </div>
+                    }
+                </div>
+                <div class="panel-footer">
+                    @if (votingAllowed)
+                    {
+                        <button class="btn btn-success btn-sm" type="submit"><span class="glyphicon glyphicon-bell"></span>@ResourceManager.GetLocalisedString("MarkYourVote", "Poll")</button>
+                    }
+                    else
+                    {
+                        @Html.Raw(String.Format(ResourceManager.GetLocalisedString("LoginToVote", "Poll"),Html.ActionLink(ResourceManager.GetLocalisedString("SignIn", "General"), "Login", "Account", new { ReturnUrl = Request.Url.PathAndQuery}, htmlAttributes: new { id = "loginLink" })))
+                        
+                    }
+                </div>
+
+            </div>
+
+        </div>
+}

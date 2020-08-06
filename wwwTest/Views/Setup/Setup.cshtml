@@ -1,0 +1,252 @@
+﻿@using System.Globalization
+@using LangResources.Utility
+@using SnitzConfig
+@using SnitzCore.Utility
+@model dynamic
+
+@{
+    Layout = null;
+
+    //check the culture so we can set the page direction and language
+    //CultureInfo ci = SessionData.Get<CultureInfo>("Culture");
+    string clang = "en"; //ci.TwoLetterISOLanguageName;
+    bool isRighToLeft = false; // SessionData.Get<bool>("isRighToLeft");
+
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title</title>
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    @Styles.Render("~/bundles/sitecss")
+    @Styles.Render("~/Content/stylesheet.min.css")
+    @Styles.Render("~/Content/Themes/Snitz/snitz.min.css")
+
+    <script>
+        var SnitzVars = SnitzVars ||
+        {
+            isUserAuthenticated: 'false',
+            baseUrl: '@Url.Content("~")'
+        };
+        var Snitzres = Snitzres ||
+        {
+            InformationMsg:'Information',
+            SuccessMsg:'Success',
+            dlgWarning: 'Warning',
+            btnOk: 'Ok',
+            btnCancel: 'Cancel',
+            ConfirmMsg: 'Confirm'
+        };
+    </script>
+
+    <style type="text/css">
+        body {
+            font-size: large;
+        }
+
+        #statusBorder {
+            position: relative;
+            height: auto;
+            height: 400px;
+            max-height: 400px;
+            overflow: auto;
+            border: solid 1px gray;
+            display: none;
+        }
+
+        #statusFill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            /*background-color:Blue;*/
+            /*height:15px;*/
+        }
+    </style>
+</head>
+<body class="col-sm-10 col-sm-offset-1">
+    <div class="container text-center">
+        <h3>@ViewBag.Title</h3>
+    </div>
+    <div class="container-fluid">
+        <p>
+            @ViewBag.Message<br />
+        </p>
+        @using (Html.BeginForm("SetupStart", "Setup", FormMethod.Post, new { @class = "form-inline" }))
+        {
+            @Html.ValidationSummary(false, "", new { @class = "alert-danger" })
+            @Html.AntiForgeryToken()
+            if (ViewBag.Init)
+            {
+                <p><span class="lead">To create the tables in the database you need to create the empty database on the server first.</span> You must also provide the username and password for a user that has table creation/modification rights on the database you use. This might not be the same user as you use in your connectionstring!</p>
+                <h4 class="lead">SQL Server UserName/Password</h4>
+                <div class="form-group input-block-level">
+                    <label class="col-sm-3">Use Integrated Security</label>
+                    <input type="checkbox" id="integrated" name="IntegratedSecurity" value="true" class="form-control" />
+                    <input type="hidden" name="IntegratedSecurity" value="false" />
+                </div>
+                <div class="form-group input-block-level password">
+                    <label class="col-sm-3">Username</label>
+                    <input type="text" name="SqlUser" id="SqlUser" value="@Model.SqlUser" class="form-control" />
+                </div>
+                <div class="form-group input-block-level password">
+                    <label class="col-sm-3">Password</label>
+                    <input type="password" name="SqlPwd" id="SqlPwd" value="@Model.SqlPwd" class="form-control" />
+                </div>
+                <hr />
+                <h4 class="lead">Forum Administrator</h4>
+                <p>Here you will setup the UserName & Password that will be entered into the database for the Forum Administrator. The password should be something that you can remember, but not something easily guessed by anyone else, it should be between 6 and 25 characters.</p>
+                <div class="form-group input-block-level">
+                    <label class="col-sm-3">Administrator Username</label>
+                    <input type="text" name="AdminUsername" id="AdminUsername" value="@Model.AdminUsername" class="form-control" />
+                </div>
+                <div class="form-group input-block-level">
+                    <label class="col-sm-3">Email </label>
+                    <input type="text" name="AdminEmail" id="AdminEmail" value="@Model.AdminEmail" class="form-control" />
+                </div>
+                <div class="form-group input-block-level">
+                    <label class="col-sm-3">Password <i id="showPassword" class="fa fa-eye"></i></label>
+                    <input type="password" name="AdminPwd" id="AdminPwd" value="@Model.AdminPwd" class="form-control col-sm-2" />
+                    
+                    <div class="pwstrength_viewport_progress col-sm-2" style="display: none;"></div>
+                </div>
+                <div class="form-group input-block-level">
+                    <label class="col-sm-3">Confirm Password</label>
+                    <input type="password" name="AdminPwdConfirm" id="AdminPwdConfirm" value="@Model.AdminPwdConfirm" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input type="submit" class="btn btn-primary" value="Continue" />
+                </div>
+
+            }
+            else
+            {
+                <div class="container-fluid">
+                    <p id="setup-message">We are now ready to create the tables and Administrator account, press the [Create tables] button to continue.</p>
+                    <input type="hidden" name="SqlUser" id="SqlUser" value="@Model.SqlUser" />
+                    <input type="hidden" name="SqlPwd" id="SqlPwd" value="@Model.SqlPwd" />
+                    <input type="hidden" name="AdminUsername" id="AdminUsername" value="@Model.AdminUsername" />
+                    <input type="hidden" name="AdminPwd" id="AdminPwd" value="@Model.AdminPwd" />
+                    <input type="hidden" name="AdminEmail" id="AdminEmail" value="@Model.AdminEmail" />
+                    <input type="hidden" name="AdminPwdConfirm" id="AdminPwdConfirm" value="@Model.AdminPwdConfirm" />
+                    <button class="btn btn-primary" id="startProcess" type="button">Create tables</button>
+                   
+                </div>
+            }
+            <input type="hidden" name="DbsFile" id="DbsFile" value="@Model.DbsFile" />
+        }
+        <p>&nbsp;</p>
+        <div id="status"></div>
+        <div id="statusBorder">
+            <div id="statusFill">
+
+            </div>
+        </div>
+        <div id="forum-link" style="display:none;">
+            <p>@Html.ActionLink("Go to Forum", "Index", "Home", null, new { @class = "btn btn-primary" })</p>
+        </div>
+    </div>
+
+    <script>
+        var uniqueId = '@Guid.NewGuid().ToString()';
+    </script>
+
+    @Scripts.Render("~/bundles/corejs")
+
+    @Scripts.Render("~/bundles/Snitzjs")
+    <script type="text/javascript">
+
+        function updateMonitor(status) {
+            var html = $("#statusFill").html();
+            $("#statusFill").html(status + html );
+        }
+        $(document).ready(function () {
+            "use strict";
+            var options = {};
+            options.ui = {
+                verdicts:["@ResourceManager.GetLocalisedString("passWeak", "Controls")", "@ResourceManager.GetLocalisedString("passNormal", "Controls")", "@ResourceManager.GetLocalisedString("passMedium", "Controls")", "@ResourceManager.GetLocalisedString("passStrong", "Controls")", "@ResourceManager.GetLocalisedString("passVSTrong", "Controls")"],
+                container: "#pwd-container",
+                showVerdictsInsideProgressBar: true,
+                viewports: {
+                    progress: ".pwstrength_viewport_progress"
+                }
+            };
+            options.common = {
+                usernameField: "#AdminUsername"
+            };
+            $('#AdminPwd').on("focus", function () {
+                $(".pwstrength_viewport_progress").show();
+            });
+            $('#AdminPwd').pwstrength(options);
+            
+            $('#startProcess').on('click', function (e) {
+                $(this).hide();
+                this.disabled = true;
+                e.preventDefault();
+                $.post(window.SnitzVars.baseUrl + "Setup/StartCreate", {
+                    id: uniqueId,
+                    sqluser: $("#SqlUser").val(),
+                    sqlpwd: $("#SqlPwd").val(),
+                    adminuser: $("#AdminUsername").val(),
+                    adminpwd: $("#AdminPwd").val(),
+                    adminemail: $("#AdminEmail").val()
+                }, function() {
+                    $('#statusBorder').show();
+                    var intervalId = setInterval(function () {
+                        var url = window.SnitzVars.baseUrl + 'Setup/GetCurrentProgress/' + uniqueId;
+                        $.post(url, function (progress) {
+                            if (progress.indexOf("Complete") > -1) {
+                                updateMonitor(progress);
+                                clearInterval(intervalId);
+                                $("#startProcess").hide();
+                                $("#setup-message").hide();
+                                if (progress.indexOf("errors") > 0) {
+                                    $("#status").html("<p>There were errors ...</p>");
+                                    $("#forum-link").show();
+                                } else if (progress.indexOf("warnings") > 0) {
+                                    $("#status").html("<p>There were warnings ...</p>");
+                                    $("#forum-link").show();
+                                }  else {
+                                    $("#status").html("<p>Finished running scripts. Please wait, while we redirect you ...</p>");
+                                    $("#forum-link").hide();
+                                    setTimeout(reload, 1000);
+                                }
+                            } else {
+                                updateMonitor(progress);
+                            }
+                        });
+                    }, 100);
+                });
+            });
+            $('#integrated').on('click', function () {
+                if ($(this)[0].checked) {
+                    $('.password').hide();
+                }else {
+                    $('.password').show();
+                }
+            });
+            $("#showPassword").on('mousedown', function () {
+                var txtPassword = $("#AdminPwd");
+                txtPassword.after('<input onchange = "PasswordChanged(this);" id = "txt_' + txtPassword.attr("id") + '" type = "text" value = "' + txtPassword.val() + '" class="form-control col-sm-2" />');
+                txtPassword.hide();
+            }).on('mouseup',function(){
+                var txtPassword = $("#AdminPwd");
+                    txtPassword.val(txtPassword.next().val());
+                    txtPassword.next().remove();
+                    txtPassword.show();
+            });
+        });
+        function reload() {
+            location.href = window.SnitzVars.baseUrl + "Setup/Finished";
+        }
+            
+        function PasswordChanged(txt) {
+            $(txt).prev().val($(txt).val());
+        }
+    </script>
+</body>
+</html>

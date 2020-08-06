@@ -1,0 +1,40 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@using WWW.Views.Helpers
+@model WWW.Models.RegisterModel
+
+<fieldset class="form-signin" id="profile_botcheck">
+    <legend>@ResourceManager.GetLocalisedString("captchaTitle", "Registration")</legend>
+    <p>
+        @ResourceManager.GetLocalisedString("captchaMessage", "Registration")
+    </p>
+    <div id="div-captcha">
+        @if (Config.UseCaptcha)
+        {
+            <div class="form-group">
+                <a href="@Url.Action("Register", new {agreeterms = "true"})" title="@ResourceManager.GetLocalisedString("captchaRefresh", "labels")"><img alt="Captcha" src="@Html.Action("CaptchaImage")" style=""/></a>
+            </div>
+            <div class="form-group">@Html.TextBoxFor(model => model.Captcha, new {@class = "form-control", placeholder = ResourceManager.GetLocalisedString("plhCaptcha", "labels") })
+            </div>
+        }
+    </div>
+    <p>&nbsp;</p>
+    <div class="form-actions pull-right flip">
+        <button class="btn btn-primary btn-next" type="button" id="btn-captcha">@ResourceManager.GetLocalisedString("Next", "General")</button>
+    </div>
+</fieldset>
+
+@using (Html.BeginScripts())
+{
+    <script type="text/javascript">
+    $(document)
+        .ready(function() {
+
+            $("#form1")
+                .removeData("validator") /* added by the raw jquery.validate plugin */
+                .removeData("unobtrusiveValidation"); /* added by the jquery unobtrusive plugin */
+            setRequiredFields();
+            $.validator.unobtrusive.parse($("#form1"));
+        });
+    </script>
+}

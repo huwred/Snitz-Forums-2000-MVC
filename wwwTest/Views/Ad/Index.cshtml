@@ -1,0 +1,6 @@
+﻿@model SnitzDataModel.Models.Ad
+
+<a href='@Url.Action("RecordClick", "Ad",new{id=Model.Id})' title="@Model.AltText" target="_blank">
+    <img src='@Url.Content("~/Content/BannerAds/")@Model.Image' />
+</a>
+<br/><br/>

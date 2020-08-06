@@ -1,0 +1,134 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel
+@using SnitzDataModel.Extensions
+
+@using SnitzDataModel.Models
+
+@using WWW.Views.Helpers
+@using Member = SnitzDataModel.Models.Member
+@using Topic = SnitzDataModel.Models.Topic
+@model dynamic
+@{
+    Dictionary<int, Ranking> ranking = ViewBag.Ranking;
+    Member author = Model.Author;
+    bool isAuthor = author.Id == SnitzMembership.WebSecurity.CurrentUserId;
+    bool isTopic = Model is Topic;
+}
+
+
+<div class="padding-xs">
+    @if (WebSecurity.IsAuthenticated)
+    {
+        <a href="@Url.Action("UserProfile", "Account", new {id = author.Username})" data-toggle="tooltip" title="">
+            @Html.Avatar(author.Username, author.PhotoUrl, "avatar img-circle").If(Config.ShowAvatar)
+        </a>
+        @Html.ActionLink(author.Username, "UserProfile", "Account", new { id = @author.Username }, new { data_toggle = "tooltip" }).If(!Config.ShowAvatar)
+    }
+    else
+    {
+        @Html.Avatar(author.Username, author.PhotoUrl, "avatar img-circle").If(Config.ShowAvatar)
+        if (!Config.ShowAvatar) { @Html.Raw(author.Username)}
+    }
+    @Html.MemberRankTitleStars(author, ranking)
+    <label class="center-block">@Model.Author.Country </label>
+    <span class="badge center-block numbers" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipPostCount", "Tooltip") @Model.Author.PostCount">@Model.Author.PostCount</span> <br />
+</div>
+
+<ul class="list-unstyled list-inline padding-none profile-list" style="margin-bottom: 0px;">
+    @{
+        var disabled = false;
+        if(SnitzMembership.WebSecurity.IsUserInRole(Model.Author.Username, "Disabled") || Model.Author.Username == "zapped" || Model.Author.Username == "n/a")
+        {
+            disabled = true;
+        }
+
+    }
+    @if (!disabled)
+    {
+        if (WebSecurity.IsAuthenticated && ClassicConfig.AllowEmail && Model.Author.ReceiveEmails == 1)
+        {
+            if (!isAuthor)
+            {
+                <li class="padding-xs">
+                    <div title="@ResourceManager.GetLocalisedString("tipAuthorEmail", "Tooltip")" data-toggle="tooltip" class="send-email fa fa-envelope" data-url="@Model.Id" data-id="@Model.AuthorId" style="cursor: pointer">
+                    </div>
+                </li>
+            }
+        }
+        if (WebSecurity.IsAuthenticated && ClassicConfig.GetValue("STRPMSTATUS") == "1" && ((author.PrivateMessageReceive == 1 && !isAuthor)) || (User.IsAdministrator() && !isAuthor))
+        {
+            <li class="padding-xs">
+                <div title="@ResourceManager.GetLocalisedString("tipAuthorPM", "Tooltip")" data-toggle="tooltip" class="sendpm-link fa fa-comments" data-url="@Model.Id" data-id="@author.Username" style="cursor: pointer">
+                </div>
+            </li>
+        }
+        if (WebSecurity.IsAuthenticated && !String.IsNullOrWhiteSpace(author.Homepage))
+        {
+            <li class="padding-xs">
+                <a href="@author.Homepage" data-toggle="tooltip" class="topic-link" title="@ResourceManager.GetLocalisedString("tipAuthorHomePage", "Tooltip")" target="_new">
+                    <i class="fa fa-home"></i>
+                </a>
+                <div ></div>
+            </li>
+        }
+
+    }
+    @if (ViewBag.IsAdministrator)
+    {
+        if (ClassicConfig.GetValue("STRIPLOGGING") == "1")
+        {
+            <li class="padding-xs">
+                <div class="showIPAddress fa fa-sitemap" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipAuthorIP", "Tooltip")" data-id="@Model.PosterIp" style="cursor: pointer">
+                </div>
+            </li>
+        }
+        if (disabled)
+        {
+            <li class="padding-xs">
+                @Html.ActionLink(" ", "UnLockUser", "Account", new {user = author.Id}, new {@class = "fa fa-unlock-alt", title = ResourceManager.GetLocalisedString("tipAuthorUnlock", "Tooltip"), data_toggle = "tooltip"})
+            </li>
+        }
+        else
+        {
+            <li class="padding-xs">
+                @Html.ActionLink(" ", "LockUser", "Account", new {user = author.Id}, new {@class = "fa fa-lock", title = ResourceManager.GetLocalisedString("tipAuthorLock", "Tooltip"), data_toggle = "tooltip"})
+            </li>
+        }
+    }
+</ul>
+<ul class="list-unstyled list-inline padding-none profile-list">
+    @if (WebSecurity.IsAuthenticated && ClassicConfig.GetValue("STRYAHOO") == "1" && !String.IsNullOrWhiteSpace(author.YAHOO))
+    {
+        <li class="padding-xs">
+            <a href="ymsgr:sendim?@author.YAHOO" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipAuthorYahoo", "Tooltip")" target="_new">
+                <i class="fa fa-yahoo"></i>
+            </a>
+        </li>
+    }
+    @if (WebSecurity.IsAuthenticated && ClassicConfig.GetValue("STRMSN") == "1" && !String.IsNullOrWhiteSpace(author.MSN))
+    {
+        <li class="padding-xs">
+            <a href="skype:@author.AIM?chat" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipAuthorMSN", "Tooltip")" target="_new">
+                <i class="fa fa-skype"></i>
+            </a>
+        </li>
+    }
+    @if (WebSecurity.IsAuthenticated && ClassicConfig.GetValue("STRAIM") == "1" && !String.IsNullOrWhiteSpace(author.AIM))
+    {
+        <li class="padding-xs">
+            <a href="aim:goim?screenname=@author.AIM" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipAuthorAIM", "Tooltip")" target="_new">
+                <img class="" src="~/Content/images/aol.png" />
+            </a>
+        </li>
+    }
+    @if (WebSecurity.IsAuthenticated && ClassicConfig.GetValue("STRICQ") == "1" && !String.IsNullOrWhiteSpace(author.ICQ))
+    {
+        <li class="padding-xs">
+            <a href="http://www.icq.com/whitepages/cmd.php?uin=@author.ICQ&action=message" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipAuthorICQ", "Tooltip")" target="_new">
+                <img class="" src="http://web.icq.com/whitepages/online?icq=@author.ICQ&img=26" />
+            </a>
+        </li>
+    }
+</ul>

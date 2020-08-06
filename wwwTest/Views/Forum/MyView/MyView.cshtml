@@ -1,0 +1,7 @@
+﻿@using SnitzDataModel.Models
+@model List<Topic>
+
+@foreach (Topic topic in Model)
+{
+    @Html.DisplayFor(m => topic, "MyView")
+}

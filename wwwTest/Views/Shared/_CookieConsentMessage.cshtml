@@ -1,0 +1,30 @@
+﻿@using SnitzConfig
+
+@using WWW.Views.Helpers
+<div id="cookie-alert">
+    <div class="panel-header">
+        <form class="btn-group-vertical" action="@Url.Action("AllowCookies", "Home", new { ReturnUrl = Request.RawUrl })" method="post">
+             <button type="button" id="cookie-dismiss" class="btn btn-success btn-circle"><i class="fa fa-remove"></i></button>
+        </form>
+        <span> To give you the best possible experience, this site uses cookies. Using @ClassicConfig.ForumTitle means you agree to our use of cookies. Find out more about our <a href="@Url.Action("CookiePolicy")" id="cookie-readmore" data-target="tooltip" title="cookie policy">cookie policy</a>.</span>
+    </div>
+</div>
+
+@using (Html.BeginScripts())
+{
+    <script>
+        $(document).ready(function () {
+            $('#cookie-dismiss').on('click', function() {
+                $('#cookie-alert').hide();
+            });
+            $('#cookie-readmore').on('click', function (e) {
+                e.preventDefault();
+                $(this).attr('data-target', '#modal-container');
+                
+                $(this).attr('data-toggle', 'modal');
+
+            });
+
+        })
+    </script>
+}

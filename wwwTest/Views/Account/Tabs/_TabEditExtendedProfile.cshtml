@@ -1,0 +1,22 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@using WWW.Views.Helpers
+@model WWW.Models.ProfileEditModel
+
+@using (Html.BeginStyles())
+{
+    @Styles.Render("~/Content/jquery-ui-timepicker-addon.min.css")
+}
+<div class="padding-md row-fluid clearfix">
+    <div class="col-xs-12 form-horizontal">
+        <h5>@ResourceManager.GetLocalisedString("usrAdmin", "ExtProfile")</h5>
+        <hr class="title" />
+        <div id="ExtProfileDiv" class="col-sm-5">
+            @Html.Action("MemberFieldsEdit", "MemberFields", new { id = Model.Profile.UserId, exclude = new string[] { "TimeZone" } })
+        </div>
+    </div>
+</div>
+@using (Html.BeginScripts())
+{
+    <script src="@Url.Content("~/Scripts/snitz.extendedprofile.js")"></script>
+}

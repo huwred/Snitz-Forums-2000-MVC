@@ -1,0 +1,18 @@
+﻿@using SnitzConfig
+@{
+    Layout = null;
+
+}
+
+To: @Html.Raw(Model.UserName) <@Model.To>
+From: @Html.Raw(Config.ForumTitle) <@ClassicConfig.ForumEmail>
+Subject: @Html.Raw(Model.EmailSubject)
+
+Hello @Html.Raw(Model.Username),
+Your posting in Forum: @Html.Raw(Model.Forum)
+Regarding the subject - @Html.Raw(Model.TopicSubject)
+
+@Html.Raw(Model.Message)
+
+
+Sent from @Html.Raw(Config.ForumTitle) by @Html.Raw(Model.Sender)

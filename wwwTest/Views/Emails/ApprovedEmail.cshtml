@@ -1,0 +1,17 @@
+﻿@using SnitzConfig
+@{
+    Layout = null;
+    string forumlink = Config.ForumUrl + "Account/Login" ;
+}
+
+To: @Html.Raw(Model.UserName) <@Model.To>
+From: @Html.Raw(Config.ForumTitle) <@ClassicConfig.ForumEmail>
+Subject: @Html.Raw(Config.ForumTitle) Registration Approved
+
+Hello @Html.Raw(Model.UserName),
+
+Your registration has been approved, you may now login and access all the forums member functions.
+
+@forumlink
+
+Sent from @Html.Raw(Config.ForumTitle)

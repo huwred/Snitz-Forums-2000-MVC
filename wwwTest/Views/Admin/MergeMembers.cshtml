@@ -1,0 +1,187 @@
+﻿@using SnitzDataModel.Models
+@using SnitzConfig
+@using WWW.Views.Helpers
+
+@model WWW.ViewModels.MergeMemberViewModel
+
+@{
+    ViewBag.PageTitle = "Merge Members";
+    ViewBag.ActivePage = "Tools";
+    //Layout = "~/Views/Admin/_Layout.cshtml";
+    ViewBag.GroupByIp = true;
+    var protclass = "";
+    var exclude = new List<string>() {"Item", "SnitzPassword", "UserLevel", "IsValid", "NewEmail", "Disabled", "Confirmed", "Created", "LastVisit", "LastPost", "LastActivity" };
+}
+@if (Model.Primary == null)
+{
+    using (Html.BeginForm("MergeMembers", "Admin", FormMethod.Post, new { @class = "form-horizontal" }))
+    {
+        <fieldset class="col-xs-6">
+            <div class="form-group">
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(model => model.MemberName, new { @class = "form-control", data_autocomplete_url = Url.Action("AutoCompleteUsername"), placeholder = "Enter primary username" })
+                </div>
+
+            </div>
+            <div class="form-group">
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(model => model.MemberToMerge, new { @class = "form-control", data_autocomplete_url = Url.Action("AutoCompleteUsername"), placeholder = "Enter username to merge" })
+                </div>
+
+            </div>
+            <div class="form-group">
+                <div class="col-xs-4">
+                    
+                    <button type="submit" class="btn btn-primary btn-sm" data-title="Load Member Accounts?" data-toggle="tooltip">Load</button>
+
+                </div>
+            </div>
+        </fieldset>
+    }
+}
+
+@if (Model != null && Model.Primary != null)
+{
+    using (Html.BeginForm("Merge", "Admin", FormMethod.Post))
+    {
+
+
+        <div class="panel panel-primary panel-body clearfix">
+            <div class="row-fluid clearfix">
+
+                <input type="hidden" name="Primary" value="@Model.Primary.Id" />
+                <input type="hidden" name="ToMerge" value="@Model.ToMerge.Id" />
+            </div>
+            <div class="row-fluid">
+                <div class="col-xs-12 col-md-7">
+                    <table class="table table-condensed table-striped table-merge">
+                        <thead>
+                            <tr class="">
+                                <th>Property</th>
+                                <th colspan="2">Primary Account @Model.Primary.Username</th>
+                                <th>&nbsp;&nbsp;</th>
+                                <th colspan="2">Secondary Account @Model.ToMerge.Username</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var prop in (Model.Primary).GetType().GetProperties().Where(x => !exclude.Contains(x.Name)))
+                            {
+                                var disabled = "";
+
+                                if (prop.PropertyType == typeof(string))
+                                {
+                                    var primval = (string)prop.GetValue(Model.Primary) ?? "";
+                                    var mergeval = (string)prop.GetValue(Model.ToMerge) ?? "";
+
+                                    if (primval == mergeval)
+                                    {
+                                        disabled = "disabled";
+                                    }
+                                }else if (prop.GetValue(Model.Primary) == prop.GetValue(Model.ToMerge) || prop.Name == "PostCount" || prop.Name=="Id" || prop.GetValue(Model.Primary).Equals(prop.GetValue(Model.ToMerge)))
+                                {
+                                    disabled = "disabled";
+                                }
+                                if (prop.Name == "PostCount" || prop.Name == "Id")
+                                {
+                                    protclass = "protected";
+                                }
+                                else
+                                {
+                                    protclass = "";
+                                }
+                                <tr class="@protclass">
+                                    @Html.Raw(String.Format("<td>{0}</td><td>{1}</td>", prop.Name, prop.GetValue(Model.Primary), null))
+                                    <td><input type="radio" name="@prop.Name" value="@Model.Primary.Id" checked="checked" @disabled /></td>
+                                    <td>&nbsp;&nbsp;</td>
+                                    @Html.Raw(String.Format("<td>{0}</td>", prop.GetValue(Model.ToMerge), null))
+                                    <td><input type="radio" name="@prop.Name" value="@Model.ToMerge.Id" @disabled /></td>
+
+                                </tr>
+
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-xs-12 col-md-4">
+                    <br/><br/>
+                    <fieldset>
+                        <div class="form-group clearfix">
+                            <div class="col-xs-8">
+                                @{
+                                    var hasposts = Model.ToMerge.PostCount > 0 ? "checked" : "";
+                                }
+                                <div>
+                                    <input type="checkbox" name="CopyTopics" @hasposts /> Move Topics/Replies
+                                </div>
+                                <div>
+                                    <input type="checkbox" name="CopyPM" checked="checked"/> Move Private messages
+                                </div>
+                                @if (Config.TableExists("FORUM_POLLS"))
+                                {
+                                    <div>
+                                        <input type="checkbox" name="Polls" checked="checked"/> Merge Poll votes
+                                    </div>
+                                }
+                                <div><hr/></div>
+                                @if (Config.TableExists("CAL_EVENTS"))
+                                {
+                                    <div>
+                                        <input type="checkbox" name="Events" checked="checked"/> Move Events
+                                    </div>
+                                }
+                                @if (Config.TableExists("FORUM_IMAGES"))
+                                {
+                                    <div>
+                                        <input type="checkbox" name="Albums" checked="checked"/> Move Album images
+                                    </div>
+                                }
+                                @if (Config.TableExists("FORUM_THANKS"))
+                                {
+                                    <div>
+                                        <input type="checkbox" name="Thanks" checked="checked"/> Move Post thanks
+                                    </div>
+                                }
+                                @if (Config.TableExists("FORUM_BOOKMARKS"))
+                                {
+                                    <div>
+                                        <input type="checkbox" name="Bookmarks" checked="checked"/> Merge Bookmarks
+                                    </div>
+                                }
+                                @if (Config.TableExists("TOPIC_RATINGS"))
+                                {
+                                    <div>
+                                        <input type="checkbox" name="Ratings" checked="checked"/> Merge Topic ratings
+                                    </div>
+                                }
+
+                                <div><hr/></div>
+                                <div>
+                                    <input type="checkbox" name="Remove"/> Delete Merged Member when done
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="form-group pull-right flip">
+                            <button type="button" class="btn btn-danger btn-sm btn-cancel">Cancel</button>
+                            <a href="#" disabled title="Merge Member Accounts?" data-toggle="tooltip" rel="nofollow" class="btn btn-primary btn-sm disabled" onclick="BootstrapDialog.confirm('Are you sure you want to merge these Members?', function(ok) { if (ok) { $('#loading').show();$('#merge-members').click(); } }) ">Merge</a>
+                            <button type="submit" id="merge-members" class="hidden" ></button>
+
+                        </div>
+
+                        
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@using (Html.BeginScripts())
+{
+    <script>
+        $(".btn-cancel").on("click",
+            function() {
+                window.location.href = '@Url.Action("MergeMembers")';
+            });
+    </script>
+}

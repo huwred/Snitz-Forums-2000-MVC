@@ -1,0 +1,90 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using SnitzMembership
+
+@using WWW.Views.Helpers
+@model SnitzMembership.Models.UserProfile
+@if ((Model.UserName != "n/a" && Model.UserName != "zapped") || User.IsAdministrator())
+{
+
+    if (!SnitzMembership.WebSecurity.IsUserInRole(Model.UserName, "Disabled") || User.IsAdministrator())
+    {
+
+
+         <tr>
+             <td class="hidden-xs ">
+                 <div class="avatar-image">
+                     @Html.Avatar(Model.UserName, Model.PhotoUrl, "img-circle small")
+                     @if (Model.ForumTitle == "Zapped Member")
+                     {
+                         <i class="fa fa-flash fa-2x img-overlay text-danger" title="@ResourceManager.GetLocalisedString("tipZapped", "Tooltip")" data-toggle="tooltip"></i>
+                     }
+                     else if (SnitzMembership.WebSecurity.IsUserInRole(Model.UserName, "Disabled") || Model.UserName != "n/a")
+                     {
+                         <i class="fa fa-ban fa-2x img-overlay text-danger" title="@ResourceManager.GetLocalisedString("tipDisabled", "Tooltip")" data-toggle="tooltip"></i>
+                     }
+                     else if (!MemberManager.IsConfirmed(Model.UserId))
+                     {
+                         @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("tipResendValidation", "Tooltip"), "ResendValidation", "Account", new {id = Model.UserId}, "fa fa-envelope-o fa-2x img-overlay text-danger")
+                     }
+                 </div>
+             </td>
+             <td>
+                 @if (Model.UserName != "n/a" && Model.UserName != "zapped")
+                 {
+                     @Html.ActionLink("" + Model.UserName, "UserProfile", "Account", new { id = Model.UserName }, new { title = String.Format(ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip"), Model.UserName), data_toggle = "tooltip" })<br />
+                 }
+                 else
+                 {
+                     @Html.DisplayFor(model => Model.UserName)
+                 }<span>@Html.MemberRankingStars(Model).If(Config.ShowRankStars)</span>
+             </td>
+             @if (Config.ShowRankTitle)
+             {
+                 <td class="text-center">@Html.MemberRankingTitle(Model)</td>
+             }
+
+             <td class="text-center">@Html.DisplayFor(model => Model.PostCount)</td>
+             <td>@Html.DisplayDateFor(model => Model.LastPost)</td>
+             <td class="hidden-xs">@Html.DisplayDateFor(model => Model.Created)</td>
+             <td class="hidden-xs">@Html.DisplayFor(model => Model.Country)</td>
+             @if (User.IsAdministrator())
+             {
+                 <td>@Html.DisplayDateFor(model => Model.LastVisit, true)</td>
+                 if (ClassicConfig.GetValue("STRIPLOGGING") == "1")
+                 {
+                     <td>
+                         <div class="showIPAddress fa fa-sitemap" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipAuthorIP", "Tooltip")" data-id="@Model.LastIp" style="cursor: pointer">
+                         </div>
+
+                     </td>
+                 }
+
+                 <td>@Html.DisplayFor(model => Model.Email)</td>
+                 <td>
+                     @if (SnitzMembership.WebSecurity.IsUserInRole(Model.UserName, "Disabled"))
+                     {
+                         @Html.ActionLinkConfirm("Unlock Member", "UnLockUser", "Account", new {user = Model.UserId}, "fa fa-unlock-alt fa-1_5x")
+                     }
+                     else
+                     {
+                         @Html.ActionLinkConfirm("Lock Member", "LockUser", "Account", new {user = Model.UserId}, "fa fa-lock fa-1_5x")
+                     }
+                     @if (Model.ForumTitle != "Zapped Member")
+                     {
+                         @Html.ActionLinkConfirm("Zap Member Profile", "ZapUser", "Account", new {id = Model.UserId}, "fa fa-flash fa-1_5x")
+                     }
+                     @Html.ActionLinkConfirm("Delete Member", "DeleteMember", "Account", new {id = Model.UserId}, "fa fa-trash fa-1_5x")
+                     @Html.ActionLink(" ", "UserProfileEdit", "Account", new {id = Model.UserId}, new {@class = "fa fa-edit fa-1_5x", title = "Edit Member Profile", data_toggle = "tooltip"})
+                     @if (ClassicConfig.AllowEmail && Model.ForumTitle != "Zapped Member")
+                     {
+                         <a href="#" title="@ResourceManager.GetLocalisedString("Email", "General") @ResourceManager.GetLocalisedString("Member", "General")" data-toggle="tooltip" class="send-email fa fa-envelope fa-1_5x" data-url="@Model.UserId" data-id="@Model.UserId"></a>
+                     }
+                 </td>
+             }
+         </tr>
+
+     }
+}

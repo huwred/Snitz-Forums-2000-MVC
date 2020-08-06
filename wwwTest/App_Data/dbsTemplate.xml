@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Tables title="Blank Template" applied="true">
+  <Create>
+    <Table name="" idfield="" >
+      <Column name="" type="" size="" default="" allownulls=""/>
+    </Table>    
+  </Create>
+  <Alter>
+    <Table name="">
+      <Column action="ADD" name="" type="" size="" default="" allownulls=""/>
+    </Table>  
+  </Alter>
+  <Insert>
+    <Table name="">
+      <Column name="" value="" type=""/>
+    </Table>
+  </Insert>
+  <Update>
+    <Table name="" condition="">
+      <Column name="" value="" type=""/>
+    </Table>    
+  </Update>
+  <Delete>
+    <Table name="" condition="" />
+  </Delete>
+  <Drop>
+    <Table name="" />
+  </Drop>
+  <Index>
+    <Table name="">
+      <Index name="" columns="" direction="ASC" unique="true" include=""/>
+    </Table>
+  </Index>
+</Tables>

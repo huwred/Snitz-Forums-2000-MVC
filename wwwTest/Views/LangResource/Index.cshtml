@@ -1,0 +1,84 @@
+﻿@model WWW.ViewModels.LangViewModel
+
+@section styles{
+<link rel="stylesheet" type="text/css" href="~/Content/dataTables.bootstrap.min.css" title="snitz">
+    
+}
+
+<div class="container-fluid" id="resource-panel">
+    <div class="col-xs-12 col-sm-4" id="left-bar">
+        @if (Model.ResourceSets.Any())
+        {
+            @Html.Partial("_ResourceSet", Model.ResourceSets)
+            @Html.Partial("_ResourceKeys", Model.Resources)
+
+        }
+    </div>
+    <div class="col-xs-12 col-sm-8">
+        <p class="btn-group-sm">
+            <button id="new-resource" href="@Url.Action("ResEdit", "LangResource",new {set = ViewBag.ResSet})" class="btn btn-sm btn-primary" data-target="#modal-container" data-toggle="modal">New Resource String</button>
+            <button href="@Url.Action("Import", "LangResource")" class="btn btn-sm btn-primary" data-target="#modal-container" data-toggle="modal">Import Data</button>
+            <button href="@Url.Action("Export", "LangResource")" class="btn btn-sm btn-primary" data-target="#modal-container" data-toggle="modal">Export Data</button>
+            @Html.ActionLink("Reset Cache", "ClearLanguageCache", null, new { @class = "btn btn-sm btn-primary" })
+            <a href="#" class="btn btn-sm btn-primary btn-grid">Grid View</a>
+            @*@Html.ActionLink("Grid View", "GridView","LangResource", null, new { @class = "btn btn-sm btn-primary" })*@
+        </p>
+               
+        @if (Model.ResourceSets.Any())
+        {
+            @Html.Partial("_ResourcePanel", Model.Resources)
+        }
+        
+        
+    </div>
+</div>
+<div class="container-fluid resource-grid" style="display:none" id="resGrid">
+    
+</div>
+
+<div id='modal-resedit' class='modal fade in' aria-labelledby="resLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
+                <h4 class="modal-title" id="pmLabel">Edit Resource</h4>
+            </div>
+            <div id='resContainer' class="modal-body">
+                <div class="container text-center">
+                    <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+@Scripts.Render("~/bundles/dropzonejs")
+    <script type="text/javascript" src="~/Scripts/langresource.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/dataTables.bootstrap.min.js"></script>
+    <script>
+        var table;
+
+        $(document).ready(function() {
+            try {
+                Dropzone.autoDiscover = false;
+            } catch (e) {
+                console.log('Dropzone not loaded');
+            }
+            $(document).on("focus", ".resource-edit", function () {
+                $('.save-res').attr('disabled', true);
+                $(this).closest('.input-group').find('.save-res').removeAttr('disabled');
+            });
+            $('.btn-grid')
+                .on('click',
+                    function (evt) {
+                        evt.preventDefault();
+                        var url = window.SnitzVars.baseUrl + 'LangResource/ResourceGrid';
+                        window.location.href = url;
+                    });
+        });
+
+    </script>
+}

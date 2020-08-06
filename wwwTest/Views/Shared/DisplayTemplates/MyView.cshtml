@@ -1,0 +1,94 @@
+﻿@using LangResources.Utility
+@using Snitz.Base
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using SnitzDataModel.Models
+@using WWW.Views.Helpers
+@model SnitzDataModel.Models.Topic
+
+@{
+    ViewBag.RatingSum =  Model.GetTopicRating();
+    bool allowrating = Model.Forum != null ? Model.Forum.AllowTopicRating : Model.ForumAllowRating==1;
+    allowrating = allowrating && Model.AllowRating == 1 && ClassicConfig.GetIntValue("INTTOPICRATING", 0) == 1;
+    string postsclass = "read";
+    string forumTitle = Uri.EscapeDataString(Config.ForumTitle ?? ClassicConfig.ForumTitle);
+    var actionuri = Url.Action("Posts", "Topic", new { id = Model.Id });
+    string pageUrl = Uri.EscapeDataString(actionuri);
+    var tracked = SnitzCookie.Tracked(Model.Id.ToString());
+    bool newPosts = false;
+    int replies = Model.ReplyCount;
+    string rolecssLP = Roles.IsUserInRole(Model.LastPostAuthorName, "Administrator") ? "administrator" : Roles.IsUserInRole(Model.LastPostAuthorName, "Moderator") ? "moderator" : "member";
+    string rolecssAU = Roles.IsUserInRole(Model.PostAuthorName, "Administrator") ? "administrator" : Roles.IsUserInRole(Model.PostAuthorName, "Moderator") ? "moderator" : "member";
+
+    if (User.IsAdministrator() || User.IsForumModerator(Model.ForumId))
+    {
+        replies += Model.UnmoderatedReplyCount.GetValueOrDefault(0);
+    }
+    if (tracked != null)
+    {
+        var today = DateTime.UtcNow.ToString("yyyyMM");
+        newPosts = (today + tracked).ToDateTime() < Model.LastPostDate;
+    }
+    else
+    {
+        newPosts = (DateTime)ViewData["LastVisitDateTime"] < Model.LastPostDate;
+    }
+    if (newPosts)
+    {
+        postsclass = "unread";
+
+    }
+    if (Model.LastPostAuthorId == WebSecurity.CurrentUserId)
+    {
+        postsclass += "_mine";
+    }
+    //string rolecss = Roles.IsUserInRole(Model.PostAuthorName, "Administrator") ? "administrator" : Roles.IsUserInRole(Model.PostAuthorName, "Moderator") ? "moderator" : "member";
+}
+<div class="well @postsclass">
+    <div class="media ">
+        <div class="pull-left">
+            <span class="align-center">
+                @if (Config.ShowAvatar)
+                {
+                    <a href="@Url.Action("UserProfile", "Account", new {id = Model.PostAuthorName})">
+                        @Html.Avatar(Model.PostAuthorName, Model.AuthorAvatar, "avatarsmall img-circle")
+                    </a><br />
+                }
+                <a class="@rolecssAU" href="@Url.Action("UserProfile", "Account", new {id = Model.PostAuthorName})">
+                    @Model.PostAuthorName
+                </a>
+            </span>
+        </div>
+        <div class="media-body">
+            <h4 class="media-heading">
+                @{
+                    var forum = Forum.FetchForum(Model.ForumId);
+                }
+                <a href="@Url.Action("Posts", "Forum", new {id = forum.GenerateSlug(), pagenum = 1})">@Model.ForumSubject</a>: <a href="@Url.Action("Posts", "Topic", new {id = Model.GenerateSlug(), pagenum = 1, archived = Model.Archived})" data-toggle="tooltip" class="topic-link" data-html="true" data-placement="auto" title='@Html.FormatBbCode(Model.Subject, false)'>@Html.FormatBbCode(Model.Subject, false)</a>&nbsp;
+                @if (Model.LastPostReplyId > 0)
+                {
+                    <a href="@Url.Action("Posts", "Topic", new {id = Model.GenerateSlug(), pagenum = -1, archived = Model.Archived})#@Model.LastPostReplyId" data-toggle="tooltip" class="topic-link" data-placement="auto" title='@ResourceManager.GetLocalisedString("tipLastPost", "Tooltip")'><i class="fa fa-chevron-right"></i></a>
+
+                }
+                <span class="small text-right">@ResourceManager.GetLocalisedString("lblPostedBy", "labels") @Html.ActionLink(" " + Model.LastPostAuthorName, "UserProfile", "Account", new {id = Model.LastPostAuthorName}, new {title = ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip"), data_toggle = "tooltip", @class = rolecssLP})</span>
+            </h4>
+            <div class="truncate-overflow">
+                <p>@Html.FormatBbCode(Model.Message)</p></div>
+            <ul class="list-inline list-unstyled">
+                <li><span><i class="fa fa-calendar"></i>@Html.Timeago(Model.Date)</span></li>
+                <li>|</li>
+                @Html.DisplayMyViewCounts(replies, Model.ViewCount.GetValueOrDefault(0), false)
+                <li>|</li>
+                @if (allowrating && ViewBag.RatingSum > 0)
+                {
+                    <li><input id="star-rating-demo" value="@ViewBag.RatingSum" type="number" class="rating" min=0 max=5 step=0.1 data-size="xs"/></li><li>|</li>
+                }
+                <li>
+                    @{ Html.RenderPartial("_SocialMedia"); }
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,138 @@
+﻿
+@using LangResources.Utility
+@using SnitzConfig
+@using SnitzDataModel
+@using SnitzDataModel.Models
+@using WWW.Views.Helpers
+
+
+@model WWW.ViewModels.PostMessageViewModel
+
+@using (Html.BeginForm("PostMessage", "Reply", FormMethod.Post,new{id="quickpostForm"}))
+{
+    ViewBag.SubmitButton = ResourceManager.GetLocalisedString("btnPost", "labels"); 
+    @Html.AntiForgeryToken()
+    <div class="quick-reply form-horizontal clearfix">
+
+            <h5>@ResourceManager.GetLocalisedString("lblQuickReply", "labels")</h5><hr class="title"/>
+            @Html.ValidationSummary(true)
+    <div class="form-group" id="editorDiv">
+        @if (ViewData["noToolbar"] == null)
+        {
+            <div class="col-xs-12 relative padding-lg">
+                @{ Html.RenderPartial("_EditorBar", Model, new ViewDataDictionary(this.ViewData) { { "buttons", new List<string>() } }); }
+                <div id="popup-btns2" class="btn-toolbar editor-buttons hidden-xs" role="toolbar">
+                    <div class="btn-group btn-group-sm">
+                        <button tabindex="10" id="prev-btn" class="btn btn-default hidden-xs prev-link" title="@ResourceManager.GetLocalisedString("tipPreview", "Tooltip")" data-toggle="tooltip">
+                            <span class="fa fa-eye"></span>
+                        </button>
+                        @if (ClassicConfig.GetValue("STRALLOWUPLOADS") == "1")
+                        {
+                            <button href="@Url.Action("FileUpload", "Home")" class="modal-link btn btn-default " title="@ResourceManager.GetLocalisedString("tipAttach", "Tooltip")"><span class="fa fa-paperclip"></span></button>
+
+                        }
+                        @if (ClassicConfig.GetIntValue("STRPHOTOALBUM") == 1 || ClassicConfig.GetIntValue("INTCOMMONALBUM") == 1)
+                        {
+                            <button href="@Url.Action("UploadFile", "PhotoAlbum",new{fields=false})" class="btn btn-default gallery-link" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipUpload", "PhotoAlbum")"><span class="fa fa-file-image-o"></span></button>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="qr-editor-field col-xs-12 padding-lg">
+
+
+            <textarea name="Message" oninput="isTyping()" class="bbc-code-editor multi-line form-control" id="Message" data-val-required="@ResourceManager.GetLocalisedString("MessageRequired", "General")" data-val="true"></textarea>
+            <div id="popup-btns" class="btn-toolbar editor-buttons hidden-sm hidden-md hidden-lg" role="toolbar" style="position: absolute;top:0;right:0;margin-right:15px;">
+                <div class="btn-group btn-group-sm">
+                    <button tabindex="10" id="prev-btn2" class="btn btn-default hidden-xs prev-link" title="@ResourceManager.GetLocalisedString("tipPreview", "Tooltip")" data-toggle="tooltip">
+                        <span class="fa fa-eye"></span>
+                    </button>
+                    @if (ClassicConfig.GetValue("STRALLOWUPLOADS") == "1")
+                    {
+                        <button href="@Url.Action("FileUpload", "Home")" class="modal-link btn btn-default " title="@ResourceManager.GetLocalisedString("tipAttach", "Tooltip")"><span class="fa fa-paperclip"></span></button>
+
+                    }
+                    @if (ClassicConfig.GetIntValue("STRPHOTOALBUM") == 1 || ClassicConfig.GetIntValue("INTCOMMONALBUM") == 1)
+                    {
+                        <button href="@Url.Action("UploadFile", "PhotoAlbum",new{fields=false})" class="btn btn-default gallery-link" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipUpload", "PhotoAlbum")"><span class="fa fa-file-image-o"></span></button>
+                    }
+                </div>
+            </div>
+            @Html.ValidationMessageFor(model => model.Message)
+        </div>
+        <div class="hidden-xs col-sm-12">
+            @if (ClassicConfig.EmoticonTable)
+            {
+                Html.RenderPartial("_emoticons", Emoticon.Emoticons());
+            }
+
+        </div>
+
+    </div>
+                @{ Html.RenderPartial("_PostOptions"); }
+            <div>
+                @Html.HiddenFor(model => model.CatId)
+                @Html.HiddenFor(model => model.ForumId)
+                @Html.HiddenFor(model => model.TopicId)
+                @Html.HiddenFor(model => model.ReplyId)
+                @*@Html.CheckBoxFor(model => model.Fixed, new { style = "display:none" })*@
+            </div>
+            @{ Html.RenderPartial("_FormButtons"); }
+
+
+    </div>
+}
+
+@using (Html.BeginScripts())
+{
+
+    <script type="text/javascript">
+        //$("#PostRating").rating({ language: window.SnitzVars.forumlang, 'showClear': true, 'showCaption': false, rtl: false });
+        var timer = null;
+        function isTyping() {
+            clearTimeout(timer);
+            var value = $('#Message').val();
+            if (value) {
+                $("#popup-btns").hide();
+                timer = setTimeout(notTyping, 2000); // that's 2 seconds of not typing
+            }
+            else {
+                notTyping();
+            }
+        }
+
+        function notTyping() {
+            $("#popup-btns").show();
+        }
+
+        $(".bbc-code-editor").bind('keydown', function(event) {
+            if (event.ctrlKey || event.metaKey) {
+                var textId = $(this)[0].id;
+                switch (String.fromCharCode(event.which).toLowerCase()) {
+                case 'i':
+                    event.preventDefault();
+                    $("#" + textId).surroundSelection("[i]", "[/i]");
+                    $("#" + textId).removeClass("required-val");
+                    break;
+                case 'b':
+                    event.preventDefault();
+                    $("#" + textId).surroundSelection("[b]", "[/b]");
+                    $("#" + textId).removeClass("required-val");
+                    break;
+                case 'u':
+                    event.preventDefault();
+                    $("#" + textId).surroundSelection("[u]", "[/u]");
+                    $("#" + textId).removeClass("required-val");
+                    break;
+                case 's':
+                    event.preventDefault();
+                    $("#" + textId).surroundSelection("[s]", "[/s]");
+                    $("#" + textId).removeClass("required-val");
+                    break;
+                }
+            }
+        });
+    </script>
+}

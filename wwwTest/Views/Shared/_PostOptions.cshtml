@@ -1,0 +1,90 @@
+﻿@using LangResources.Utility
+@using Microsoft.Ajax.Utilities
+@using Snitz.Base
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel
+@using SnitzDataModel.Extensions
+@using WWW.ViewModels
+@using Forum = SnitzDataModel.Models.Forum
+@model PostMessageViewModel
+@{
+    var forumSub = Forum.FetchForum(Model.ForumId).Subscription;
+    bool hasForumSubscription = User.ForumSubscriptions().Contains(Model.ForumId);
+    bool isSubscribed = false;
+    if (User.TopicSubscriptions().Count > 1 && Model.TopicId > 0)
+    {
+        isSubscribed = User.TopicSubscriptions().Contains(Model.TopicId) || hasForumSubscription;
+    }
+
+}
+@if (Model.AllowRating && Model.IsAuthor && ClassicConfig.GetIntValue("INTTOPICRATING", 0) == 1)
+{
+    <div class="form-group padding-lg col-lg-6">
+        @Html.CheckBoxFor(model => model.AllowTopicRating, new { tabindex = "5", id = "show-sig" })
+        <label>@ResourceManager.GetLocalisedString("cbxAllowRating", "labels")</label>
+    </div>
+}
+@if (ClassicConfig.GetValue("STRSIGNATURES") == "1")
+{
+    <div class="form-group padding-lg col-lg-6">
+        @Html.CheckBoxFor(model => model.UseSignature, new { tabindex = "5", id = "show-sig" })
+        <label>@ResourceManager.GetLocalisedString("cbxShowSig", "labels")</label>
+    </div>
+}
+@if (forumSub.In(new[] { Enumerators.Subscription.TopicSubscription, Enumerators.Subscription.ForumSubscription }))
+{
+    if (!hasForumSubscription && !isSubscribed)
+    {
+        <div class="form-group padding-lg col-lg-6">
+            @Html.CheckBoxFor(model => model.SubscribeTopic, new { tabindex = "5" })
+            <label>@ResourceManager.GetLocalisedString("cbxSubscribeTopic", "labels")</label>
+        </div>
+    }
+}
+
+@if (User.IsAdministrator() || User.IsForumModerator(Model.ForumId))
+{
+    <div class="form-group padding-lg col-lg-6">
+        @Html.CheckBoxFor(model => model.Lock, new { tabindex = "5" })
+        <label>@ResourceManager.GetLocalisedString("cbxLockTopic", "labels")</label>
+    </div>
+    if (ClassicConfig.GetValue("STRSTICKYTOPIC") == "1" && !Model.IsBlogPost)
+    {
+        <div class="form-group padding-lg col-lg-6">
+            @Html.CheckBoxFor(model => model.Sticky, new { tabindex = "5" })
+            <label>@ResourceManager.GetLocalisedString("cbxMakeSticky", "labels")</label>
+        </div>
+    }
+    if (Model.Type == PostType.Topic && ClassicConfig.GetValue("STRARCHIVESTATE") == "1")
+    {
+        <div class="form-group padding-lg col-lg-6">
+            @Html.CheckBoxFor(model => model.DoNotArchive, new { tabindex = "5" })
+            <label>@ResourceManager.GetLocalisedString("cbxNoArchive", "labels")</label>
+        </div>
+    }
+    if (Model.IsBugPost)
+    {
+        <div class="form-group padding-lg col-lg-6">
+            @Html.CheckBoxFor(model => model.Fixed, new { tabindex = "5" })
+            <label>Mark as fixed</label>
+        </div>
+    }
+    else
+    {
+        @Html.CheckBoxFor(model => model.Fixed, new { tabindex = "5", style = "display:none" })
+
+    }
+}
+else
+{
+
+    @Html.CheckBoxFor(model => model.Fixed, new { tabindex = "5", style = "display:none" })
+}
+@if (ClassicConfig.GetIntValue("INTALLOWDRAFT") == 0 && Model.IsDraft)
+{
+    <div class="form-group padding-lg col-lg-6">
+        @Html.CheckBoxFor(model => model.SaveDraft, new { tabindex = "5" })
+        <label>@ResourceManager.GetLocalisedString("cbxDraft", "labels")</label>
+    </div>
+}

@@ -1,0 +1,29 @@
+﻿@using LangResources.Utility
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model dynamic
+
+@{
+    ViewBag.PageTitle = "Online Activity Menu";
+    ViewBag.ActivePage = "Online Activity";
+    //Layout = "~/Views/Admin/_Layout.cshtml";
+    ViewBag.GroupByIp = true;
+}
+<h5>Request Logging</h5>
+<hr class="title"/>
+    @using (Html.BeginForm("SaveLoggingConfig", "Admin", null, FormMethod.Post, new { @class = "form-horizontal" }))
+    {
+        ViewBag.SubmitButton = ResourceManager.GetLocalisedString("btnSave", "labels");
+        <div class="form-group">
+            @Html.ConfigToggle("Log page requests:", "INTLOGREQUESTS", null, "control-label col-xs-3")
+        </div>
+        <div class="form-group">
+            @Html.ConfigToggle("Only Search requests:", "INTLOGREQUESTSSEARCH", null, "control-label col-xs-3")
+        </div>
+        <div class="form-group">
+            <div class="col-xs-5 col-xs-offset-5">@{ Html.RenderPartial("_FormButtons"); }</div>
+        </div>
+    }
+<h5>Online Activity</h5>
+<hr class="title"/>
+@Html.Partial("_AdminOnlineUsers")

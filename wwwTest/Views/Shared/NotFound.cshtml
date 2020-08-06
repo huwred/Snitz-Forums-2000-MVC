@@ -1,0 +1,15 @@
+﻿
+@using LangResources.Utility
+@using SnitzConfig
+@model System.Web.Mvc.HandleErrorInfo
+@{
+    //Layout = "";
+    ViewBag.Title = "Page Not Found";
+}
+
+<div class="alert alert-warning col-xs-4 col-xs-offset-4 text-center">
+    @ResourceManager.GetLocalisedString("lbl404", "labels")<br /><br />
+    <p>@Html.ActionLink(ResourceManager.GetLocalisedString("lnkReturn", "labels"), "Index", "Home")</p>
+</div>
+<div class="row"></div>
+<div class="row"></div>

@@ -1,0 +1,141 @@
+﻿@using System
+@using System.Collections.ObjectModel
+@using LangResources.Utility
+@using SnitzConfig
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+
+@model WWW.ViewModels.AdminViewModel
+@{
+    ViewBag.PageTitle = "Date Configuration";
+    ViewBag.ActivePage = ResourceManager.GetLocalisedString("mnuAdminDate", "labels");
+    
+    //Layout = "~/Views/Admin/_Layout.cshtml";
+}
+
+<div class="panel panel-primary panel-body clearfix">
+    @using (Html.BeginForm("SaveDateConfig", "Admin", null, FormMethod.Post, new { @class = "form-horizontal" }))
+    {
+        ViewBag.SubmitButton = ResourceManager.GetLocalisedString("btnSave", "labels");
+        <div class="form-group">
+            <div class="col-xs-6 col-sm-3">
+                <label class="control-label">Time Display</label>
+            </div>
+            <div class="col-xs-6 col-sm-2">
+                <input id="timeformat" name="time-format" type="checkbox" class="yesno-checkbox" data-size="mini" data-on-text="24hr" data-off-text="12hr" checked="@(Model.Config["STRTIMETYPE"] == "24")" />
+                @Html.HelpLink("STRTIMETYPE")
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-xs-6 col-sm-3">
+                <label class="control-label">Use friendly times</label>
+            </div>
+            <div class="col-xs-6 col-sm-2">
+                <input id="usetimeago" name="use-timeago" type="checkbox" class="yesno-checkbox" data-size="mini" data-on-text="Yes" data-off-text="No" checked="@(ClassicConfig.GetValue("INTUSETIMEAGO") == "1")" />
+                @Html.HelpLink("INTUSETIMEAGO")
+            </div>
+        </div>
+        if (Model.Config.ContainsKey("STRTIMEADJUST") && Model.Config["STRTIMEADJUST"] != null)
+        {
+            <div class="form-group">
+                <div class="col-xs-6 col-sm-3">
+                    <label class="control-label">Time Adjustment</label>
+                </div>
+                <div class="col-xs-6 col-sm-2">
+                    <input type="number" name="time-adjust" class="form-control" value="@(Model.Config["STRTIMEADJUST"])" />
+                    @Html.HelpLink("STRTIMEADJUST")
+                </div>
+
+            </div>
+        }
+        else
+        {
+            <div class="form-group">
+                <div class="col-xs-6 col-sm-3">
+                    <label class="control-label">Time Zone</label>
+                </div>
+                <div class="col-xs-6">
+                    <select class="form-control inline" name="time-zone">
+                        @{
+                            string forumTimeZoneId = ClassicConfig.GetValue("STRCURRENTTIMEZONE");
+
+                            foreach (var timeZoneInfo in Model.TimeZones)
+                            {
+                                if (forumTimeZoneId == timeZoneInfo.Id)
+                                {
+                                    <option value="@timeZoneInfo.Id" selected="selected">@timeZoneInfo.Id</option>
+                                }
+                                else
+                                {
+                                    <option value="@timeZoneInfo.Id">@timeZoneInfo.Id</option>
+                                }
+
+                            }
+                        }
+                    </select>
+                    @Html.HelpLink("STRCURRENTTIMEZONE")
+                </div>
+            </div>
+        }
+        <div class="form-group">
+            <div class="col-xs-6 col-sm-3">
+                <label class="control-label">Date Display</label>
+            </div>
+            <div class="col-xs-6 col-sm-4">
+                <select name="date-format" id="strDateType" class="form-control inline">
+                    <option value="mdy" @if (Model.Config["STRDATETYPE"] == "mdy") { @Html.Raw("selected") }>
+                        12/31/2000 (US short)
+                    </option>
+                    <option value="dmy" @if (Model.Config["STRDATETYPE"] == "dmy") { @Html.Raw("selected") }>
+                        31/12/2000 (UK short)
+                    </option>
+                    <option value="ymd" @if (Model.Config["STRDATETYPE"] == "ymd") { @Html.Raw("selected") }>
+                        2000/12/31 (Other short)
+                    </option>
+                    <option value="ydm" @if (Model.Config["STRDATETYPE"] == "ydm") { @Html.Raw("selected") }>
+                        2000/31/12 (Other short)
+                    </option>
+                    <option value="mmdy" @if (Model.Config["STRDATETYPE"] == "mmdy") { @Html.Raw("selected") }>
+                        Dec 31 2000 (US med)
+                    </option>
+                    <option value="dmmy" @if (Model.Config["STRDATETYPE"] == "dmmy") { @Html.Raw("selected") }>
+                        31 Dec 2000 (UK med)
+                    </option>
+                    <option value="ymmd" @if (Model.Config["STRDATETYPE"] == "ymmd") { @Html.Raw("selected") }>
+                        2000 Dec 31 (Other med)
+                    </option>
+                    <option value="ydmm" @if (Model.Config["STRDATETYPE"] == "ydmm") { @Html.Raw("selected") }>
+                        2000 31 Dec (Other med)
+                    </option>
+                    <option value="mmmdy" @if (Model.Config["STRDATETYPE"] == "mmmdy") { @Html.Raw("selected") }>
+                        December 31 2000 (US long)
+                    </option>
+                    <option value="dmmmy" @if (Model.Config["STRDATETYPE"] == "dmmmy") { @Html.Raw("selected") }>
+                        31 December 2000 (UK long)
+                    </option>
+                    <option value="ymmmd" @if (Model.Config["STRDATETYPE"] == "ymmmd") { @Html.Raw("selected") }>
+                        2000 December 31 (Other long)
+                    </option>
+                    <option value="ydmmm" @if (Model.Config["STRDATETYPE"] == "ydmmm") { @Html.Raw("selected") }>
+                        2000 31 December (Other long)
+                    </option>
+                </select>
+                @Html.HelpLink("STRDATETYPE")
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-xs-6 col-sm-3">
+                <label class="control-label">Current UTC Time</label>
+            </div>
+            <div class="col-xs-6 col-sm-3">@Model.ServerTime</div>
+        </div>
+        <div class="form-group">
+            <div class="col-xs-6 col-sm-3">
+                <label class="control-label">Default Forum Time</label>
+            </div>
+            <div class="col-xs-6 col-sm-3">@Model.ForumTime</div>
+        </div>
+        Html.RenderPartial("_FormButtons");
+    }
+
+</div>

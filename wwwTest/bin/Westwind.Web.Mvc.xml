@@ -1,0 +1,868 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Westwind.Web.Mvc</name>
+    </assembly>
+    <members>
+        <member name="T:Westwind.Web.Mvc.BaseController">
+            <summary>
+            Base Controller implementation that holds UserState,
+            ErrorDisplay objects that are preinitialized.
+            </summary>
+        </member>
+        <member name="F:Westwind.Web.Mvc.BaseController.UserState">
+            <summary>
+            Contains User state information retrieved from the authentication system
+            </summary>
+        </member>
+        <member name="F:Westwind.Web.Mvc.BaseController.ErrorDisplay">
+            <summary>
+            ErrorDisplay control that holds page level error information
+            </summary>
+        </member>
+        <member name="M:Westwind.Web.Mvc.BaseController.CreateUserState">
+            <summary>
+            Override this method to create custom overridden userstate
+            object instances.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Westwind.Web.Mvc.BaseController.CreateViewModel``1">
+            <summary>
+            Creates or updates a ViewModel and adds values to some of the
+            stock properties of the Controller. 
+            
+            This default implementation initializes the ErrorDisplay and UserState
+            objects after creation.
+            </summary>
+            <typeparam name="TViewModel"></typeparam>
+            <returns></returns>        
+        </member>
+        <member name="M:Westwind.Web.Mvc.BaseController.InitializeViewModel(Westwind.Web.Mvc.BaseViewModel)">
+            <summary>
+            Updates a ViewModel and adds values to some of the
+            stock properties of the Controller. 
+            
+            This default implementation initializes the ErrorDisplay and UserState
+            objects after creation.
+            </summary>
+        </member>
+        <member name="M:Westwind.Web.Mvc.BaseController.InitializeExplicit(System.Web.Routing.RequestContext)">
+            <summary>
+            Allow external initialization of this controller by explicitly
+            passing in a request context
+            </summary>
+            <param name="requestContext"></param>
+        </member>
+        <member name="M:Westwind.Web.Mvc.BaseController.DisplayErrorPage(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Displays a self contained error page without redirecting.
+            Depends on ErrorController.ShowError() to exist
+            </summary>
+            <param name="title"></param>
+            <param name="message"></param>
+            <param name="redirectTo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Westwind.Web.Mvc.BaseController.ReturnAjaxError(System.String,System.Int32)">
+            <summary>
+            Returns a Json error response to the client
+            </summary>
+            <param name="errorMessage">Message of the error to return</param>
+            <param name="statusCode">Optional status code.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Westwind.Web.Mvc.BaseController.ReturnAjaxError(System.Exception,System.Int32)">
+            <summary>
+            Returns a JSON error response to the client
+            </summary>
+            <param name="ex">Exception that generates the error message and info to return</param>
+            <param name="statusCode">Optional status code</param>
+            <returns></returns>
+        </member>
+        <member name="T:Westwind.Web.Mvc.NegotiatedResult">
+            <summary>
+            Returns a content negotiated result based on the Accept header.
+            Minimal implementation that works with JSON and XML content,
+            can also optionally return a view with HTML.    
+            </summary>
+            <example>
+            // model data only
+            public ActionResult GetCustomers()
+            {
+                 return new NegotiatedResult(repo.Customers.OrderBy( c=> c.Company) )
+            }
+            // optional view for HTML
+            public ActionResult GetCustomers()
+            {
+                 return new NegotiatedResult("List", repo.Customers.OrderBy( c=> c.Company) )
+            }
+            </example>
+        </member>
+        <member name="P:Westwind.Web.Mvc.NegotiatedResult.Data">
+            <summary>
+            Data stored to be 'serialized'. Public
+            so it's potentially accessible in filters.
+            </summary>
+        </member>
+        <member name="P:Westwind.Web.Mvc.NegotiatedResult.ViewName">
+            <summary>
+            Optional name of the HTML view to be rendered
+            for HTML responses
+            </summary>
+        </member>
+        <member name="P:Westwind.Web.Mvc.NegotiatedResult.FormatOutput">
+            <summary>
+            Global static flag that allows you to set whether 
+            output is formatted. By default Debug settings
+            of project are used - debug is formatted
+            </summary>
+        </member>
+        <member name="M:Westwind.Web.Mvc.NegotiatedResult.#ctor(System.Object)">
+            <summary>
+            Pass in data to serialize
+            </summary>
+            <param name="data">Data to serialize</param>        
+        </member>
+        <member name="M:Westwind.Web.Mvc.NegotiatedResult.#ctor(System.String,System.Object)">
+            <summary>
+            Pass in data and an optional view for HTML views
+            </summary>
+            <param name="data"></param>
+            <param name="viewName"></param>
+        </member>
+        <member name="T:Westwind.Web.Mvc.NegotiatedResultExtensions">
+            <summary>
+            Extends Controller with Negotiated() ActionResult that does
+            basic content negotiation based on the Accept header.
+            </summary>
+        </member>
+        <member name="M:Westwind.Web.Mvc.NegotiatedResultExtensions.Negotiated(System.Web.Mvc.Controller,System.Object)">
+            <summary>
+            Return content-negotiated content of the data based on Accept header.
+            Supports:
+               application/json  - using JSON.NET
+               text/xml   - Xml as XmlSerializer XML
+               text/html  - as text, or an optional View
+               text/plain - as text
+            </summary>        
+            <param name="controller"></param>
+            <param name="data">Data to return</param>
+            <returns>serialized data</returns>
+            <example>
+            public ActionResult GetCustomers()
+            {
+                 return this.Negotiated( repo.Customers.OrderBy( c=> c.Company) )
+            }
+            </example>
+        </member>
+        <member name="M:Westwind.Web.Mvc.NegotiatedResultExtensions.Negotiated(System.Web.Mvc.Controller,System.String,System.Object)">
+            <summary>
+            Return content-negotiated content of the data based on Accept header.
+            Supports:
+               application/json  - using JSON.NET
+               text/xml   - Xml as XmlSerializer XML
+               text/html  - as text, or an optional View
+               text/plain - as text
+            </summary>        
+            <param name="controller"></param>
+            <param name="viewName">Name of the View to when Accept is text/html</param>
+            /// <param name="data">Data to return</param>        
+            <returns>serialized data</returns>
+            <example>
+            public ActionResult GetCustomers()
+            {
+                 return this.Negotiated("List", repo.Customers.OrderBy( c=> c.Company) )
+            }
+            </example>
+        </member>
+        <member name="T:Westwind.Web.Mvc.ErrorController">
+            <summary>
+            A generic Error Display class that can be used to display standalone 
+            error messages with a single line of code.
+            
+            Depends on a Error.cshtml view which is passed
+            an ErrorViewModel as a parameter
+            </summary>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ErrorController.ShowError(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Displays a generic error message
+            </summary>
+            <param name="title"></param>
+            <param name="message"></param>
+            <param name="redirectTo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ErrorController.ShowErrorFromModel(Westwind.Web.ErrorViewModel)">
+            <summary>
+            Displays a generic error message but allows passing a view model directly for 
+            additional flexibility
+            </summary>
+            <param name="errorModel"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ErrorController.ShowErrorViewPage(System.String,Westwind.Web.ErrorViewModel)">
+            <summary>
+            This method allows displaying an error page you specify
+            and pass an optional ErrorViewModel as a parameter
+            </summary>
+            <param name="viewPage"></param>
+            <param name="errorModel"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ErrorController.ShowErrorPageResult(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Static method that can be called from outside of MVC requests
+            (like in Application_Error) to display an error View.
+            </summary>
+            <param name="title"></param>
+            <param name="message"></param>
+            <param name="redirectTo"></param>
+            <param name="IsHtml"></param>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ErrorController.ShowMessagePageResult(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Static method that can be called from outside of MVC requests
+            (like in Application_Error) to display an error View.
+            </summary>
+            <param name="title"></param>
+            <param name="message"></param>
+            <param name="redirectTo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ErrorController.ShowErrorPageResult(Westwind.Web.ErrorViewModel)">
+            <summary>
+            Static method that can be called from outside of MVC requests
+            (like in Application_Error) to display an error View.
+            </summary>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ErrorController.ShowErrorPage(System.String,System.String,System.String)">
+            <summary>
+            Static method that can be called from outside of MVC requests
+            (like in Application_Error) to display an error View.
+            </summary>
+            <param name="title"></param>
+            <param name="message"></param>
+            <param name="redirectTo"></param>
+            <param name="messageIsHtml"></param>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ErrorController.ShowErrorPage(Westwind.Web.ErrorViewModel)">
+            <summary>
+            Static method that can be called from outside of MVC requests
+            (like in Application_Error) to display an error View.
+            </summary>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ErrorController.ShowErrorPageFromView(System.String,Westwind.Web.ErrorViewModel)">
+            <summary>
+            Allows you to display an arbitrary view and pass an optional
+            ErrorViewModel for it. In short it's a shortcut way to just
+            execute a custom view.
+            </summary>
+            <param name="viewPage">Path to a ViewPage</param>
+            <param name="errorModel">Optional ErrorViewModel to pass to the view</param>
+        </member>
+        <member name="T:Westwind.Web.Mvc.JsonNetResult">
+            <summary>
+            Works like JsonResult but uses Json.NET for serialization in MVC
+            </summary>
+        </member>
+        <member name="T:Westwind.Web.Mvc.CompressContentAttribute">
+            <summary>
+            Attribute that can be added to controller methods to force content
+            to be GZip encoded if the client supports it
+            </summary>
+        </member>
+        <member name="M:Westwind.Web.Mvc.CompressContentAttribute.OnActionExecuting(System.Web.Mvc.ActionExecutingContext)">
+            <summary>
+            Override to compress the content that is generated by
+            an action method.
+            </summary>
+            <param name="filterContext"></param>
+        </member>
+        <member name="M:Westwind.Web.Mvc.CompressContentAttribute.IsGZipSupported">
+            <summary>
+            Determines if GZip is supported
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Westwind.Web.Mvc.CompressContentAttribute.GZipEncodePage">
+            <summary>
+            Sets up the current page or handler to use GZip through a Response.Filter
+            IMPORTANT:  
+            You have to call this method before any output is generated!
+            </summary>
+        </member>
+        <member name="T:Westwind.Web.Mvc.ErrorDisplay">
+            <summary>
+            An error display component that allows rich rendering of individual messages
+            as well as validation error messages.
+            
+            Object should be passed in to view end rendered with 
+            &lt;%= ((ErrorDisplay) ViewData["ErrorDisplay"]).Show(450,true) %&gt;
+            or via a view.
+            
+            Relies on several CSS Styles:
+            .errordisplay, errordisplay-text, errordisplay-warning-icon, errordisplay-info-icon
+            The icon links link to images.
+            </summary>
+        </member>
+        <member name="P:Westwind.Web.Mvc.ErrorDisplay.Message">
+            <summary>
+            The message that is displayed
+            </summary>
+        </member>
+        <member name="P:Westwind.Web.Mvc.ErrorDisplay.HasMessage">
+            <summary>
+            Determines whether there is a message present.
+            </summary>
+        </member>
+        <member name="P:Westwind.Web.Mvc.ErrorDisplay.HtmlEncodeMessage">
+            <summary>
+            Flag that determines whether the message is displayed
+            as HTML or as text. By default message is encoded as text (true).
+            </summary>
+        </member>
+        <member name="P:Westwind.Web.Mvc.ErrorDisplay.Timeout">
+            <summary>
+            Timeout in milliseconds before the error display is hidden
+            </summary>
+        </member>
+        <member name="P:Westwind.Web.Mvc.ErrorDisplay.DisplayErrors">
+            <summary>
+            Holds a modelstate errors collection
+            </summary>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ErrorDisplay.Render(System.Int32,System.Boolean)">
+            <summary>
+            Method 
+            </summary>
+            <param name="width"></param>
+            <param name="center"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ErrorDisplay.AddMessages(System.Web.Mvc.ModelStateDictionary,System.String)">
+            <summary>
+            Adds ModelState errors to the validationErrors
+            </summary>
+            <param name="modelErrors"></param>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ErrorDisplay.AddMessages(Westwind.Utilities.ValidationErrorCollection,System.String)">
+            <summary>
+            Adds an existing set of Validation Errors to the DisplayErrors
+            </summary>
+            <param name="validationErrors"></param>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ErrorDisplay.AddMessage(System.String,System.String)">
+            <summary>
+            Adds an individual model error
+            </summary>
+            <param name="errorMessage"></param>
+            <param name="control"></param>
+        </member>
+        <member name="P:Westwind.Web.Mvc.BaseControl.Id">
+            <summary>
+            The ID rendered into the page
+            </summary>
+        </member>
+        <member name="P:Westwind.Web.Mvc.BaseControl.Name">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Westwind.Web.Mvc.BaseControl.Text">
+            <summary>
+            Text for the control if applicable. This property may 
+            not apply to all types of controls
+            </summary>
+        </member>
+        <member name="P:Westwind.Web.Mvc.BaseControl.Value">
+            <summary>
+            A value for the control for rendering. May not apply for all controls
+            </summary>
+        </member>
+        <member name="P:Westwind.Web.Mvc.BaseControl.CssClass">
+            <summary>
+            The CSS class rendered
+            </summary>
+        </member>
+        <member name="P:Westwind.Web.Mvc.BaseControl.Attributes">
+            <summary>
+            Any Html Attributes for the main element of this control specified as key value strings
+            </summary>
+        </member>
+        <member name="P:Westwind.Web.Mvc.BaseControl.Styles">
+            <summary>
+            A set of styles specified as key value strings
+            </summary>
+        </member>
+        <member name="P:Westwind.Web.Mvc.BaseControl.Style">
+            <summary>
+            A style string you want to apply. Augmented by the Styles dictionary property
+            </summary>
+        </member>
+        <member name="P:Westwind.Web.Mvc.BaseControl.Output">
+            <summary>
+            Internal output writer
+            </summary>
+        </member>
+        <member name="P:Westwind.Web.Mvc.BaseControl.Page">
+            <summary>
+            Page level helper routines and state features for
+            use internally in the control's code
+            </summary>
+        </member>
+        <member name="M:Westwind.Web.Mvc.BaseControl.ApplyAttributes">
+            <summary>
+            renders standard attributes. Override for any custom attributes
+            you want to add to the control. When overriding the base class
+            method call the base method to include the stock rendering.
+            
+            Called by RenderAttributes.
+            </summary>
+        </member>
+        <member name="M:Westwind.Web.Mvc.BaseControl.RenderAttributes">
+            <summary>
+            Renders the attributes into the output stream
+            </summary>
+        </member>
+        <member name="M:Westwind.Web.Mvc.BaseControl.Render">
+            <summary>
+            Returns rendered HTML output
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Westwind.Web.Mvc.BaseControl.IsFirstRenderOnPage">
+            <summary>
+            Determines whether the control has already been rendered. Use to control
+            whether scripts or other shared page components get rendered more than
+            once.
+            </summary>
+        </member>
+        <member name="M:Westwind.Web.Mvc.BaseControl.MergeAttributes(System.Object)">
+            <summary>
+            Merges attributes from an object map 
+            </summary>
+            <param name="attributes"></param>
+        </member>
+        <member name="T:Westwind.Web.Mvc.DateControl">
+            <summary>
+            Simple Implemnetation of a Date Control that uses
+            ui.jquery's Date picker control. Very rudimentary
+            
+            Requires: jquery.js and ui.jquery.js loaded (which includes date picker)
+                      expects ui. themes in folder below scripts
+            </summary>
+        </member>
+        <member name="T:Westwind.Web.Mvc.HtmlHelperExtensions">
+            <summary>
+            Application specific UrlHelper Extensions
+            </summary>
+        </member>
+        <member name="M:Westwind.Web.Mvc.HtmlHelperExtensions.Control``1(System.Web.Mvc.HtmlHelper,System.String,``0,System.Object)">
+            <summary>
+            Generic routine that embeds a control derived off base control into the
+            current output stream.
+            
+            DateControl
+            ErrorDisplay        
+            </summary>
+            <typeparam name="ControlType"></typeparam>
+            <param name="htmlHelper"></param>
+            <param name="name"></param>
+            <param name="control"></param>
+            <param name="htmlAttributes"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Westwind.Web.Mvc.PageEnvironment">
+            <summary>
+            Class that can be used by Controls to access some
+            common high level functionality
+            </summary>
+        </member>
+        <member name="P:Westwind.Web.Mvc.PageEnvironment.Current">
+            <summary>
+            Current Page State Instance
+            </summary>
+        </member>
+        <member name="M:Westwind.Web.Mvc.PageEnvironment.EmbedScriptString(System.Text.StringBuilder,System.String,System.String,System.Boolean)">
+            <summary>
+            Embeds a piece of script into the page uniquely by id. 
+            
+            Use this method to ensure this script block is loaded into the page
+            only once based on a common id. First script loaded wins.
+            </summary>
+            <param name="output"></param>
+            <param name="script"></param>
+            <param name="id"></param>
+            <param name="addScriptTags"></param>
+        </member>
+        <member name="P:Westwind.Web.Mvc.PageEnvironment.CachedPageInstance">
+            <summary>
+            Internal Cached Page instance for access to client script
+            </summary>
+        </member>
+        <member name="M:Westwind.Web.Mvc.PageEnvironment.GetWebResourceUrl(System.Type,System.String)">
+            <summary>
+            Returns a Url to a WebResource as a string
+            </summary>
+            <param name="type">Any type in the same assembly as the Resource</param>
+            <param name="resourceId">The full resource Id in the specified assembly</param>
+            <returns></returns>
+        </member>
+        <member name="M:Westwind.Web.Mvc.PageEnvironment.EmbedScriptResource(System.Text.StringBuilder,System.Type,System.String,System.String)">
+            <summary>
+            Embeds a script reference into the page
+            </summary>
+            <param name="output"></param>
+            <param name="resourceId"></param>        
+            <param name="id"></param>
+        </member>
+        <member name="M:Westwind.Web.Mvc.PageEnvironment.EmbedScriptReference(System.Text.StringBuilder,System.String,System.String)">
+            <summary>
+            Embeds a script tag that references an external .js/resource
+            </summary>
+            <param name="output"></param>
+            <param name="url"></param>
+            <param name="id"></param>
+        </member>
+        <member name="T:Westwind.Web.Mvc.UrlHelperExtensions">
+            <summary>
+            Application specific UrlHelper Extensions
+            </summary>
+        </member>
+        <member name="M:Westwind.Web.Mvc.UrlHelperExtensions.Css(System.Web.Mvc.UrlHelper,System.String,System.String)">
+            <summary>
+            Retrieves a CSS link based on a themes path
+            </summary>
+            <param name="urlHelper"></param>
+            <param name="cssFile"></param>
+            <param name="theme"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Westwind.Web.Mvc.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:Westwind.Web.Mvc.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Westwind.Web.Mvc.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:Westwind.Web.Mvc.Properties.Resources.ViewCouldNotBeFound">
+            <summary>
+              Looks up a localized string similar to View could not be found..
+            </summary>
+        </member>
+        <member name="P:Westwind.Web.Mvc.Properties.Resources.WeAreSorryButAnUnspecifiedErrorOccurredInT">
+            <summary>
+              Looks up a localized string similar to We are sorry, but an unspecified error occurred in the application. The error has been logged and forwarded to be checked out as soon as possible..
+            </summary>
+        </member>
+        <member name="T:Westwind.Web.Mvc.RequireSslAttribute">
+            <summary>
+            Allows for dynamically assigning the RequireSsl property at runtime
+            either with an explicit boolean constant, a configuration setting,
+            or a Reflection based 'delegate' 
+            </summary>
+        </member>
+        <member name="M:Westwind.Web.Mvc.RequireSslAttribute.#ctor">
+            <summary>
+            Default constructor forces SSL required
+            </summary>
+        </member>
+        <member name="M:Westwind.Web.Mvc.RequireSslAttribute.#ctor(System.Boolean)">
+            <summary>
+            Allows assignment of the SSL status via parameter
+            </summary>
+            <param name="requireSsl"></param>
+        </member>
+        <member name="M:Westwind.Web.Mvc.RequireSslAttribute.#ctor(System.Type,System.String)">
+            <summary>
+            Allows invoking a method at runtime to check for a 
+            value dynamically.
+            
+            Note: The method called must be a static method
+            </summary>
+            <param name="typeName">Fully qualified type name on which the method to call exists</param>
+            <param name="method">Static method on this type to invoke with no parameters</param>
+        </member>
+        <member name="M:Westwind.Web.Mvc.RequireSslAttribute.#ctor(System.String)">
+            <summary>
+            Looks for an appSetting key you specify and if it exists
+            and is set to true or 1 which forces SSL.
+            </summary>
+            <param name="appSettingsKey"></param>
+        </member>
+        <member name="T:Westwind.Web.Mvc.MvcHtmlUtils">
+            <summary>
+            Set of generic MVC Html Helper utilities
+            </summary>
+        </member>
+        <member name="M:Westwind.Web.Mvc.MvcHtmlUtils.SelectListItemsFromEnum(System.Type,System.Boolean)">
+            <summary>
+            Returns a selectListItem list for an enumerated value
+            </summary>
+            <param name="enumType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Westwind.Web.Mvc.MvcHtmlUtils.SelectListItemsFromDictionary(System.Collections.IDictionary)">
+            <summary>
+            Takes a dictionary of values and turns it into a SelectListItems enumeration.
+            Converts the dictionary keys  into the value and the dictionary value into
+            the text.
+            </summary>
+            <remarks>
+            Assumes the dictionary keys and values can be turned 
+            into strings using ToString()
+            </remarks>
+            <param name="dict"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Westwind.Web.Mvc.MvcHtmlUtils.SelectListMonths(System.String)">
+            <summary>
+            Returns a select list of months of the year set with 01-12 and
+            a custom format display string (01 - January by default)
+            </summary>
+            <param name="formatString">Optional format string to format the month string. Based on a Date variable</param>
+            <returns></returns>
+        </member>
+        <member name="M:Westwind.Web.Mvc.MvcHtmlUtils.SelectListYears(System.Int32,System.Int32)">
+            <summary>
+            Gets a select list of years.
+            </summary>
+            <param name="numberOfYears">Number of years to display</param>
+            <param name="startYear">Year to start. If 0 starts current year</param>
+            <returns></returns>
+        </member>
+        <member name="T:Westwind.Web.Mvc.ViewRenderer">
+            <summary>
+            Class that renders MVC views to a string using the
+            standard MVC View Engine to render the view. 
+            
+            Requires that ASP.NET HttpContext is present to
+            work, but works outside of the context of MVC
+            </summary>
+        </member>
+        <member name="P:Westwind.Web.Mvc.ViewRenderer.Context">
+            <summary>
+            Required Controller Context
+            </summary>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ViewRenderer.#ctor(System.Web.Mvc.ControllerContext)">
+            <summary>
+            Initializes the ViewRenderer with a Context.
+            </summary>
+            <param name="controllerContext">
+            If you are running within the context of an ASP.NET MVC request pass in
+            the controller's context. 
+            Only leave out the context if no context is otherwise available.
+            </param>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ViewRenderer.RenderViewToString(System.String,System.Object)">
+            <summary>
+            Renders a full MVC view to a string. Will render with the full MVC
+            View engine including running _ViewStart and merging into _Layout        
+            </summary>
+            <param name="viewPath">
+            The path to the view to render. Either in same controller, shared by 
+            name or as fully qualified ~/ path including extension
+            </param>
+            <param name="model">The model to render the view with</param>
+            <returns>String of the rendered view or null on error</returns>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ViewRenderer.RenderView(System.String,System.Object,System.IO.TextWriter)">
+            <summary>
+            Renders a full MVC view to a writer. Will render with the full MVC
+            View engine including running _ViewStart and merging into _Layout        
+            </summary>
+            <param name="viewPath">
+            The path to the view to render. Either in same controller, shared by 
+            name or as fully qualified ~/ path including extension
+            </param>
+            <param name="model">The model to render the view with</param>
+            <returns>String of the rendered view or null on error</returns>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ViewRenderer.RenderPartialViewToString(System.String,System.Object)">
+            <summary>
+            Renders a partial MVC view to string. Use this method to render
+            a partial view that doesn't merge with _Layout and doesn't fire
+            _ViewStart.
+            </summary>
+            <param name="viewPath">
+            The path to the view to render. Either in same controller, shared by 
+            name or as fully qualified ~/ path including extension
+            </param>
+            <param name="model">The model to pass to the viewRenderer</param>
+            <returns>String of the rendered view or null on error</returns>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ViewRenderer.RenderPartialView(System.String,System.Object,System.IO.TextWriter)">
+            <summary>
+            Renders a partial MVC view to given Writer. Use this method to render
+            a partial view that doesn't merge with _Layout and doesn't fire
+            _ViewStart.
+            </summary>
+            <param name="viewPath">
+            The path to the view to render. Either in same controller, shared by 
+            name or as fully qualified ~/ path including extension
+            </param>
+            <param name="model">The model to pass to the viewRenderer</param>
+            <param name="writer">Writer to render the view to</param>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ViewRenderer.RenderView(System.String,System.Object,System.Web.Mvc.ControllerContext)">
+            <summary>
+            Renders a full MVC view to a writer. Will render with the full MVC
+            View engine including running _ViewStart and merging into _Layout
+            </summary>
+            <param name="viewPath">
+            The path to the view to render. Either in same controller, shared by 
+            name or as fully qualified ~/ path including extension
+            </param>
+            <param name="model">The model to pass to the viewRenderer</param>
+            <param name="controllerContext">Active Controller context</param>
+            <returns>String of the rendered view or null on error</returns>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ViewRenderer.RenderView(System.String,System.IO.TextWriter,System.Object,System.Web.Mvc.ControllerContext)">
+            <summary>
+            Renders a full MVC view to a writer. Will render with the full MVC
+            View engine including running _ViewStart and merging into _Layout
+            </summary>
+            <param name="viewPath">
+            The path to the view to render. Either in same controller, shared by 
+            name or as fully qualified ~/ path including extension
+            </param>
+            <param name="model">The model to pass to the viewRenderer</param>
+            <param name="writer">Writer to render the view to</param>
+            <param name="controllerContext">Active Controller context</param>
+            <returns>String of the rendered view or null on error</returns>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ViewRenderer.RenderView(System.String,System.Object,System.Web.Mvc.ControllerContext,System.String@)">
+            <summary>
+            Renders a full MVC view to a writer. Will render with the full MVC
+            View engine including running _ViewStart and merging into _Layout
+            </summary>
+            <param name="viewPath">
+            The path to the view to render. Either in same controller, shared by 
+            name or as fully qualified ~/ path including extension
+            </param>
+            <param name="model">The model to pass to the viewRenderer</param>
+            <param name="controllerContext">Active Controller context</param>
+            <param name="errorMessage">optional out parameter that captures an error message instead of throwing</param>
+            <returns>String of the rendered view or null on error</returns>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ViewRenderer.RenderView(System.String,System.Object,System.IO.TextWriter,System.Web.Mvc.ControllerContext,System.String@)">
+            <summary>
+            Renders a full MVC view to a writer. Will render with the full MVC
+            View engine including running _ViewStart and merging into _Layout
+            </summary>
+            <param name="viewPath">
+            The path to the view to render. Either in same controller, shared by 
+            name or as fully qualified ~/ path including extension
+            </param>
+            <param name="model">The model to pass to the viewRenderer</param>
+            <param name="controllerContext">Active Controller context</param>
+            <param name="writer">Writer to render the view to</param>
+            <param name="errorMessage">optional out parameter that captures an error message instead of throwing</param>
+            <returns>String of the rendered view or null on error</returns>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ViewRenderer.RenderPartialView(System.String,System.Object,System.Web.Mvc.ControllerContext)">
+            <summary>
+            Renders a partial MVC view to string. Use this method to render
+            a partial view that doesn't merge with _Layout and doesn't fire
+            _ViewStart.
+            </summary>
+            <param name="viewPath">
+            The path to the view to render. Either in same controller, shared by 
+            name or as fully qualified ~/ path including extension
+            </param>
+            <param name="model">The model to pass to the viewRenderer</param>
+            <param name="controllerContext">Active controller context</param>
+            <returns>String of the rendered view or null on error</returns>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ViewRenderer.RenderPartialView(System.String,System.IO.TextWriter,System.Object,System.Web.Mvc.ControllerContext)">
+            <summary>
+            Renders a partial MVC view to string. Use this method to render
+            a partial view that doesn't merge with _Layout and doesn't fire
+            _ViewStart.
+            </summary>
+            <param name="viewPath">
+            The path to the view to render. Either in same controller, shared by 
+            name or as fully qualified ~/ path including extension
+            </param>
+            <param name="model">The model to pass to the viewRenderer</param>
+            <param name="controllerContext">Active controller context</param>
+            <param name="writer">Text writer to render view to</param>
+            <param name="errorMessage">optional output parameter to receive an error message on failure</param>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ViewRenderer.RenderViewToWriterInternal(System.String,System.IO.TextWriter,System.Object,System.Boolean)">
+            <summary>
+            Internal method that handles rendering of either partial or 
+            or full views.
+            </summary>
+            <param name="viewPath">
+            The path to the view to render. Either in same controller, shared by 
+            name or as fully qualified ~/ path including extension
+            </param>
+            <param name="model">Model to render the view with</param>
+            <param name="partial">Determines whether to render a full or partial view</param>
+            <param name="writer">Text writer to render view to</param>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ViewRenderer.RenderViewToStringInternal(System.String,System.Object,System.Boolean)">
+            <summary>
+            Internal method that handles rendering of either partial or 
+            or full views.
+            </summary>
+            <param name="viewPath">
+            The path to the view to render. Either in same controller, shared by 
+            name or as fully qualified ~/ path including extension
+            </param>
+            <param name="model">Model to render the view with</param>
+            <param name="partial">Determines whether to render a full or partial view</param>
+            <returns>String of the rendered view</returns>
+        </member>
+        <member name="M:Westwind.Web.Mvc.ViewRenderer.CreateController``1(System.Web.Routing.RouteData,System.Object[])">
+            <summary>
+            Creates an instance of an MVC controller from scratch 
+            when no existing ControllerContext is present       
+            </summary>
+            <typeparam name="T">Type of the controller to create</typeparam>
+            <returns>Controller for T</returns>
+            <exception cref="T:System.InvalidOperationException">thrown if HttpContext not available</exception>
+        </member>
+        <member name="T:Westwind.Web.Mvc.EmptyController">
+            <summary>
+            Empty MVC Controller instance used to 
+            instantiate and provide a new ControllerContext
+            for the ViewRenderer
+            </summary>
+        </member>
+        <member name="T:Westwind.Web.Mvc.PagingDetails">
+            <summary>
+            Contains information about a paging setup
+            </summary>
+        </member>
+        <member name="F:Westwind.Web.Mvc.PagingDetails.ClientPageClickHandler">
+            <summary>
+            Client handler function called on POST operation with page number as parameter
+            </summary>
+        </member>
+        <member name="P:AlbumViewerAngular.CallbackExceptionHandlerAttribute.AllowExceptionDetail">
+            <summary>
+            Determines whether ExceptionDetail is allowed
+            </summary>
+        </member>
+        <member name="P:AlbumViewerAngular.CallbackExceptionHandlerAttribute.ShowErrorPageInDebugMode">
+            <summary>
+            When true returns standard ASP.NET yellow screen of death
+            when DebugMode is enabled.
+            </summary>
+        </member>
+    </members>
+</doc>

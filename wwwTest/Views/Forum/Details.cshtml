@@ -1,0 +1,311 @@
+﻿@using LangResources.Utility
+@using Snitz.Base
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using Category = SnitzDataModel.Models.Category
+@model SnitzDataModel.Models.Forum
+
+@{
+    List<SelectListItem> categories = Category.List();
+    ViewBag.SubmitButton = ResourceManager.GetLocalisedString("btnSave", "labels");
+    var moderators = string.Join(",", Model.ForumModerators.Keys.Select(x => x.ToString()).ToArray().Select(item =>  item ));
+
+}
+@section sidebox{
+    @Html.Partial("_RightColumn", new ViewDataDictionary(this.ViewData) { { "show", new List<string>() { "catlist", "online" } } })
+
+}
+<h5>@Html.Raw(ViewBag.Title)</h5>
+<hr class="title" />
+
+<div class="container-fluid">
+    @using (Html.BeginForm("CreateEdit", "Forum", FormMethod.Post, new { id = "forumPropertiesForm", @class = "" }))
+    {
+        <div class="col-sm-6">
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            <div class="panel-group">
+                <div class="panel panel-info">
+                    <div class="panel-body">
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CatId, new { @class = "control-label" })
+                            @Html.DropDownListFor(model => model.CatId, categories, new { @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Type, new { @class = "control-label" })
+                            @Html.EnumDropDownListFor(model => model.Type, new { @class = "form-control" }, "")
+                        </div>
+                        <div class="form-group" id="forumSubject">
+                            @Html.LabelFor(model => model.Subject, new { @class = "control-label" })
+                            @Html.TextBoxFor(model => model.Subject, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Subject)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Description, new { @class = "control-label" })
+                            @Html.TextAreaFor(model => model.Description, new { @class = "form-control", rows = "4" })
+                            @Html.ValidationMessageFor(model => model.Description)
+                        </div>
+                        <div class="form-group" id="forumLink">
+                            @Html.LabelFor(model => model.Url, new { @class = "control-label" })
+                            @Html.TextBoxFor(model => model.Url, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Url)
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-info">
+                    <div class="panel-body">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Order, new { @class = "control-label" })
+                            @Html.TextBoxFor(model => model.Order, new { @class = "form-control aspinEdit" })
+                        </div>
+                        <div class="form-group" id="default-days">
+                            @Html.LabelFor(model => model.DefaultDays, new { @class = "control-label" })
+                            @Html.EnumDropDownListFor(model => model.DefaultDays, new { @class = "form-control" }, "")
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.PrivateForums, new { @class = "control-label" })
+                            @Html.EnumDropDownListFor(model => model.PrivateForums, new { @class = "form-control", id = "private-forums" }, "")
+                        </div>
+                        @{
+                            var hidepass = "style='display:none'";
+                            if (Model.PrivateForums.In(Enumerators.ForumAuthType.AllowedMemberPassword, Enumerators.ForumAuthType.MembersPassword, Enumerators.ForumAuthType.PasswordProtected))
+                            {
+                                hidepass = "";
+                            }
+                        }
+                        <div class="form-group" id="forum-password" @Html.Raw(hidepass)>
+                            @Html.LabelFor(model => model.PasswordNew, new { @class = "control-label" })
+                            @Html.PasswordFor(model => model.PasswordNew, new { @class = "form-control", value = Model.PasswordNew })
+                            @Html.ValidationMessageFor(model => model.PasswordNew)
+                            <label for="chkShowPassword"><input type="checkbox" id="chkShowPassword" />Show password</label>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.PostAuth, new { @class = "control-label" })
+                            @Html.EnumDropDownListFor(model => model.PostAuth, new { @class = "form-control", id = "post-auth" }, "")
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ReplyAuth, new { @class = "control-label" })
+                            @Html.EnumDropDownListFor(model => model.ReplyAuth, new { @class = "form-control", id = "reply-auth" }, "")
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-info">
+                    <div class="panel-body">
+                        <div id="forum-props">
+                            <div class="form-group" id="increase-posts">
+                                <label class="control-label">@Html.CheckBoxFor(model => model.IncreasePostCount) @ResourceManager.GetLocalisedString("forumPostCount","Admin")</label>
+                            </div>
+                            @if (ClassicConfig.GetIntValue("INTTOPICRATING", 0) == 1)
+                            {
+                                <div class="form-group" id="allow-rating">
+                                    <label class="control-label">@Html.CheckBoxFor(model => model.AllowTopicRating) @ResourceManager.GetLocalisedString("forumAllowRating", "Admin")</label>
+                                </div>
+                            }
+
+                            @if (Model.Category.Subscription.In(new[] {Enumerators.CategorySubscription.TopicSubscription, Enumerators.CategorySubscription.ForumSubscription}))
+                            {
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Subscription, new {@class = "control-label"})
+                                    @Html.EnumDropDownListFor(model => model.Subscription, new {@class = "form-control"}, "")
+                                </div>
+                            }
+                            @if (Model.Category.Moderation == Enumerators.ModerationLevel.Allowed)
+                            {
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Moderation, new {@class = "control-label"})
+                                    @Html.EnumDropDownListFor(model => model.Moderation, new {@class = "form-control", id = "forumModeration"}, "")
+                                </div>
+                            }
+
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+        <div class="col-sm-6">
+            @{
+                var hidden = "style='display:none'";
+                var hideModerators = "";
+                if (Model.PrivateForums.In(Enumerators.ForumAuthType.AllowedMemberPassword, Enumerators.ForumAuthType.AllowedMembers, Enumerators.ForumAuthType.AllowedMembersHidden))
+                {
+                    hidden = "";
+                }
+                if (Model.Moderation.Equals(Enumerators.Moderation.UnModerated) || (Model.Category.Moderation == Enumerators.ModerationLevel.NotAllowed))
+                {
+                    hideModerators = "style='display:none'";
+                }
+            }
+            <div class="panel panel-info panel-form" id="forum-moderators" @Html.Raw(hideModerators)>
+                <div class="panel-heading"> @ResourceManager.GetLocalisedString("forumMods", "Admin")</div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="control-label col-xs-6"> @ResourceManager.GetLocalisedString("forumAvailMods", "Admin")</label><label class="control-label">@ResourceManager.GetLocalisedString("forumUnavailMods", "Admin")</label>
+                        @Html.ListBoxFor(x => x.ForumModerators, new MultiSelectList(ViewBag.AllModerators, "Key", "Value", Model.ForumModerators.Keys.Select(x => x.ToString()).ToArray()), new { @class = "form-control mod-select multiselect" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-info panel-form" id="allowed-members" @Html.Raw(hidden)>
+                <div class="panel-heading">@ResourceManager.GetLocalisedString("forumAllowed", "Admin")</div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        @Html.ListBoxFor(x => x.AllowedMembers, new SelectList(Model.AllowedMembers, "Key", "Value", Model.AllowedMemberSelection), new { @class = "form-control" })
+                        <button type="button" id="rem-allowed" class="btn btn-primary btn-sm" title="@ResourceManager.GetLocalisedString("forumRemAllow", "Admin")">@ResourceManager.GetLocalisedString("forumRemAllow", "Admin")</button>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-4">@ResourceManager.GetLocalisedString("forumAddAllow", "Admin")</label>
+                        <div class="col-xs-7">
+                            <input id="new-allowed" type="text" placeholder="@ResourceManager.GetLocalisedString("forumUsrLook", "Admin")" class="form-control ltr" data-autocomplete-url="@Url.Action("AutoCompleteUsername")" />
+                        </div>
+                        <div class="col-xs-1"><button type="button" id="add-allowed" class="btn btn-primary btn-sm" title="@ResourceManager.GetLocalisedString("forumAddAllow", "Admin")"><i class="fa fa-plus"></i></button></div>
+                    </div>
+                </div>
+            </div>
+            @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.PostCount)
+            @Html.HiddenFor(model => model.TopicCount)
+            @Html.HiddenFor(model => model.LastPostDate)
+            @Html.HiddenFor(model => model.LastPostAuthorId)
+            @Html.HiddenFor(model => model.LastPostTopicId)
+            @Html.HiddenFor(model => model.LastPostReplyId)
+            @Html.HiddenFor(model => model.ArchivedPostCount)
+            @Html.HiddenFor(model => model.ArchivedTopicCount)
+            @Html.HiddenFor(model => model.LastArchiveDate)
+            @Html.HiddenFor(model => model.LastDeletionDate)
+            @Html.HiddenFor(model => model.ArchiveSchedule)
+            @Html.HiddenFor(model => model.DeleteSchedule)
+            <div class="panel">
+                <div class="panel-info panel-body">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PollsAuth, new { @class = "control-label" })
+                        @Html.EnumDropDownListFor(model => model.PollsAuth, new { @class = "form-control" }, "")
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="col-sm-6">
+        <div id="plugins">
+
+            @* Event Calendar code *@
+            @if (Config.TableExists("CAL_EVENTS") && ClassicConfig.GetIntValue("INTCALEVENTS") == 1)
+            {
+                @Html.Action("ForumEventSettings", "Calendar", new {id = Model.Id})
+            }
+            @* Event Calendar code *@
+            @if (Config.TableExists("FORUM_THANKS") && ClassicConfig.GetIntValue("STRTHANKS") == 1)
+            {
+                @Html.Action("ForumThanks", "PostThanks", new {id = Model.Id})
+            }
+        </div>
+        @Html.Partial("_FormButtons")
+
+
+    </div>
+</div>
+
+
+@section Scripts {
+
+    <script type="text/javascript" src="~/Scripts/jquery.twosidedmultiselect.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/forum.details.js"></script>
+    @if (ClassicConfig.GetIntValue("INTCALEVENTS") == 1)
+    {
+        @Scripts.Render("~/Scripts/snitz.cal.min.js")
+    }
+
+    <script>
+
+        $(window).on('load',
+            function() {
+                if ($('#ForumModerators').length) {
+                    $("#ForumModerators").find("option").each(function() {
+                        var selectedids = '@moderators'.split(',');
+
+                        if (jQuery.inArray($(this).val(), selectedids) !== -1) {
+                            $(this).attr('selected', true);
+                        }
+
+                    });
+                    $(".multiselect").twosidedmultiselect();
+                }
+                //if ($('#PollsAuth').length) {
+                //    var current = $('#PollsAuth').val();
+                //    if (current != 'Disallow') {
+                //        $('#Allowed').prop('disabled', 'disabled');
+                //    } else {
+                //        $('#Allowed').prop('disabled', false);
+                //    }
+                //    $('#PollsAuth').on('change',
+                //        function() {
+                //            var list_value = $(this).val();
+                //            if (list_value != 'Disallow') {
+                //                $('#Allowed').prop('disabled', 'disabled');
+                //            } else {
+                //                $('#Allowed').prop('disabled', false);
+                //            }
+                //        });
+                //}
+                //if ($('#Allowed').length) {
+                //    var current2 = $('#Allowed').val();
+                //    if (current2 != 'None') {
+                //        $('#PollsAuth').prop('disabled', 'disabled');
+                //    } else {
+                //        $('#PollsAuth').prop('disabled', false);
+                //    }
+                //    $('#Allowed').on('change',
+                //        function() {
+                //            var list_value = $(this).val();
+                //            if (list_value != 'None') {
+                //                $('#PollsAuth').prop('disabled', 'disabled');
+                //            } else {
+                //                $('#PollsAuth').prop('disabled', false);
+                //            }
+                //        });
+                //}
+                //POST the MESSAGE FORM - use this to hook into the Form post
+                $('#btn-submit').on('click',
+                    function(event) {
+                        $("#ForumModerators").find("option").each(function() {
+                            $(this).attr('selected', true);
+                        });
+                        var serializedForm = $("#forumPropertiesForm").serialize();
+
+                        event.preventDefault();
+                        $.ajax({
+                            type: "POST",
+                            url: '@Url.Action("CreateEdit", "Forum")',
+                            data: serializedForm,
+                            dataType: "json",
+                            success: function(data) {
+                                //Add post processing here
+                                /* Event Calendar code */
+                                if ($("#cal-forumAuth").length > 0) {
+                                    setForumEventsAuth(event);
+                                } else {
+                                    location.reload();
+                                    return false;
+                                }
+                                /* Event Calendar code */
+
+                                return true;
+                            },
+                            error: function(jqXHR, textStatus, errorThrown) {
+                                BootstrapDialog.alert(
+                                    {
+                                        title: "Error ",
+                                        message: jqXHR.responseText
+                                    });
+                            }
+                        });
+
+                    });
+            });
+    </script>
+}

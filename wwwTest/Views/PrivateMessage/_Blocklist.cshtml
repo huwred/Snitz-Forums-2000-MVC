@@ -1,0 +1,44 @@
+﻿@using LangResources.Utility
+@model System.Collections.Generic.IEnumerable<SnitzDataModel.Models.PrivateBlocklist>
+
+
+<div class="panel-body form-horizontal">
+    <label>@ResourceManager.GetLocalisedString("lblBlocklist", "PrivateMessage")</label>
+    <ul>
+        @foreach (var blocked in Model)
+        {
+            <li>@blocked.BlockedMemberName</li>
+        }
+
+    </ul>
+@using (Ajax.BeginForm(
+    new AjaxOptions
+    {
+        OnSuccess = "OnSuccess",
+        OnFailure = "OnFailure",
+        UpdateTargetId = "message-panel",
+        HttpMethod = "POST",
+        LoadingElementId = "loading"
+    }))
+{
+        <div class="form-group">
+            <div class="col-xs-12"><label class="control-label">@ResourceManager.GetLocalisedString("lblBlocklistUpdate", "PrivateMessage")</label></div>
+        
+            <div class="col-xs-4">
+                <input type="text" name="BlockUser" id="BlockUser" placeholder="@ResourceManager.GetLocalisedString("plhFindMember", "labels")" class="form-control ltr" data-autocomplete-url="@Url.Action("BlockUsername")" @ViewBag.ReadOnly value="" />
+            </div>
+            <input type="submit" class="btn btn-danger btn-sm" value="@ResourceManager.GetLocalisedString("btnBlock", "PrivateMessage")" name="action:Block" />
+            <input type="submit" class="btn btn-success btn-sm" value="@ResourceManager.GetLocalisedString("btnUnblock", "PrivateMessage")" name="action:Unblock" />
+
+        </div>
+    }
+</div>
+
+<script type="text/javascript">
+    $('*[data-autocomplete-url]').each(function () {
+        $(this).autocomplete({
+            source: $(this).data("autocomplete-url"),
+            minLength:3
+        });
+    });
+</script>

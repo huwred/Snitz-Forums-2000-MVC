@@ -1,0 +1,117 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@model WWW.Models.RegisterModel
+@{
+    ViewBag.Title = ResourceManager.GetLocalisedString("registerTitle", "Registration");
+    bool hideTerms = Convert.ToBoolean(ViewBag.Agreed);
+}
+@section styles{
+    <style type="text/css">
+        .form-signin {
+            margin: 0;
+        }
+    </style>
+}
+<div class="container-fluid">
+    <h5>@ViewBag.Title.</h5>
+    <hr class="title" />
+    @if (!hideTerms)
+    {
+        <div class="policy">@Html.Partial("Register/_Policy")</div>
+    }
+    else
+    {
+        using (Html.BeginForm("Register", "Account", FormMethod.Post, new { id = "form1" }))
+        {
+            <div class="container-fluid small col-md-6 col-md-offset-3">
+                <div class="col-xs-12 col-md-4">
+                    <div class="form-signin">
+                        @Html.ValidationSummary()
+                        @Html.ValidationMessageFor(model => model.Captcha)
+                        @*@Html.ValidationMessageFor(m => m.Profile.DateOfBirth)
+                            @Html.ValidationMessageFor(m => m.UserName)<br />
+                            @Html.ValidationMessageFor(m => m.Email)*@
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-6">
+                    <section id="loginForm">
+                        @Html.AntiForgeryToken()
+                        @Html.Partial("Register/_BotChecker")
+                        @if (Model.RegisterFields.Count > 0)
+                        {
+                            @Html.Partial("Register/_MemberConfig")
+                        }
+                        <fieldset class="form-signin form-horizontal" id="profile_register" style="display: none">
+                            <legend class="form-signin-heading">@ResourceManager.GetLocalisedString("createAccount", "Registration")</legend>
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.UserName, new { @class = "sr-only" })
+                                @Html.TextBoxFor(m => m.UserName, new { @class = "form-control ltr", placeholder = ResourceManager.GetLocalisedString("UserName", "General") })
+
+                            </div>
+                            <br />
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Email, new { @class = "sr-only" })
+                                @Html.TextBoxFor(m => m.Email, new { @class = "form-control ltr", placeholder = ResourceManager.GetLocalisedString("Email", "General"), @type = "email" })
+
+                            </div>
+                            <br />
+                            <div class="form-group" id="pwd-container">
+                                <div class="col-sm-7 padding-none">
+                                    @Html.LabelFor(m => m.Password, new { @class = "sr-only" })
+                                    @Html.PasswordFor(m => m.Password, new { @class = "form-control ltr", placeholder = ResourceManager.GetLocalisedString("Password", "General") })
+                                </div>
+                                <div class="col-sm-4 col-sm-offset-1 padding-none" style="padding-top: 10px;">
+                                    <div class="pwstrength_viewport_progress" style="display: none;"></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-7  padding-none">
+                                    @Html.LabelFor(m => m.ConfirmPassword, new { @class = "sr-only" })
+                                    @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control ltr", placeholder = ResourceManager.GetLocalisedString("ConfirmPassword", "General") })
+                                </div>
+
+                            </div>
+                            <div class="form-group" style="padding-top: 10px;">
+                                <input type="submit" value="@ResourceManager.GetLocalisedString("Register", "General")" class="btn btn-lg btn-primary btn-block" />
+                            </div>
+                        </fieldset>
+
+                    </section>
+
+                </div>
+            </div>
+        }
+
+    }
+</div>
+
+<div id='emailModal' class='modal fade in' data-url='@Url.Action("EmailMember", "Account")' aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
+                <h4 class="modal-title" id="myModalLabel">@ResourceManager.GetLocalisedString("dlgEmailAdminTitle", "labels")</h4>
+            </div>
+            <div id='emailContainer' class="modal-body">
+                <div class="container text-center">
+                    <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        var dobRequired = false;
+        var strPWeak = "@ResourceManager.GetLocalisedString("passWeak", "Controls")";
+        var strPNormal = "@ResourceManager.GetLocalisedString("passNormal", "Controls")";
+        var strPMedium = "@ResourceManager.GetLocalisedString("passMedium", "Controls")";
+        var strPStrong = "@ResourceManager.GetLocalisedString("passStrong", "Controls")";
+        var strPVStrong = "@ResourceManager.GetLocalisedString("passVSTrong", "Controls")";
+        var errCaptchaWrong = "@String.Format(ResourceManager.GetLocalisedString("CaptchaCheck_Wrong", "ErrorMessage"), ClassicConfig.MinAge)";
+        var errDOB = "@ResourceManager.GetLocalisedString("regDOB", "ErrorMessage")";
+    </script>
+    @Scripts.Render("~/Scripts/snitz.register.min.js")
+}

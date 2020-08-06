@@ -1,0 +1,41 @@
+﻿@using LangResources.Utility
+@using WWW.Views.Helpers
+@model BbCodeFormatter.CustomBBcode
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
+    <h4 class="modal-title">Add Code Filter</h4>
+</div> 
+    @using (Html.BeginForm("AddBbCode", "Admin", FormMethod.Post,new{id="addbbcodeform"}))
+    {
+<div class="modal-body">
+
+    <div class="form-group">
+        <label class="control-label">Name</label> @Html.ValidationMessageFor(model=>model.Name)
+        @Html.TextBoxFor(model => model.Name, new { @class = "form-control"})
+
+    </div>        
+        <div class="form-group">
+            <label class="control-label">Pattern</label> @Html.ValidationMessageFor(model => model.Pattern)
+            @Html.TextBoxFor(model => model.Pattern, new { @class = "form-control" })
+        </div>
+        <div class="form-group">
+            <label class="control-label">Replace with</label> @Html.ValidationMessageFor(model => model.Replace)
+            @Html.TextBoxFor(model => model.Replace, new { @class = "form-control" })
+        </div>        
+    <div class="form-group clearfix">
+        <label class="control-label">Order</label> @Html.ValidationMessageFor(model => model.Order)
+        @Html.TextBoxFor(model => model.Order, new { @class = "form-control" })
+        
+    </div> 
+
+</div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">@ResourceManager.GetLocalisedString("btnCancel", "labels")</button>
+            <button type="button" id="bbapprove-btn" class="btn btn-success">Save</button>
+        </div>
+    }
+<script>
+
+    setRequiredFields();
+
+</script>

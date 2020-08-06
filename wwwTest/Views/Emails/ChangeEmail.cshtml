@@ -1,0 +1,13 @@
+﻿@using SnitzConfig
+@{
+    Layout = null;
+    string forumlink = Config.ForumUrl + "Account/EmailConfirmation/" + @Model.ConfirmationToken;
+}
+
+To: @Html.Raw(Model.UserName) <@Model.To>
+From: @Html.Raw(Config.ForumTitle) <@ClassicConfig.ForumEmail>
+Subject: Complete Email Change
+
+Hello @Html.Raw(Model.UserName),
+
+To complete the email change click on the following link @forumlink

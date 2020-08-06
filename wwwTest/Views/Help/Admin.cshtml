@@ -1,0 +1,163 @@
+﻿@using System.Configuration
+@using BbCodeFormatter
+@using LangResources.Utility
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model FaqProcessor
+
+@section styles{
+    <style>
+        .modal-content{min-width:600px;width:700px}
+/*body.modal-open div.modal-backdrop { 
+    z-index: 0; 
+}*/
+    body.modal-open {
+        overflow: inherit;
+}
+    </style>
+}
+@{
+    ViewBag.Title = ResourceManager.GetLocalisedString("pageHelp", "Title") + " | " + (Config.ForumTitle ?? ClassicConfig.ForumTitle);
+}
+@section pageMeta
+{
+    <meta name="description" content="Frequently asked questions about using the forums">
+    <meta name="author" content="@(Config.ForumTitle ?? ClassicConfig.ForumTitle)">
+}
+@section breadcrumb
+{
+    @Html.BuildBreadcrumbNavigation()
+}
+@section sidebox{
+    <div class="side-box">
+        <i id="pagesearch" title="Search this page" data-toggle="tooltip" class="fa fa-search" style="cursor: pointer"></i> Search this page
+        
+    </div>
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="side-box">
+                @{ Html.RenderPartial("_SearchForums"); }
+            </div>
+        } 
+        @Html.Partial("_RightColumn", new ViewDataDictionary(this.ViewData) {{"show", new List<string>() {"catlist"}}})
+
+}
+<div class="container" id="faq-container">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="faq-list">
+             
+                <div class="panel-group" id="accordion">
+                    @{ string first = "in";}
+                    @foreach (var cat in Model.Categories())
+                    {
+
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#cat_@cat.Key">
+                                        @cat.Value
+                                    </a>@if (User.IsAdministrator() || User.IsUserInRole("FaqModerator"))
+                                        {
+                                            <span class="pull-right flip"><a href="@Url.Action("Edit", "Help", new { id = -1, category = @cat.Key })" class="pop-open modal-link" title="@ResourceManager.GetLocalisedString("faqAdd","General")" data-target="tooltip"><i class="fa fa-plus"></i></a></span>
+                                        }
+                                </h4>
+                            </div>
+
+                            <div class="panel-collapse collapse @first" id="cat_@cat.Key">
+                                <div class="panel-body">
+                                    @{
+                                        List<Question> questions = Model.GetCategoryQuestions(cat.Key);
+                                    }
+                                    <ul>
+                                        @foreach (var q in questions)
+                                        {
+                                            <li><a href="#q_@q.Id">@q.Description</a></li>
+                                        }
+                                    </ul>
+                                    <div class="panel-group">
+                                        @foreach (var q in questions)
+                                        {
+                                            <div class="panel panel-primary" id="q_@q.Id">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        @q.Description <span class="pull-right flip">@if (User.IsAdministrator() || User.IsUserInRole("FaqModerator"))
+                                                                                                {
+                                                                                                    <a href="@Url.Action("Edit", "Help", new { id = @q.Id, category = @q.CategoryId })" class="pop-open modal-link" title="edit in popup" data-target="tooltip"><i class="fa fa-edit"></i></a> 
+                                                                                                    @Html.ActionLinkConfirm("Delete FAQ item", "Delete", "Help", new { id = @q.Id }, "fa fa-trash")
+                                                                                                }<a href="#page-top" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipPageTop","Tooltip")"><i class="fa fa-angle-double-up"></i></a></span>
+                                                    </h4>
+                                                </div>
+                                                <div class="panel-body">
+                                                    @Html.Raw(BbCodeProcessor.Format(q.Answer))
+                                                </div>
+                                            </div>
+
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                                        first = "";
+                    }
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="modal fade" id="findwindow" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+        <div id="" class="modal-dialog" >
+            <div class="modal-content" style="width:150px !important;height: 160px;min-height:150px !important;">
+            <div class="modal-header">
+                <button type="button" class="btn close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                <h4 class="modal-title" id="myModalLabel">Find on page</h4>
+            </div>                
+                <div class="modal-body clearfix">
+                    <form onsubmit="return false;" class="form-horizontal container-fluid">
+                        <div class="form-group"><input type="search" class="form-control" size="25" maxlength="25" id="fwtext" onchange="resettext();" placeholder="Enter text to find"></div>
+                        <div class="form-group"><div class="btn-group-sm"><input type="button" class="btn btn-sm btn-primary" value="Find Prev" onclick="findprev();">
+                        <input id="btn" type="button" class="btn btn-sm btn-primary" value="Find Next" onclick="this.blur(); findit();"><span id="find_msg"></span></div>
+                        </div>
+                    </form>                    
+                </div>
+            </div>
+        </div>
+    </div>  
+
+@section scripts
+{
+    @Scripts.Render("~/Scripts/find5.min.js")
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // set current position
+
+            $('body').on('click', '#pagesearch', function (evt) {
+                evt.preventDefault();
+                $(this).tooltip('hide');              
+                $(this).attr('data-target', '#findwindow');
+                $(this).attr('data-toggle', 'modal');
+
+            });
+
+            $('#findwindow').on('hidden.bs.modal', function () {
+                $(this).removeData('bs.modal');
+            });
+
+            $('body').on('click', '.btn-postform', function (event) {
+                    var val1 = $(this).attr('data-first');
+                    var val2 = $(this).attr('data-last');
+                    var label = $(this).attr('data-label');
+                    var parentDiv = $(this).closest("[id^=editorDiv]");
+                    var textId = parentDiv.find(".bbc-code-editor")[0].id;
+                    $("#" + textId).surroundSelection(val1, val2);
+                    $("#" + textId).focus();
+            });
+
+        });
+    </script>
+}

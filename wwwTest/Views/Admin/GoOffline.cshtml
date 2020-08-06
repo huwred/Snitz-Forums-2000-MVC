@@ -1,0 +1,49 @@
+﻿
+
+@using SnitzCore.Filters
+@model WWW.Models.OfflineModel
+@{
+    ViewBag.PageTitle = "GoOffline";
+
+    //Layout = "~/Views/Admin/_Layout.cshtml";
+}
+
+@if (OfflineHelper.OfflineData != null)
+{
+    int min = (OfflineHelper.OfflineData.TimeWhenSiteWillGoOfflineUtc - DateTime.UtcNow).Minutes;
+    if (min > 0)
+    {
+        <div class='alert alert-danger'>Forum will shutdown in @min minutes @Html.ActionLink("Cancel Offline setting","GoOnline")</div>
+    }
+    else
+    {
+        <div class='alert alert-warning'>Forum is currently shutdown. @Html.ActionLink("Go Online","GoOnline")</div>
+    }
+}
+else
+{
+    <div class="panel panel-primary panel-body clearfix">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+                <label>Shut down in </label>
+                @Html.TextBoxFor(model => model.DelayTillOfflineMinutes, new { @class = "form-control aspinEdit" })
+                <label>minutes</label>
+            </div>  
+            <div class="form-group">
+                <label>Message to show visitors</label>
+                <input type="text" class="form-control" value="Site is down for maintenance" name="Message" />
+            </div>
+            <div class="form-group">
+                <label>Only users from @Model.AllowedIP will have access to the forum</label>
+                <small>If you are unable to log back in, you can put the forum back online by deleting the offline_file.txt file in the forum's App_Data folder</small>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-danger">Go Offline</button>
+            </div>
+        }
+    </div>    
+}
+

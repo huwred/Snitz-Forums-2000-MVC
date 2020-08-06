@@ -1,0 +1,31 @@
+﻿@using WWW.Views.Helpers
+
+<div class="side-box" id="upcoming-events">
+    <i class="fa fa-spinner fa-pulse fa-3x fa-fw" id="cal-loading"></i>
+    <div id="calendar-list">
+    </div>
+</div>
+
+@using (Html.BeginScripts())
+{
+
+    @Scripts.Render("~/Scripts/moment.min.js")
+    if (Session["Culture"] != null && Session["Culture"].ToString() == "fa")
+    {
+        @Scripts.Render("~/Scripts/moment-jalaali.min.js")
+    }
+
+    @Scripts.Render("~/Scripts/fullcalendar-year.min.js")
+    if (Session["Culture"] != null)
+    {
+        @Scripts.Render("~/Scripts/lang/" + Session["Culture"] + ".js")
+    }
+    @Scripts.Render("~/Scripts/snitz.cal.min.js")
+
+    <script type="text/javascript">
+        $(document)
+            .ready(function () {
+                UpComingCalendar("@Url.Action("GetUpcomingEvents", "Calendar",new{count=60})", 'calendar-list');
+            });
+    </script>
+}

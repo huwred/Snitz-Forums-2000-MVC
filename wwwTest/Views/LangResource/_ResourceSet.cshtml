@@ -1,0 +1,21 @@
+﻿@model List<string>
+
+        <div class="panel panel-primary">
+            <div class="panel-heading">Resource Set</div>
+            <div class="panel-body">
+                <select class="form-control" id="resource-set">
+                    @foreach (var res in Model)
+                    {
+                        <option value="@res">@res</option>
+                    }
+                </select>
+            </div>
+@*            <div class="panel-footer bg-silver">
+                <div class="btn-group-sm">
+                    <button class="btn btn-default" id="btn-set-ren">Rename</button>
+                    <button class="btn btn-default" id="btn-set-del">Delete</button>
+                    <a id="act-del-set" href="@Url.Action("SetDelete", "LangResource",new{set=ViewBag.ResSet})" style="display:none" ></a>
+                    <a id="act-ren-set" href="@Url.Action("SetRename", "LangResource",new{set=ViewBag.ResSet})" style="display:none" ></a>
+                </div>
+            </div>*@
+        </div>

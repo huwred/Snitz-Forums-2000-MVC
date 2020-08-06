@@ -1,0 +1,19 @@
+﻿@using LangResources.Utility
+@model dynamic
+<section id="policy">
+    <div class="container-fluid small col-md-6 col-md-offset-3">
+        <h5 class="breadcrumb padding-md">@ResourceManager.GetLocalisedString("lblPrivacyTitle", "labels")</h5>
+        @Html.Raw(ResourceManager.GetLocalisedString("lblPrivacyContent", "labels"))
+        @using (Html.BeginForm("Action", "Account", new { agreeterms = "true" }, FormMethod.Get))
+        {
+            <button type="submit" name="Register" class="btn btn-sm btn-primary">@ResourceManager.GetLocalisedString("btnAgree", "labels")</button>
+            <button type="submit" name="Cancel" class="btn btn-sm btn-primary">@ResourceManager.GetLocalisedString("btnCancel", "labels")</button>
+            <input type="hidden" id="agreeterms" name="agreeterms" value="true" />
+        }
+        <p>
+            @ResourceManager.GetLocalisedString("lblPrivacyQuestions", "labels")
+            &nbsp;
+            <span title="@ResourceManager.GetLocalisedString("dlgEmailAdminTitle", "labels")" data-toggle="tooltip" class="send-adminemail fa fa-envelope fa-1_5x" style="cursor: pointer"></span>
+        </p>
+    </div>
+</section>

@@ -1,0 +1,80 @@
+﻿@using LangResources.Utility
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model WWW.ViewModels.AdminRolesViewModel
+@{
+    ViewBag.PageTitle = "Role Manager";
+    ViewBag.ActivePage = ResourceManager.GetLocalisedString("mnuAdminRoles", "labels");
+    //Layout = "~/Views/Admin/_Layout.cshtml";
+    string[] protectedRoles = new[] {"Administrator", "Moderator", "Disabled"};
+}
+
+<div class="panel panel-primary">
+    <div class="panel-body">
+            <div class="form-group clearfix">
+                <label for="Username" class="control-label">Enter a username/rolename to add to one of the lists</label>
+                @*                <div class="col-sm-4">@Html.ValidationSummary(false, "", new { @class = "alert alert-danger" })
+                    @Html.TextBoxFor(model => model.Username, new { @class = "form-control", data_autocomplete_url = @Url.Action("AutoCompleteUsername") })
+                </div>*@
+                
+            </div>
+            <div class="form-group">
+                <div class="col-xs-6" id="role-form">
+        @using (Html.BeginForm("AddRole", "Admin", null, FormMethod.Post))
+        {
+            @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" })
+            <input type="hidden" id="IsRolenameRequired" name="IsRolenameRequired" value="true" />
+            <div class="panel panel-primary">
+                <div class="panel-heading">Roles</div>
+                <div class="panel-body">
+                    <ul class="list-group">
+                    @foreach (var role in Model.RoleList)
+                    {
+                        <li class="list-group-item">
+                            <a href="#" class="roleLink">@role</a>
+                            <span class="pull-right flip">
+                                @if (!protectedRoles.Contains(role))
+                                {
+                                    @Html.ActionLinkConfirm("Delete Role?", "DeleteRole", "Admin", new { rolename = role }, "fa fa-trash-o fa-1_5x")
+                                }
+                                    
+                            </span>
+                        </li>
+                    }
+                    </ul>
+                    <div class="form-group">
+                        <input type="submit" name="AddRole" class="btn btn-primary" value="Add Role" />
+                        <div class="col-xs-6">@Html.TextBoxFor(model => model.NewRolename, new { @class = "form-control" })</div>
+                        
+                        
+                    </div>                    
+                </div>
+            </div>
+        }
+                </div>
+                <div class="col-xs-6">
+                    <div id="role-panel">
+            @if (!String.IsNullOrWhiteSpace(Model.Rolename))
+            {
+                Html.Action("GetRoleView", new {rolename = @Model.Rolename});
+            }
+            
+            
+
+                    </div>
+                </div>
+            </div>
+
+    </div>
+</div>
+@section scripts{
+   
+    <script>
+        $.validator.setDefaults({ ignore: null });
+        
+        /*conditional validator for subject*/
+        setConditionalValidators();
+
+    </script>
+}

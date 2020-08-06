@@ -1,0 +1,43 @@
+﻿@using System.Collections
+@using System.ComponentModel
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@model WWW.ViewModels.MemberViewModel
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
+                <h4 class="modal-title">Email Member</h4>
+            </div> 
+<div class="modal-body pre-scrollable">
+  <dl class="dl-horizontal">
+    <dt>Username</dt>
+    <dd>- @Model.User.UserName</dd>
+    <dt>Email</dt>
+    <dd>- @Model.User.Email</dd>
+
+    @foreach (DictionaryEntry item in Model.EnabledProfileFields)
+    {
+        var barProperty = Model.User.GetType().GetProperty((string)item.Key);
+        bool isDef = Attribute.IsDefined(barProperty, typeof(DisplayNameAttribute));
+        string dName = null;
+        if (isDef)
+        {
+            dName = ((DisplayNameAttribute)Attribute.GetCustomAttribute(barProperty, typeof(DisplayNameAttribute))).DisplayName;
+        }
+
+        string barValue = barProperty.GetValue(Model.User, null) as string;
+        if ((item.Key as string).Contains("Date"))
+        {
+            barValue = barValue.ToDateTime().Value.ToFormattedString(false);
+        }
+    <dt @if((bool) item.Value) {@Html.Raw("class='text-danger'")}>@Html.Raw(dName ?? item.Key) </dt>
+    <dd>- @barValue </dd>
+    
+    }  
+
+  </dl> 
+
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-danger" data-dismiss="modal">Ok</button>
+</div>

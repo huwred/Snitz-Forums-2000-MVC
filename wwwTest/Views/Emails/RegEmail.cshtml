@@ -1,0 +1,16 @@
+﻿@using SnitzConfig
+@{
+    Layout = null;
+    string forumlink = Config.ForumUrl + "Account/RegisterConfirmation/" + @Model.ConfirmationToken + "?usr=" + @Model.UserId;
+}
+
+To: @Html.Raw(Model.UserName) <@Model.To>
+From: @Html.Raw(Config.ForumTitle) <@ClassicConfig.ForumEmail>
+Subject: @Html.Raw(Config.ForumTitle) Complete Registration Process
+
+Hello @Html.Raw(Model.UserName),
+
+In order to complete the registration process we need to verify your email address, please click on or paste the following link in your browser address bar
+@forumlink
+
+Sent from @Html.Raw(Config.ForumTitle)

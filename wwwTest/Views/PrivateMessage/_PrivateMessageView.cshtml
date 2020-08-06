@@ -1,0 +1,30 @@
+﻿
+@using LangResources.Utility
+@using SnitzConfig
+@using WWW.Views.Helpers
+@model dynamic
+
+@{
+    string pMessage = ViewBag.Message;
+}
+<div class="panel-heading padding-xs clearfix">
+    <div class="pull-left flip">
+        <label>@ViewBag.Subject</label><br />
+        @String.Format(ResourceManager.GetLocalisedString("lblPMSentBy", "PrivateMessage"), ViewBag.Sender, ViewBag.Date)
+    </div>
+    <div class="pull-right flip btn-group-xs">
+        @if ((string)TempData["Inbox"] == "true")
+        {
+            <a class="btn btn-default pm-button" data-val="@ViewBag.MessageId" data-target="ReplyMessage" title="@ResourceManager.GetLocalisedString("tipPMReply", "PrivateMessage")" data-toggle="tooltip" href="#"><i class="fa fa-mail-reply"></i></a>
+        }<a href="#" title="@ResourceManager.GetLocalisedString("tipPMForward", "PrivateMessage")" data-toggle="tooltip" class="btn btn-sm btn-default pm-button" data-val="@ViewBag.MessageId" data-target="ForwardMessage"><i class="fa fa-mail-forward"></i></a>
+        @if (ClassicConfig.GetIntValue("STRSHOWPRINTERFRIENDLY") == 1)
+        {
+            <a title="@ResourceManager.GetLocalisedString("tipPrintPM", "Tooltip")" data-toggle="tooltip" href="@Url.Action("Print", "PrivateMessage", new { id = ViewBag.MessageId })" class="btn btn-sm btn-default" target="_blank">
+                <i class="fa fa-print"></i>
+            </a>
+        }
+    </div>
+</div>
+<div class="panel-body" id="private-msg-container">
+    @Html.FormatBbCode(pMessage)
+</div>

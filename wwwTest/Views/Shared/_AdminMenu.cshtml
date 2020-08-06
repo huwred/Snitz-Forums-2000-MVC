@@ -1,0 +1,100 @@
+﻿@using LangResources.Utility
+@using SnitzCore.Utility
+@using SnitzConfig
+
+
+<li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminMainConfig", "Menu"), "ForumConfig", "Admin", null, new { rel = "nofollow" })</li>
+<li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminFeature", "Menu"), "FeatureConfig", "Admin", null, new { rel = "nofollow" })</li>
+<li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminDate", "Menu"), "DateConfig", "Admin", null, new { rel = "nofollow" })</li>
+<li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminEmail", "Menu"), "EmailServer", "Admin", null, new { rel = "nofollow" })</li>
+<li class="divider"></li>
+<li class="dropdown-submenu">
+    <a tabindex="-1" href="#">@ResourceManager.GetLocalisedString("mnuAdminForum", "Menu")</a>
+    <ul class="dropdown-menu">
+        @if (ClassicConfig.GetIntValue("STRARCHIVESTATE") == 1)
+        {
+            <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminArchive", "Menu"), "ManageArchives", "Admin", null, new { rel = "nofollow" })</li>
+        }
+        <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuManageGroups", "Menu"), "ManageGroups", "Admin", null, new { rel = "nofollow" })</li>
+        <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminModerators", "Menu"), "ManageModerators", "Admin", null, new { rel = "nofollow" })</li>
+        <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminNameFilter", "Menu"), "UserFilter", "Admin", null, new { rel = "nofollow" })</li>
+        <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminWordFilter", "Menu"), "WordFilter", "Admin", null, new { rel = "nofollow" })</li>
+        <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminPolls", "Menu"), "ManagePolls", "Admin", null, new { rel = "nofollow" })</li>
+        @if (Config.TableExists("FORUM_BBCODE"))
+        {
+            <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminBbcodeFilter", "Menu"), "Bbcodes", "Admin", null, new { rel = "nofollow" })</li>
+
+        }
+    </ul>
+</li>
+<li class="dropdown-submenu">
+    <a tabindex="-1" href="#">@ResourceManager.GetLocalisedString("mnuAdminMembership", "Menu")</a>
+    <ul class="dropdown-menu">
+        <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminMember", "Menu"), "MemberConfig", "Admin", null, new { rel = "nofollow" })</li>
+        @if (ClassicConfig.GetIntValue("STRPICTURE",0) == 1)
+        {
+            <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminAvatar", "Menu"), "ManageAvatars", "Admin", null, new { rel = "nofollow" })</li>
+        }
+        @if (ClassicConfig.RestrictReg)
+        {
+            <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminPending", "Menu"), "PendingMembers", "Admin", null, new { rel = "nofollow" })</li>
+        }
+        <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminRoles", "Menu"), "ManageRoles", "Admin", null, new { rel = "nofollow" })</li>
+        <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminRanking", "Menu"), "RankingConfig", "Admin", null, new { rel = "nofollow" })</li>
+        <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminSubs", "Menu"), "ManageSubs", "Admin", null, new { rel = "nofollow" })</li>
+        <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuMergeAccounts", "Menu"), "MergeMembers", "Admin", null, new { rel = "nofollow" })</li>
+    </ul>
+</li>
+<li class="divider"></li>
+<li class="dropdown-submenu">
+    <a tabindex="-1" href="#">@ResourceManager.GetLocalisedString("mnuAdminOther", "Menu")</a>
+    <ul class="dropdown-menu">
+        <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminManageAds", "Menu"), "ManageBanners", "Admin", null, new { rel = "nofollow" })</li>
+        <li><a href="@String.Format("{0}snitzjobs",Config.ForumUrl)" target="_blank">Background Jobs</a></li>
+        <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminDbs", "Menu"), "DbsFile", "Admin", new { path = "", view = 0 }, new { rel = "nofollow" })</li>
+        <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminLangResources", "Menu"), "Index", "LangResource", null, new { rel = "nofollow" })</li>
+        <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminOnline", "Menu"), "Online", "Admin", null, new { rel = "nofollow" })</li>
+        <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminTools", "Menu"), "Tools", "Admin", null, new { rel = "nofollow" })</li>
+        @if (Config.TableExists("FORUM_FILECOUNT")){
+            <li>@Html.ActionLink("Manage Downloads", "Index", "Files", null, new { rel = "nofollow" })</li>
+        }
+         <li class="dropdown-submenu">
+            <a tabindex="-1" href="#">Site Manager</a>
+            <ul class="dropdown-menu">
+                @if(@Common.AssemblyLoaded("SiteManage")){
+                    if (Config.DbType == "mssql")
+                    {
+                        <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminDbManager", "Menu"), "Index", "DbManager", new { path = "", view = 0 }, new { rel = "nofollow" })</li>
+                    }                
+ 
+               }
+                <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminExplorer", "Menu"), "Index", "WebFileManager", new { path = "", view = 0 }, new { rel = "nofollow" })</li>
+                <li>@Html.ActionLink("Paypal Setup", "Configuration", "PayPal", null, new { rel = "nofollow" })</li>
+            </ul>
+        </li>
+    </ul>
+</li>
+<li class="dropdown-submenu">
+    <a tabindex="-1" href="#">@ResourceManager.GetLocalisedString("mnuAdminMODS", "Menu")</a>
+    <ul class="dropdown-menu">
+
+        @if (Config.TableExists("FORUM_WIDGETS"))
+        {
+            <li>@Html.ActionLink("Widgets", "Admin", "Widgets", null, new { rel = "nofollow" })</li>
+        }
+        @if (Config.TableExists("FORUM_IMAGES"))
+        {
+            <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminPhotoAlbum", "Menu"), "Admin", "PhotoAlbum", null, new { rel = "nofollow" })</li>
+        }
+        @if (Config.TableExists("CAL_EVENTS"))
+        {
+            <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuCalendar", "Menu"), "ManageEvents", "Admin", null, new { rel = "nofollow" })</li>
+        }
+        <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminOtherMods", "Menu"), "ModConfiguration", "Admin", null, new { rel = "nofollow" })</li>
+
+    </ul>
+</li>
+<li class="divider"></li>
+<li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminReset", "Menu"), "ResetApplication", "Admin", new { pagenum = 1 }, new { rel = "nofollow" })</li>
+<li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminShutdown", "Menu"), "GoOffline", "Admin", new { pagenum = 1 }, new { rel = "nofollow" })</li>
+

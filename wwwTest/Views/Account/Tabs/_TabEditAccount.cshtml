@@ -1,0 +1,260 @@
+﻿@using System.Globalization
+@using LangResources.Utility
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzCore.Utility
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model WWW.Models.ProfileEditModel
+@{
+    bool isRighToLeft = SessionData.Get<bool>("isRighToLeft");
+}
+@using (Html.BeginStyles())
+{
+    @Styles.Render("~/Content/jquery.jcrop.min.css")
+    @Styles.Render("~/Content/snitz.avatar.min.css")
+    if (isRighToLeft)
+    {
+        @Styles.Render("~/Content/snitz.avatar-rtl.min.css")
+    }
+}
+<div class="padding-md row-fluid clearfix">
+
+    <div class="col-xs-12 col-sm-6 form-horizontal">
+        <input type="text" name="Profile.UserId" id="Profile_UserId" value="@Model.Profile.UserId" style="display: none;" />
+
+        @if (Config.ShowAvatar)
+        {
+            <div class="form-group">
+                <div class="col-sm-4" id="profile-div">
+                    @Html.Avatar(Model.Profile.UserName, Model.Profile.PhotoUrl, "avatar online ")
+                </div>
+                <div class="col-sm-8 media-bottom">
+                    @Html.HiddenFor(model => model.Profile.PhotoUrl)<br />
+                    <div class="input-group">
+                        @if (Model.Profile.UserId == SnitzMembership.WebSecurity.CurrentUserId)
+                        {
+                            <span class="input-group-btn">
+                                <button href="@Url.Action("Upload", "Avatar", new {id = Model.Profile.UserId})" class="btn btn-warning modal-link">@ResourceManager.GetLocalisedString("tipUploadAvatar", "Tooltip")</button>
+                                <button id="avatar-remove" class="btn btn-danger" data-toggle="tooltip" value="@ResourceManager.GetLocalisedString("tipRemoveAvatar", "Tooltip")" title="@ResourceManager.GetLocalisedString("btnRemoveAvatar", "labels")"><i class="fa fa-trash"></i></button><br/>
+                            </span>
+                        }
+                    </div>
+                </div>
+                <div class="col-xs-8">
+                    <div id="result"></div>
+                </div>
+            </div>
+
+        }
+        else
+        {
+            @Html.HiddenFor(model => model.Profile.PhotoUrl)
+        }
+        @if (ClassicConfig.GetValue("STRFULLNAME") == "1")
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.Profile.Firstname, new { @class = "control-label col-sm-4 flip text-right" })
+                <div class="col-sm-7">
+                    @Html.TextBoxFor(model => model.Profile.Firstname, new { @class = "form-control", @placeholder = "First name" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Profile.Lastname, new { @class = "control-label col-sm-4 flip text-right" })
+                <div class="col-sm-7">
+                    @Html.TextBoxFor(model => model.Profile.Lastname, new { @class = "form-control", @placeholder = "Last name" })
+                </div>
+            </div>
+        }
+        @if (ClassicConfig.GetValue("STRSEX") == "1")
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.Profile.Gender, new { @class = "control-label col-sm-4 flip text-right" })
+                <div class="col-sm-7">
+                    @Html.DropDownListFor(model => model.Profile.Gender, Model.GenderList, "-- Select Gender --", new { @class = "form-control" })
+                </div>
+            </div>
+        }
+        @if (ClassicConfig.GetValue("STRAGE") == "1")
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.Profile.Age, new { @class = "control-label col-sm-4 flip text-right" })
+                <div class="col-sm-7">
+                    @Html.TextBoxFor(model => model.Profile.Age, new { @class = "form-control" })
+                </div>
+            </div>
+        }
+        else if (ClassicConfig.GetValue("STRAGEDOB") == "1")
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.Profile.DateOfBirth, new { @class = "control-label col-sm-4 flip text-right" })
+                <div class="col-sm-8">
+                    @{
+                        var now = DateTime.Now;
+                        var yearNow = now.ToString("yyyy",CultureInfo.CurrentCulture);
+                        var currentyear = Convert.ToInt32(yearNow);
+                        var startyear = currentyear - 90;
+
+                    }
+                    @if (Model.Profile.BirthDate.HasValue)
+                    {
+                        var birthyear = Model.Profile.BirthDate.Value.ToString("yyyy", CultureInfo.CurrentCulture);
+                        <div class="col-xs-4 padding-xs">@Html.DropDownList(ResourceManager.GetLocalisedString("lblYear", "labels"), new SelectList(Enumerable.Range(startyear, currentyear - startyear), Convert.ToInt32(birthyear)), " Year ", new { @class = "form-control padding-xs dobdropdown", id = "ddYear" })</div>
+                        <div class="col-xs-3 padding-xs">@Html.DropDownList(ResourceManager.GetLocalisedString("lblMonth", "labels"), new SelectList(Enumerable.Range(1, 12), Model.Profile.BirthDate.Value.Month), " Month ", new { @class = "form-control padding-xs dobdropdown numbers", id = "ddMonth" })</div>
+                        <div class="col-xs-3 padding-xs">@Html.DropDownList(ResourceManager.GetLocalisedString("lblDay", "labels"), new SelectList(Enumerable.Range(1, 31), Model.Profile.BirthDate.Value.Day), " Day ", new { @class = "form-control padding-xs dobdropdown numbers", id = "ddDay" })</div>
+                    }
+                    else
+                    {
+                        <div class="col-sm-4 padding-xs">@Html.DropDownList(ResourceManager.GetLocalisedString("lblYear", "labels"), new SelectList(Enumerable.Range(startyear, currentyear - startyear), -1), " Year ", new { @class = "form-control padding-xs dobdropdown", id = "ddYear" })</div>
+                        <div class="col-sm-4 padding-xs">@Html.DropDownList(ResourceManager.GetLocalisedString("lblMonth", "labels"), new SelectList(Enumerable.Range(1, 12), -1), " Month ", new { @class = "form-control padding-xs dobdropdown numbers", id = "ddMonth" })</div>
+                        <div class="col-sm-3 padding-xs">@Html.DropDownList(ResourceManager.GetLocalisedString("lblDay", "labels"), new SelectList(Enumerable.Range(1, 31), -1), " Day ", new { @class = "form-control padding-xs dobdropdown numbers", id = "ddDay" })</div>
+
+                    }
+                    @Html.HiddenFor(m => m.Profile.DateOfBirth)
+
+                    <input type="hidden" id="MinAge" value="@ClassicConfig.GetValue("STRMINAGE")" />
+                </div>
+            </div>
+
+        }
+        @if (ClassicConfig.GetValue("STRMARSTATUS") == "1")
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.Profile.MaritalStatus, new { @class = "control-label col-sm-4 flip text-right" })
+                <div class="col-sm-7">
+                    @Html.TextBoxFor(model => model.Profile.MaritalStatus, new { @class = "form-control" })
+                </div>
+            </div>
+
+        }
+        @if (ClassicConfig.GetValue("STRCITY") == "1")
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.Profile.City, new { @class = "control-label col-sm-4 flip text-right" })
+                <div class="col-sm-7">
+                    @Html.TextBoxFor(model => model.Profile.City, new { @class = "form-control", @placeholder = "City" })
+                </div>
+            </div>
+        }
+        @if (ClassicConfig.GetValue("STRSTATE") == "1")
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.Profile.State, new { @class = "control-label col-sm-4 flip text-right" })
+                <div class="col-sm-7">
+                    @Html.TextBoxFor(model => model.Profile.State, new { @class = "form-control", @placeholder = "State" })
+                </div>
+            </div>
+        }
+        @if (ClassicConfig.GetValue("STRCOUNTRY") == "1")
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.Profile.Country, new { @class = "control-label col-sm-4 flip text-right" })
+                <div class="col-sm-7">
+                    @Html.DropDownListFor(model => model.Profile.Country, (IEnumerable<SelectListItem>)ViewBag.CountryList, "-- Select Country --", new { @class = "form-control" })
+                </div>
+            </div>
+        }
+        @if (ClassicConfig.GetValue("STREXTENDPROFILE") == "1")
+        {
+            <div id="TimeZoneDiv">
+                @Html.Action("MemberFieldEdit", "MemberFields", new { id = Model.Profile.UserId, property = "TimeZone" })
+            </div>
+        }
+
+    </div>
+    <div class="col-xs-12 col-sm-6 form-horizontal">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Profile.Email, new { @class = "control-label col-sm-3 flip text-right" })
+            <div class="col-sm-9">
+                @if (User.IsAdministrator())
+                {
+                    @Html.TextBoxFor(model => model.Profile.Email, new { @class = "form-control ltr" })
+                }
+                else
+                {
+                    @Html.TextBoxFor(model => model.Profile.Email, new { @class = "form-control ltr", @readonly = true })
+                }
+
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Profile.UserName, new { @class = "control-label col-sm-3" })
+            <div class="col-sm-8">
+                @Html.TextBoxFor(model => model.Profile.UserName, new { @class = "form-control ltr", data_val = "false", @readonly = "true" })
+            </div>
+        </div>
+
+
+        @if (User.IsAdministrator())
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.Profile.ForumTitle, new { @class = "control-label col-sm-3" })
+                <div class="col-sm-7">
+                    @Html.TextBoxFor(model => model.Profile.ForumTitle, new { @class = "form-control" })
+                </div>
+            </div>
+        }
+        else
+        {
+            @Html.HiddenFor(model => model.Profile.ForumTitle)
+        }
+        @if (User.IsAdministrator())
+        {
+            <div class="form-group">
+                <div class="control-label col-sm-3">
+                    @Html.LabelFor(model => model.Profile.PostCount, DisplayOptions.Humanize)
+                </div>
+                <div class="col-sm-4">
+                    <input type="number" value="@Model.Profile.PostCount" name="Profile.PostCount" class="form-control" />
+                </div>
+            </div>
+        }
+        else
+        {
+            @Html.HiddenFor(model => model.Profile.PostCount)
+        }
+        <div class="form-group">
+            <br />
+            <hr class="title" />
+        </div>
+
+        @if (ClassicConfig.GetValue("STRHOMEPAGE") == "1")
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.Profile.Homepage, new { @class = "control-label col-sm-3 flip text-right" })
+                <div class="col-sm-9">
+                    @Html.TextBoxFor(model => model.Profile.Homepage, new { @class = "form-control ltr", @placeholder = "Home web site url" })
+                </div>
+            </div>
+        }
+        @if (ClassicConfig.GetValue("STROCCUPATION") == "1")
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.Profile.Occupation, new { @class = "control-label col-sm-3 flip text-right" })
+                <div class="col-sm-7">
+                    @Html.TextBoxFor(model => model.Profile.Occupation, new { @class = "form-control", @placeholder = "Occupation" })
+                </div>
+            </div>
+        }
+        @if (ClassicConfig.GetValue("STRBIO") == "1")
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.Profile.Biography, new { @class = "control-label col-sm-3" })
+                <div class="col-sm-12">
+                    @Html.TextAreaFor(model => model.Profile.Biography, new { @class = "form-control", @rows = 5, @placeholder = "Biography" })
+                </div>
+            </div>
+        }
+        @{ Html.RenderPartial("_FormButtons"); }
+    </div>
+</div>
+@using (Html.BeginScripts())
+{
+    @Scripts.Render("~/bundles/userprofile")
+
+    if (ClassicConfig.GetIntValue("STREXTENDPROFILE") == 1)
+    {
+        <script src="@Url.Content("~/Scripts/snitz.extendedprofile.js")"></script>
+    }
+
+}

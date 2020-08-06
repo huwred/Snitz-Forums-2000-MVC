@@ -1,0 +1,202 @@
+﻿@using LangResources.Models
+@using LangResources.Utility
+@using WWW.ViewModels
+@model WWW.ViewModels.LangViewModel
+@{
+    var _model = new LangResource {Resources = ResourceManager.ReadResources()};
+
+    string[] cultures = _model.Resources.First().Select(r => r.Culture).ToArray();
+
+    var rowcount = 0;
+
+}
+@section styles{
+    <link rel="stylesheet" type="text/css" href="~/Content/dataTables.bootstrap.min.css" title="snitz">
+
+}
+
+<div class="container-fluid resource-grid">
+    <a href="#" class="pull-right flip" style="padding: 5px" id="close-grid" title="@ResourceManager.GetLocalisedString("lblClose","labels")" data-toggle="tooltip"><i class="fa fa-close fa-2x"></i></a>
+
+    <table class="table table-bordered table-striped" id="ResourceTable">
+        <thead>
+            <tr>
+                <th>Resource Id</th>
+                <th></th>
+                <th></th>
+                @foreach (var culture in cultures)
+                {
+                    <th>
+                        @ResourceManager.GetLocalisedString("lang_" + culture, "SupportedCultures")
+                    </th>
+                }
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var group in _model.Resources)
+            {
+                <tr data-row="@rowcount">
+
+                    <td>@group.Key</td>
+                    <td>@String.Join(",", cultures) </td>
+                    <td>@group.First().ResourceSet</td>
+                    @foreach (var culture in cultures)
+                    {
+                        ResourceEntry res = group.SingleOrDefault(c => c.Culture == culture);
+
+                        <td>
+                            @if (group.Select(c => c.Culture == culture).Any())
+                            {
+
+                                if (res != null)
+                                {
+                                    @res.Value
+                                }
+                            }
+                        </td>
+
+                    }
+
+                    <td><button class="btn btn-primary"><i class="fa fa-edit"></i></button></td>
+                </tr>
+                rowcount += 1;
+            }
+        </tbody>
+    </table>
+</div>
+
+<div id='modal-resedit' class='modal fade in' aria-labelledby="resLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
+                <h4 class="modal-title" id="pmLabel">Edit Resource</h4>
+            </div>
+            <div id='resContainer' class="modal-body">
+                <div class="container text-center">
+                    <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    @Scripts.Render("~/bundles/dropzonejs")
+    <script type="text/javascript" src="~/Scripts/langresource.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/dataTables.bootstrap.min.js"></script>
+    <script>
+        var table;
+
+        $(document).ready(function () {
+            defineTable();
+            $(document)
+                .on('click', '#close-grid',
+                    function (evt) {
+                        evt.preventDefault();
+                        var url = window.SnitzVars.baseUrl + 'LangResource/';
+                        window.location.href = url;
+                        return false;
+                    });
+
+        });
+
+
+        $(document).ajaxComplete(function () {
+
+
+            defineTable();
+
+
+        });
+
+        function defineTable() {
+            if ($.fn.dataTable.isDataTable('#ResourceTable')) {
+
+                table = $('#ResourceTable').DataTable();
+                table.column(1).visible(false, false);
+                table.columns.adjust().draw(false);
+            }
+
+            else {
+                if (window.SnitzVars.forumlang === "en") {
+                    table = $('#ResourceTable').DataTable({
+                        "scrollY": "600px",
+                        "scrollCollapse": true,
+                        "paging": true,
+                        "pageLength": 50,
+                        "ordering": true,
+                        "columnDefs": [
+                            {
+                                "targets": [1],
+                                "visible": false,
+                                "searchable": false
+                            },
+                            {
+                                "targets": [2],
+                                "visible": false,
+                                "searchable": true
+                            }
+                        ]
+                    });
+                } else {
+                    table = $('#ResourceTable').DataTable({
+                        "language": {
+                            "url": window.SnitzVars.baseUrl + "Scripts/Datatable/" + window.SnitzVars.forumlang + ".json"
+                        },
+                        "scrollY": "600px",
+                        "scrollCollapse": true,
+                        "paging": true,
+                        "pageLength": 50,
+                        "ordering": true,
+                        "columnDefs": [
+                            {
+                                "targets": [1],
+                                "visible": false,
+                                "searchable": false
+                            },
+                            {
+                                "targets": [2],
+                                "visible": false,
+                                "searchable": true
+                            }
+                        ]
+                    });
+                }
+
+
+            }
+            $('#ResourceTable tbody').on('click', 'button', function (evt) {
+
+                evt.preventDefault();
+                var data = table.row($(this).parents('tr')).data();
+                var rownum = $(this).parents('tr').data("row");
+
+                $('#ResourceTable tbody').off('click', 'button');
+
+                $.ajax
+                    ({
+                        type: "POST",
+                        contentType: "application/json; charset=utf-8",
+                        url: SnitzVars.baseUrl + "LangResource/EditRow/",
+                        data: JSON.stringify({ id: rownum, rowData: data }),
+                        dataType: "html",
+                        success: function (data) {
+                            $("#resContainer").html(data);
+                            $('#modal-resedit').modal('show');
+                            return false;
+                        },
+                        error: function (x, e) {
+                            alert('Failed');
+                        }
+                    });
+                return false;
+            });
+        }
+
+        defineTable();
+    </script>
+}

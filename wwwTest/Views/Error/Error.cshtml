@@ -1,0 +1,64 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+
+@model System.Web.Mvc.HandleErrorInfo
+@{
+    Layout = null;
+    ViewBag.Title = "Forum Error";
+
+    //Exception ex = Model.Exception;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Error</title>
+    @Styles.Render("~/bundles/sitecss")
+
+    @Styles.Render("~/Content/stylesheet.min.css")
+    @Styles.Render("~" + Config.ThemeFolder() + "/snitz.min.css")
+</head>
+    <body>
+    <div class="container-fluid">
+        <div class="col-xs-6 col-xs-offset-3">
+            <div class="panel panel-warning ">
+
+                <div class="panel-heading">
+                    @ResourceManager.GetLocalisedString("ErrHeading", "ErrorMessage")
+                </div>
+                <div class="panel-body">
+                    <p>
+                        @if (Model != null)
+                        {
+                            <b>@ResourceManager.GetLocalisedString("lblController", "labels"):</b> @Model.ControllerName<br />
+                            <b>@ResourceManager.GetLocalisedString("lblAction", "labels"):</b> @Model.ActionName<br />
+                            <b>@ResourceManager.GetLocalisedString("lblException", "labels"):</b> @Model.Exception.Message<br />
+
+                        }
+                        else
+                        {
+                            @ViewBag.Error
+                        }
+                    </p>
+                    <a href='javascript:history.go(-1);'>@ResourceManager.GetLocalisedString("lnkReturn", "labels")</a>
+                </div>
+            </div>
+
+            @if (Model != null @*&& (ClassicConfig.ShowDebug)*@) 
+            {
+                <div class="row-fluid">
+                    <div>
+                        <pre style="width: 90%; margin: auto; max-height: 450px; overflow: scroll">
+                        @Model.Exception.InnerException
+                        @Model.Exception.StackTrace
+                    </pre>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+        @{ Html.RenderPartial("_Footer"); }
+    </body>
+</html>

@@ -1,0 +1,31 @@
+﻿@using SnitzConfig
+@using LangResources.Utility
+@using SnitzCore.Utility
+@using SnitzDataModel.Extensions
+@{
+    var themepath = Common.RootFolder + Config.ThemeFolder();
+}
+<div class="container">
+    <ul class="list-unstyled">
+        @if (User.Theme() == "Classic")
+        {
+            <li><img class="no-new-posts" src="~/Content/Images/blank.png" /> @ResourceManager.GetLocalisedString("lblOldPosts", "labels")</li>
+
+        }
+        @if (ClassicConfig.GetIntValue("STRHOTTOPIC") == 1)
+        {
+            <li class="numbers"><img class="hot-topic" src="@themepath/Images/hot.gif"/> @String.Format(ResourceManager.GetLocalisedString("lblHotTopic", "labels"), ClassicConfig.GetIntValue("INTHOTTOPICNUM"))</li>
+        }
+
+        <li><img class="new-posts" src="@themepath/Images/new.png"/> @ResourceManager.GetLocalisedString("lblNewPosts", "labels") </li>
+        <li><img class="locked-topic" src="@themepath/Images/lock.png"/> @ResourceManager.GetLocalisedString("lblLockedTopic", "labels") </li>
+        <li><img class="stick-topic" src="@themepath/Images/stick.png"/> @ResourceManager.GetLocalisedString("StickyTopics", "labels") </li>
+        @if (User.IsAdministrator() || User.IsModerator())
+        {
+            <li><img class="unmoderated-topic" src="@themepath/Images/warning.png"/> @ResourceManager.GetLocalisedString("tipTopicUnmoderatedReplies", "Tooltip") </li>
+            <li><img class="hold-topic" src="@themepath/Images/onhold.png"/> @ResourceManager.GetLocalisedString("tipTopicOnHold", "Tooltip") </li>
+        }
+    </ul>
+</div>
+
+

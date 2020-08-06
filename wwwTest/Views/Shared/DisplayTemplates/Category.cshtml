@@ -1,0 +1,70 @@
+﻿@using LangResources.Utility
+@using Snitz.Base
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model SnitzDataModel.Models.Category
+    
+@{
+    Model.Forums = Model.Forums.OrderBy(f => f.Order).ThenBy(f => f.Subject).ToList();
+
+    bool hasMatch = User.CanViewCategory(Model.Id,null);
+    string adminClass = "col-md-10";
+    if (User.Identity.IsAuthenticated)
+    {
+        adminClass = "col-md-7";
+    }
+    if (User.IsAdministrator())
+    {
+        adminClass = "col-md-6";
+    }
+}
+@if (hasMatch)
+{
+    <div class="panel panel-primary panel-category">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-xs-8 col-sm-7 @adminClass">
+                    <a href="@Html.Raw("#panel" + Model.Id)" data-toggle="collapse" class="accordion-toggle collapsed">&nbsp;</a>
+                    
+                    @Html.ActionLink(Model.Title, "Index", "Category", new {id=Model.Id },null)
+                </div>
+                <div class="col-xs-2 col-sm-1">@ResourceManager.GetLocalisedString("lblTopics", "labels")</div>
+                <div class="col-xs-2 col-sm-1">@ResourceManager.GetLocalisedString("lblPosts", "labels")</div>
+                @if (User.IsAdministrator())
+                {
+                    <div class="hidden-xs col-sm-3 col-md-4 flip text-right ">
+                        @if (Model.Status == Enumerators.Status.Open)
+                        {
+                            @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfLockCategory", "labels"), "Lock", "Category", new { id = Model.Id, @lock = true }, "fa fa-lock fa-1_5x")
+                        }
+                        else
+                        {
+                            @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfUnlockCategory", "labels"), "Lock", "Category", new { id = Model.Id, @lock = false }, "fa fa-unlock-alt fa-1_5x")
+                        }
+                        @Html.ActionLink(" ", "CreateEdit", "Category", new { id = Model.Id }, new { @class = "fa fa-edit fa-1_5x", title = ResourceManager.GetLocalisedString("tipEditCategory", "Tooltip"), data_toggle = "tooltip" })
+                        @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfDeleteCategory", "labels"), "Delete", "Category", new { id = Model.Id }, "fa fa-trash-o fa-1_5x")
+                        @Html.ActionLink(" ", "CreateEdit", "Forum", new { id = 0, catid = Model.Id }, new { @class = "fa fa-folder-o fa-1_5x", title = ResourceManager.GetLocalisedString("tipNewForum", "Tooltip"), data_toggle = "tooltip" })
+                        @Html.CategorySubscriptionLink(Model.Id, User)
+                    </div>
+                }else if (User.Identity.IsAuthenticated)
+                {
+                    <div class="hidden-xs hidden-sm col-md-4 flip text-right ">
+                            @Html.CategorySubscriptionLink(Model.Id, User)
+                    </div>
+                }
+            </div>
+        </div>
+        <div id="@Html.Raw("panel"+Model.Id)" class="panel-body padding-xs collapse in">
+            <div class="inner">
+                <ul class="topiclist forums">
+                    @Html.DisplayFor(m => Model.Forums)
+                    @*@for (int i = 0; i < Model.Forums.Count; i++)
+                    {
+                        @Html.DisplayFor(x => x.Forums[i], "ForumNew")
+                    }*@
+                </ul>
+            </div>
+        </div>
+    </div>
+}

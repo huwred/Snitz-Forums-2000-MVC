@@ -1,0 +1,84 @@
+﻿@using LangResources.Utility
+@using WWW.ViewModels
+@{
+    ViewBag.PageTitle = "Dbs Files";
+    ViewBag.ActivePage = ResourceManager.GetLocalisedString("mnuAdminDbs", "labels");
+}
+@model List<DbsFile>
+
+<h2>DbsFile 3</h2>
+<div class="panel panel-primary panel-body clearfix">
+
+        <table class="table table-condensed">
+            <thead class="bg-info">
+                <tr>
+                    <th class="col-xs-4">Title</th><th class="col-xs-1">Applied</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var file in Model)
+            {
+                <tr>
+                    @if (!file.Applied)
+                    {
+                        <td><a href="#" title="Process updates" data-toggle="tooltip" class="process-dbs" data-url="@file.Name">@file.Description</a></td>
+                    }
+                    else
+                    {
+                        <td>@file.Description</td>
+                    }
+                    <td>@file.Applied</td> 
+
+                </tr>
+            }
+            </tbody>
+        </table>           
+
+    <p>Once applied, you can remove the dbs scripts from the list by deleting the file from your server. They are located in the forums <b>App_Data</b> folder</p>
+    <div id="status"></div>
+    <div id="statusBorder">
+        <div id="statusFill">
+
+        </div>
+    </div>
+</div>
+@section scripts
+{
+    <script  type="text/javascript">
+        function updateMonitor(status) {
+            var html = $("#statusFill").html();
+            $("#statusFill").html(status + html);
+        }
+        var uniqueId = '@Guid.NewGuid().ToString()';
+        $(document).ready(function () {
+            $('.process-dbs').on('click', function (e) {
+                e.preventDefault();
+                $.post(SnitzVars.baseUrl + "Admin/ProcessDbs", {
+                    id: uniqueId,
+                    dbsfile: $(this).attr("data-url")
+                }, function () {
+                    $('#statusBorder').show();
+                    $("#statusFill").html("Started");
+                    var intervalDbs = setInterval(function () {
+                        //
+                        var url = SnitzVars.baseUrl + 'Admin/GetProgress/' + uniqueId;
+                        $.post(url, function (progress) {
+                            
+                            if (progress.indexOf("Complete") > -1) {
+                                updateMonitor(progress);
+                                //$("#statusFill").html("Completed");
+                                clearInterval(intervalDbs);
+
+                            } else {
+                                updateMonitor(progress);
+
+                            }
+
+                        });
+                    }, 50);
+                });
+
+            });
+        });
+    </script>
+}

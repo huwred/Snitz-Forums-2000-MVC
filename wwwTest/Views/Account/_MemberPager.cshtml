@@ -1,0 +1,106 @@
+﻿@using LangResources.Utility
+@using WWW.Views.Helpers
+@model WWW.ViewModels.ListUserViewModel
+
+@{
+    string controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    long pagecount = ViewBag.PageCount;
+    long page = ViewBag.Page;
+    long intLow = page - 1;
+    long intHigh = page + 3;
+    if (intLow < 1) { intLow = 1; }
+    if (intHigh > pagecount) { intHigh = pagecount; }
+    if (intHigh - intLow < 5) { while ((intHigh < intLow + 4) && intHigh < pagecount) { intHigh++; } }
+    if (intHigh - intLow < 5) { while ((intLow > intHigh - 4) && intLow > 1) { intLow--; } }
+
+    string sort = "desc";
+    if (ViewBag.SortDir == "desc")
+    {
+        sort = "asc";
+    }
+
+}
+
+@using (Html.BeginForm("Search", controllerName, FormMethod.Post, new { @class = "form-inline", id = "jumptopage" + ViewBag.instanceNum }))
+{
+    <input type="hidden" id="sortCol" name="sortCol" value="@ViewBag.SortCol" />
+    <input type="hidden" id="sortDir" name="sortDir" value="@ViewBag.SortDir" />
+    <input type="hidden" id="Initial" name="Initial" value="@Model.Initial" />
+    <div class="row-fluid">
+        @if (pagecount > 1)
+        {
+
+            <div class="col-xs-12 col-sm-6 col-md-6">
+                <div class="input-group">
+                    <ul class="pager">
+                        @if (page > 1)
+                        {
+                            <li><span class="">
+                                    <a href="#" onclick="javascript:jumpMemberPage(1);" title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipFirstPage", "Tooltip")" data_toggle="tooltip"><<</a>
+                            </span></li>
+                            <li><span class="">
+                                <a href="#" onclick="javascript:jumpMemberPage(@page - 1);" title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipPreviousPage", "Tooltip")" data_toggle="tooltip"><</a>
+                            </span></li>
+                        }
+
+
+                        @for (long i = intLow; i < intHigh + 1; i++) 
+                        {
+                            if (i == page)
+                            {
+                                <li><span class="pager-link-current">@i</span></li>
+                            }
+                            else
+                            {
+                                <li><span class=""><a href="#" onclick="javascript:jumpMemberPage(@i);" title="@String.Format(LangResources.Utility.ResourceManager.GetLocalisedString("tipGotoPage", "Tooltip"), i)" data_toggle="tooltip">@i</a></span></li>
+                            }
+                        }
+                        @if (page < pagecount)
+                        {
+                            <li><span class="">
+                                <a href="#" onclick="javascript:jumpMemberPage(@page + 1);" title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipNextPage", "Tooltip")" data_toggle="tooltip">></a>
+                            </span></li>
+                            <li><span class="">
+                                <a href="#" onclick="javascript:jumpMemberPage(@pagecount);" title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipLastPage", "Tooltip")" data_toggle="tooltip">>></a>
+                            </span></li>
+                        }
+                        <span class="text-muted hidden-xs">@String.Format(ResourceManager.GetLocalisedString("lblTotalPages", "labels"), pagecount)</span>
+                    </ul>
+                </div>
+            </div>
+
+        }
+        @if (pagecount > 5)
+        {
+
+            <div class="col-xs-4 col-sm-2 pull-right flip">
+                <div class="input-group">
+                    <input type="number" value="@ViewBag.Page" id="PageNum" name="PageNum" class="form-control input-sm" placeholder="jump to page" title="jump to page" />
+                    <span class="input-group-btn"><button type="submit" class="btn btn-sm btn-default">Go</button></span>
+                </div>
+            </div>
+
+        }
+    </div>
+
+}
+@using (Html.BeginScripts())
+{
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+            $('a .page-select').click(function(){
+                alert('Sign new href executed.'); 
+            }); 
+
+            //$(".page-select").on('click',
+            //    function(e) {
+            //        alert("submit");
+            //        var form = $(this).parents('form:first');
+            //        e.preventDefault();
+            //        form.submit();
+            //        return false;
+            //    });
+        });
+    </script>
+}

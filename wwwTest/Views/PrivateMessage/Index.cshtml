@@ -1,0 +1,145 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+
+@model WWW.ViewModels.PrivateMessageViewModel
+
+@{
+    ViewBag.Title = ResourceManager.GetLocalisedString("PrivateMessaging", "PrivateMessage");
+}
+
+<div class="container" id="pm-panel">
+    <h4>@ViewBag.Title </h4>
+    <span id="mailbox-size">@{ Html.RenderAction("MailboxLimitString"); }</span>
+    <hr class="title" />
+    <div class="panel panel-primary">
+        <div class="panel-heading padding-xs">
+            <div class="btn-toolbar" role="toolbar">
+                <div class="btn-group btn-sm">
+                    <a class="btn btn-default pm-button" data-val="1" data-target="GetFolder" title="@ResourceManager.GetLocalisedString("Inbox", "PrivateMessage")" data-toggle="tooltip" href="#"><i class="fa fa-1_5x fa-sign-in fa-rotate-90"></i></a>
+                    @if (Model.SaveSentItems)
+                    {
+                        <a class="btn btn-default pm-button" data-val="0" data-target="GetFolder" title="@ResourceManager.GetLocalisedString("OutBox", "PrivateMessage")" data-toggle="tooltip" href="#"><i class="fa fa-1_5x fa-sign-out fa-rotate-270"></i></a>
+                    }
+
+                    <a class="btn btn-default pm-button" data-val="" data-target="NewMessage" title="@ResourceManager.GetLocalisedString("NewMessage", "PrivateMessage")" data-toggle="tooltip" href="#"><i class="fa fa-1_5x fa-envelope-o"></i></a>
+                    <a class="btn btn-default pm-send" style="display: none;" title="@ResourceManager.GetLocalisedString("SendMessage", "PrivateMessage")" data-toggle="tooltip" href="#" data-target="SendPMsg"><i class="fa fa-1_5x fa-send-o"></i></a>
+                    <a class="btn btn-default pm-draft" style="display: none;" title="@ResourceManager.GetLocalisedString("SaveDraft", "PrivateMessage")" data-toggle="tooltip" href="#" data-target="SendPMsg"><i class="fa fa-1_5x fa-save"></i></a>
+
+                    <a class="btn btn-default pm-delete" title="@ResourceManager.GetLocalisedString("DeleteMessage", "PrivateMessage")" data-toggle="tooltip" href="#"><i class="fa fa-1_5x fa-trash-o"></i></a>
+                    @if (ClassicConfig.GetValue("STRPMATTACH") == "1")
+                    {
+                        <a style="display:none;" href="@Url.Action("FileUpload", "Home")" class="btn btn-default pm-attach modal-link" title="@ResourceManager.GetLocalisedString("btnUpload", "labels")"><span class="fa fa-1_5x fa-paperclip"></span></a>
+                    }
+                    <a class="btn btn-default pm-button" data-target="Settings" data-val="1" title="@ResourceManager.GetLocalisedString("Settings", "PrivateMessage")" data-toggle="tooltip" href="#"><i class="fa fa-1_5x fa-cog"></i></a>
+                    <a class="btn btn-default pm-button" data-target="SearchMessages" data-val="1" title="@ResourceManager.GetLocalisedString("Search", "PrivateMessage")" data-toggle="tooltip" href="#"><i class="fa fa-1_5x fa-search"></i></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="panel-body padding-xs">
+            <div class="col-xs-12 col-md-6 padding-xs pull-right flip">
+                <div id="message-panel" class="panel panel-info">
+                </div>
+                <div id="msgloading" class="modal-backdrop fade in">
+                    <div class="container text-center" style="height:100%;">
+                        <i class="fa fa-spinner fa-4x fa-pulse fa-fw" id="spinWait" style="top: 50%; position: relative;"></i>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6 padding-xs pull-left flip" id="message-box">
+                @{ Html.RenderPartial("_PrivateMessages", Model.InBox); }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section styles
+{
+    <script type="text/javascript">
+        var loading = false;
+        var showDelete = true;
+        var intMailBox = 1;
+    </script>
+}
+@section scripts{
+    @Scripts.Render("~/bundles/dropzonejs")
+    <script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/fullcalendar-year.min.js"></script>
+    @if (Session["Culture"] != null && Session["Culture"].ToString() != "en")
+    {
+        @Scripts.Render("~/Scripts/lang/" + Session["Culture"] + ".js")
+    }
+    <script type="text/javascript" src="~/Scripts/datatable-moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/snitz.editor.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/snitz.upload.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/snitz.pm.min.js"></script>
+    <script>
+        $("#pm-notify").html('');
+        try {
+            Dropzone.autoDiscover = false;
+        } catch (e) {
+            console.log('Dropzone not loaded');
+        }
+
+        $(document).ajaxComplete(function () {
+            lazyload();
+            if ($.fn.dataTable.isDataTable('.message-table')) {
+
+            } else {
+                defineTable();
+            }
+        });
+
+        function defineTable() {
+
+            $.fn.dataTable.moment('DD MMM YYYY HH:mm', window.SnitzVars.forumlang);
+            if (window.SnitzVars.forumlang === "en") {
+                $('.message-table')
+                    .DataTable({
+                        "searching": false,
+                        "scrollY": "500px",
+                        "scrollCollapse": true,
+                        "paging": false,
+                        "pageLength": 150,
+                        "order": [[4, "desc"]],
+                        "info": false,
+                        "columnDefs": [
+                            { 'orderData': [4], 'targets': [3] },
+                            {
+                                'targets': [4],
+                                'visible': false,
+                                'searchable': false
+                            }
+                        ]
+                    });
+            } else {
+                $('.message-table').DataTable({
+                    "language": {
+                        "url": window.SnitzVars.baseUrl + "Scripts/Datatable/" + window.SnitzVars.forumlang + ".json"
+                    },
+                    "searching": false,
+                    "scrollY": "500px",
+                    "scrollCollapse": true,
+                    "paging": false,
+                    "pageLength": 150,
+                    "order": [[4, "desc"]],
+                    "info": false,
+                    "columnDefs": [
+                        { 'orderData': [4], 'targets': [3] },
+                        {
+                            'targets': [4],
+                            'visible': false,
+                            'searchable': false
+                        }
+                    ]
+                });                
+            }
+
+            //
+        }
+
+        defineTable();
+    </script>
+}

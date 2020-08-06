@@ -1,0 +1,130 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@using WWW.Views.Helpers
+@model WWW.ViewModels.UserProfileViewModel
+    <div class="padding-md row-fluid clearfix">
+        <div class="panel-body">
+            <div class="col-xs-12 col-sm-4 form-horizontal">
+                @* AIM *@
+                @if (ClassicConfig.GetValue("STRAIM") == "1")
+                {
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Profile.AIM, new { @class = "control-label" })
+                        <div class="col-xs-12">
+                            @if (!String.IsNullOrWhiteSpace(Model.Profile.AIM))
+                            {
+                                <a href="aim:goim?screenname=@Model.Profile.AIM" title="Send AIM message to author" target="_new">
+                                    <img src="http://big.oscar.aol.com/@Model.Profile.AIM?on_url=http://www.aim.com/remote/gr/MNB_online.gif&off_url=http://www.aim.com/remote/gr/MNB_offline.gif" style="border: none;" alt="My status" />
+                                </a>
+                            }
+                            else
+                            {
+                                @ResourceManager.GetLocalisedString("lblNotProvided", "labels")
+                            }
+
+                        </div>
+                    </div>
+
+                }
+                @* ICQ *@@if (ClassicConfig.GetValue("STRICQ") == "1")
+                {
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Profile.ICQ, new { @class = "control-label" })
+                        <div class="col-xs-12">
+                            @if (!String.IsNullOrWhiteSpace(Model.Profile.ICQ))
+                            {
+
+                                <img src="http://web.icq.com/whitepages/online?icq=@Model.Profile.ICQ&img=26" />
+                                <a href="http://www.icq.com/whitepages/cmd.php?uin=@Model.Profile.ICQ&action=message" target="_new">Message me</a>
+
+                            }
+                            else
+                            {
+                                @ResourceManager.GetLocalisedString("lblNotProvided", "labels")
+                            }
+                        </div>
+                    </div>
+                }
+
+                @* MSN now Skype *@@if (ClassicConfig.GetValue("STRMSN") == "1")
+                {
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Profile.MSN, new { @class = "control-label" })
+                        <div class="col-xs-12">
+                            @if (!String.IsNullOrWhiteSpace(Model.Profile.MSN))
+                            {
+                                <script type="text/javascript" src="http://www.skypeassets.com/i/scom/js/skype-uri.js" target="_new"></script>
+                                <div id="SkypeButton_Call_huwred_1">
+                                    <script type="text/javascript">
+                                        Skype.ui({
+                                            "name": "chat",
+                                            "element": "SkypeButton_Call_huwred_1",
+                                            "participants": ["@Model.Profile.MSN"],
+                                            "imageSize": 24
+                                        });
+                                    </script>
+                                </div>
+                            }
+                            else
+                            {
+                                @ResourceManager.GetLocalisedString("lblNotProvided", "labels")
+                            }
+                        </div>
+                    </div>
+
+                }
+                @* YAHOO *@@if (ClassicConfig.GetValue("STRYAHOO") == "1")
+                {
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Profile.YAHOO, new { @class = "control-label" })
+                        <div class="col-xs-12">
+                            @if (!String.IsNullOrWhiteSpace(Model.Profile.YAHOO))
+                            {
+                                <a href="ymsgr:sendim?@Model.Profile.YAHOO" title="Send author a Yahoo message">
+                                    <img src="http://opi.yahoo.com/online?u=@Model.Profile.YAHOO&m=g&t=1" alt="Yahoo status">
+                                </a>
+                            }
+                            else
+                            {
+                                @ResourceManager.GetLocalisedString("lblNotProvided", "labels")
+                            }
+
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="middle col-xs-12 col-sm-4 form-horizontal ">
+
+                @if (ClassicConfig.GetValue("STRHOBBIES") == "1")
+                {
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Profile.Hobbies)
+                        <div class="input-block-level table-bordered">
+                            @Html.DisplayTextFor(model => model.Profile.Hobbies)
+                        </div>
+                    </div>
+                }
+                @if (ClassicConfig.GetValue("STRLNEWS") == "1")
+                {
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Profile.LatestNews)
+                        <div class="input-block-level table-bordered">
+                            @Html.DisplayTextFor(model => model.Profile.LatestNews)
+                        </div>
+                    </div>
+                }
+
+                @if (ClassicConfig.GetValue("STRQUOTE") == "1")
+                {
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Profile.FavQuote)
+                        <div class="input-block-level table-bordered">
+                            @Html.FormatBbCode(Model.Profile.FavQuote)
+                        </div>
+                    </div>
+
+                }
+            </div>
+        </div>
+
+    </div>

@@ -1,0 +1,93 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+
+<script>
+    /*lets set some global forum variables for js */
+    var SnitzVars = SnitzVars ||
+    {
+        AdDuration: '@ClassicConfig.GetIntValue("INTADDURATION", 30)',
+        userName: '@User.Identity.Name',
+        currentUserId: '@WebSecurity.CurrentUserId',
+        currentlocation: '@HttpContext.Current.Request.Url',
+        cookieDomain: '@Request.Url.Host',
+        cookiePath: '@Config.CookiePath',
+        forumDateStr: '@Config.DateStr',
+        forumTimeStr: '@Config.TimeStr',
+        baseUrl: '@Url.Content("~")',
+        isUserAuthenticated: '@User.Identity.IsAuthenticated',
+        forumTitle: '@(Config.ForumTitle ?? ClassicConfig.ForumTitle)',
+        forumUrl: '@(Config.ForumUrl ?? ClassicConfig.ForumUrl)',
+        forumDesc: '@Config.ForumDescription',
+        MaxImageSize: parseInt('@ClassicConfig.GetValue("INTMAXIMAGESIZE")') * 1024 * 1024,
+        MaxFileSize: parseInt('@ClassicConfig.GetValue("INTMAXFILESIZE")'),
+        allowedimagetypes: '@ClassicConfig.GetValue("STRIMAGETYPES")',
+        allowedfiles: [@foreach (var allowedFile in ClassicConfig.GetValue("STRFILETYPES").Split(','))
+                       {
+                           @Html.Raw("'")@allowedFile@Html.Raw("',")
+                       }],
+        forumlang: '@Session["Culture"]',
+        defaultTheme: '@Config.DefaultTheme',
+        useTimeago: '@ClassicConfig.GetValue("INTUSETIMEAGO")',
+        erpop : '@(TempData["errorpopup"] != null)',
+        pending : "@ViewBag.PendingMembers",
+        errMsg : '@ViewBag.Error',
+        successMsg : '@ViewBag.Success',
+        tempScrollTop : sessionStorage.getItem('scrollTop')
+    };
+
+    function passwordDialog(actionurl, forum, topic) {
+        BootstrapDialog.show({
+            type: BootstrapDialog.TYPE_WARNING,
+            title: '@ResourceManager.GetLocalisedString("dlgPasswordTitle", "labels")',
+            message: '@ResourceManager.GetLocalisedString("dlgPasswordMsg", "labels") <input type="password" class="form-control">',
+            onhide: function(dialogRef) {
+                var pass = dialogRef.getModalBody().find('input').val();
+                if ($.trim(pass.toLowerCase()) !== '') {
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("PasswordCheck", "Forum")',
+                        data: { pwd: pass, forumid: forum, topicid: topic },
+                        success: function(result) {
+                            window.location.href = actionurl;
+                            return false;
+                        },
+                        error: function(error) {
+                            BootstrapDialog.alert({
+                                title: '@ResourceManager.GetLocalisedString("dlgPasswordErr", "labels")',
+                                message: error
+                            });
+                            return false;
+                        }
+                    });
+                } else {
+                    BootstrapDialog.alert({
+                        title: '@ResourceManager.GetLocalisedString("dlgPasswordErr", "labels")',
+                        message: '@ResourceManager.GetLocalisedString("dlgPasswordReq", "labels")'
+                    });
+                    return false;
+                }
+                return false;
+            },
+            buttons: [
+                {
+                    id: 'btn-cancel',
+                    label: '@ResourceManager.GetLocalisedString("btnCancel", "labels")',
+                    action: function(dialogRef) {
+                        window.location.href = SnitzVars.baseUrl;
+                        return false;
+                    }
+                },
+                {
+                    id: 'btn-ok',
+                    label: '@ResourceManager.GetLocalisedString("btnOk", "labels")',
+                    action: function(dialogRef) {
+                        dialogRef.close();
+                    }
+                }
+            ]
+        });
+    }
+
+
+</script>
+

@@ -1,0 +1,89 @@
+﻿@using LangResources.Utility
+@using SnitzCore.Extensions
+@using SnitzDataModel.Models
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model WWW.ViewModels.RankingViewModel
+@{
+    ViewBag.PageTitle = "Rank Configuration";
+    ViewBag.ActivePage = ResourceManager.GetLocalisedString("mnuAdminRanking", "labels");
+    //Layout = "~/Views/Admin/_Layout.cshtml";
+}
+
+<div class="panel panel-primary panel-body clearfix">
+    @using (Ajax.BeginForm("SaveRankingConfig", "Admin", null,
+        new AjaxOptions
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            UpdateTargetId = "RankingConfig",
+            HttpMethod = "POST",
+            LoadingElementId = "loading"
+        }, new { @class = "form-horizontal" }))
+    {
+        ViewBag.SubmitButton = ResourceManager.GetLocalisedString("btnSave", "labels");
+        <div class="form-group">
+            <div class="col-xs-10 col-sm-6">
+                <label class="control-label">Show Ranking:</label>
+                @Html.EnumDropDownListFor(m => m.Type, new { @class = "form-control col-xs-3" }, "")
+            </div>
+        </div>
+
+        foreach (var rank in Model.Ranks)
+        {
+            Ranking ranking = (Ranking)rank.Value;
+
+            <div class="form-group">
+
+                @switch (rank.Key)
+                {
+                    case 0:
+                        <div class="col-xs-12">
+                            <label class="control-label">Administrator title</label>
+                            <input type="hidden" id="rankId_@rank.Key" name="rankId_@rank.Key" value="@rank.Key"/>
+                            <input id="rankLevel_@rank.Key" name="rankLevel_@rank.Key" type="hidden" class="form-control" value="@ranking.RankLevel"/>
+                        </div>
+                        break;
+                    case 1:
+                        <div class="col-xs-12">
+                            <label class="control-label">Moderator title</label>
+                            <input type="hidden" id="rankId_@rank.Key" name="rankId_@rank.Key" value="@rank.Key"/>
+                            <input id="rankLevel_@rank.Key" name="rankLevel_@rank.Key" type="hidden" class="form-control" value="@ranking.RankLevel"/>
+                        </div>
+                        break;
+                    case 2:
+                        <div class="col-xs-12">
+                            <label class="control-label">Starting Member title</label>
+                            <input type="hidden" id="rankId_@rank.Key" name="rankId_@rank.Key" value="@rank.Key"/>
+                            <input id="rankLevel_@rank.Key" name="rankLevel_@rank.Key" type="hidden" class="form-control" value="@ranking.RankLevel"/>
+                        </div>
+                        break;
+                    default:
+                        <div class="col-xs-12">
+                            <label class="control-label">Member Level @(rank.Key - 2)</label>
+                            <input type="hidden" id="rankId_@rank.Key"name="rankId_@rank.Key"  value="@rank.Key"/>
+                        </div>
+                        <div class="col-xs-2">
+                            <input id="rankLevel_@rank.Key" name="rankLevel_@rank.Key" type="text" class="form-control" value="@ranking.RankLevel"/>
+                        </div>
+                        break;
+                }
+
+
+                <div class="col-xs-3">
+                    <input type="text" id="rankTitle_@rank.Key" name="rankTitle_@rank.Key" class="form-control" value="@ranking.Title"/>
+                </div>
+                <div class="col-xs-6 rank-admin">
+                    @if (rank.Key != 2)
+                    {
+                        @Html.ShowRankImages(ranking.Image, rank.Key)
+                    }
+                    <input type="text" id="rankImage_@rank.Key" name="rankImage_@rank.Key" value="@ranking.Image" style="display: none;"/>
+
+                </div>
+            </div>
+        }
+        Html.RenderPartial("_FormButtons");
+            }
+</div>
+

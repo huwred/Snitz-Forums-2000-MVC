@@ -1,0 +1,14 @@
+﻿
+
+@using LangResources.Utility
+
+@model short
+
+@if (Model==1)
+{
+        <text>@ResourceManager.GetLocalisedString("lblYes", "labels")</text>
+}
+else
+{
+        <text>@ResourceManager.GetLocalisedString("lblNo", "labels")</text>
+}

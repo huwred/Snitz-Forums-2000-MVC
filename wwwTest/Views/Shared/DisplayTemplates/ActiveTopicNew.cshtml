@@ -1,0 +1,51 @@
+﻿@using LangResources.Utility
+@using Snitz.Base
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using WWW.Helpers
+@using WWW.Views.Helpers
+@model SnitzDataModel.Models.ActiveTopic
+
+@{
+    string forumsubject = Model.Forum != null ? Model.Forum.Subject : Model.ForumSubject;
+    string rolecssLP = Roles.IsUserInRole(Model.LastPostAuthorName, "Administrator") ? "administrator" : Roles.IsUserInRole(Model.LastPostAuthorName, "Moderator") ? "moderator" : "member";
+    string rolecssAU = Roles.IsUserInRole(Model.PostAuthorName, "Administrator") ? "administrator" : Roles.IsUserInRole(Model.PostAuthorName, "Moderator") ? "moderator" : "member";
+
+    var unmoderatedClass = "";
+    if (Model.PostStatus == Enumerators.PostStatus.UnModerated)
+    {
+        unmoderatedClass = "topic-unmoderated";
+    }
+    else if (Model.PostStatus == Enumerators.PostStatus.OnHold)
+    {
+        unmoderatedClass = "topic-onhold";
+    }
+    int replies = Model.ReplyCount;
+    if (User.IsAdministrator() || User.IsForumModerator(Model.ForumId))
+    {
+        replies += Model.UnmoderatedReplyCount.GetValueOrDefault(0);
+        if (Model.UnmoderatedReplyCount.GetValueOrDefault(0) > 0)
+        {
+            unmoderatedClass = "topic-unmoderated";
+        }
+    }
+    if (Model.PostStatus == Enumerators.PostStatus.Draft)
+    {
+        unmoderatedClass = "topic-draft";
+    }
+    var searchterms = ViewData["Terms"];
+    if (ClassicConfig.GetIntValue("STRTHANKS") == 1)
+    {
+        ViewData["allowThanks"] = CustomAssemblyResolver.ExecuteMethod("Snitz.PostThanks", "PostThanks.Helpers.Methods", "Allowed", new object[] { Model.ForumId });
+    }
+    var buttons = new List<string> { "subs", "thanks", "unmod", "admin" };
+}
+@if (Model.PostStatus != Enumerators.PostStatus.Draft || (Model.PostStatus == Enumerators.PostStatus.Draft && Model.AuthorId == SnitzMembership.WebSecurity.CurrentUserId))
+{
+    <li style="">
+        <a href="@Url.Action("Posts", "Topic", new {id = Model.GenerateSlug(), pagenum = -1,archived = Model.Archived, terms = searchterms })#@Model.LastPostReplyId"  class="sidebar-recent-title" >@Html.FormatBbCode(Model.Subject, true)</a>
+        <span class="sidebar-recent-author">@ResourceManager.GetLocalisedString("lblLastPost", "labels") @Html.Timeago(Model.LastPostDate) @ResourceManager.GetLocalisedString("lblPostedBy", "labels") @Html.ActionLink(Model.LastPostAuthorName, "UserProfile", "Account", new { id = Model.LastPostAuthorName }, new { title = ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip"), data_toggle = "tooltip", @class = rolecssLP })</span>
+        <span class="sidebar-recent-content truncate-overflow">@Html.FormatBbCode(Model.Message, true)</span>
+    </li>
+}

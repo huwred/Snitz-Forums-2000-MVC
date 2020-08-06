@@ -1,0 +1,38 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@model System.Web.Mvc.HandleErrorInfo
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
+    <h4 class="modal-title" id="myModalLabel">@ResourceManager.GetLocalisedString("ErrHeading", "ErrorMessage")</h4>
+</div>
+<div class="modal-body">
+
+    @if (Model != null)
+    {
+    <p>
+        <b>@ResourceManager.GetLocalisedString("lblController", "labels"):</b> @Model.ControllerName<br />
+        <b>@ResourceManager.GetLocalisedString("lblAction", "labels"):</b> @Model.ActionName<br />
+        <b>@ResourceManager.GetLocalisedString("lblException", "labels"):</b> @Model.Exception.Message
+    </p>
+
+    }
+    else
+    {
+        <p>
+            @ViewBag.Error
+        </p>
+
+            }
+
+    @if (Model != null && (HttpContext.Current.IsDebuggingEnabled || ClassicConfig.ShowDebug))
+            {
+        <div class="row-fluid">
+            <div>
+                <pre style="width: 80%; margin: auto; max-height: 300px; overflow: scroll">
+                        @Model.Exception.InnerException
+                    </pre>
+            </div>
+        </div>
+    }
+</div>
+

@@ -1,0 +1,178 @@
+﻿@using LangResources.Utility
+@using SnitzCore.Extensions
+@using WWW.Views.Helpers
+@using SnitzDataModel.Extensions
+@model WWW.ViewModels.AdminEmailServer
+
+@{
+    ViewBag.PageTitle = "Email Server";
+    ViewBag.ActivePage = ResourceManager.GetLocalisedString("mnuAdminEmail", "labels");
+    //Layout = "~/Views/Admin/_Layout.cshtml";
+    ViewBag.SubmitButton = ResourceManager.GetLocalisedString("btnSave", "labels");
+}
+
+<ul class="nav nav-tabs" role="tablist" id="emailTab">
+    <li class="active"><a href="#email-server" role="tab" data-toggle="tab">Email server settings</a></li>
+    <li><a href="#email-spam" role="tab" data-toggle="tab">Spam domains</a></li>
+</ul>
+
+<div class="tab-content row-fluid clearfix">
+
+    <div class="tab-pane active" id="email-server" role="tabpanel" aria-labelledby="server-tab">
+        @using (Html.BeginForm("EmailServer", "Admin", FormMethod.Post, new { @class = "form-horizontal" }))
+        {
+            <div class="col-sm-5 flip text-left">
+                <div class="form-group">
+                    <label for="EmailMode" class="control-label col-xs-8 col-sm-6">Email mode:</label>
+                    <div class="col-xs-4 col-sm-3">
+                        <input id="EmailMode" name="EmailMode" type="checkbox" class="yesno-checkbox" data-size="mini" checked="@(Model.EmailMode == "1")" />
+                        @Html.HelpLink("STREMAIL")
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="UseSpamFilter" class="control-label col-xs-8 col-sm-6">Filter known spam domains:</label>
+                    <div class="col-xs-4 col-sm-3">
+                        <input id="UseSpamFilter" name="UseSpamFilter" type="checkbox" class="yesno-checkbox" data-size="mini" checked="@(Model.UseSpamFilter == "1")" />
+                        @Html.HelpLink("STRFILTEREMAILADDRESSES")
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label  col-xs-12 col-sm-6">Contact Email:</label>
+                    <div class="col-xs-12 col-sm-6">
+                        @Html.TextBoxFor(model => model.ContactEmail, new { @class = "form-control inline" })
+                        @Html.HelpLink("STRCONTACTEMAIL", "pull-right")
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-6">From Email:</label>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="input-group col-xs-12">
+                            <input type="text" class="form-control resource-edit" placeholder="Resource string" value="@Model.From" name="From" />
+                            <span class="input-group-btn">
+                                <button data-toggle="tooltip" type="button" class="btn btn-default send-email" title="Send test email" data-id="@SnitzMembership.WebSecurity.CurrentUserId"><i class="fa fa-envelope"></i></button>
+                            </span>
+                            <span class="input-group-addon" style="border:0;color:inherit;">@Html.HelpLink("STRFROMEMAIL")</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-1"></div>
+            <div class="col-sm-5 flip text-left">
+                <div class="form-group">
+                    <label class="control-label">Mail Server @Html.HelpLink("STRMAILSERVER")</label>
+                    @Html.TextBoxFor(model => model.Server, new { @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Server port @Html.HelpLink("STRMAILSERVERPORT")</label>
+                    @Html.TextBoxFor(model => model.Port, new { @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Requires Authentication </label>
+                    @Html.CheckBoxFor(model => model.Auth, new { @class = "checkbox-inline", id = "checkbox-auth" })@Html.HelpLink("STRMAILAUTH")
+                </div>
+                <div id="smtp-auth" @if (!Model.Auth) { @Html.Raw("style='display:none'") }>
+                    <div class="form-group">
+                        <label class="control-label">Use default credentials</label>
+                        @Html.CheckBoxFor(model => model.DefaultCred, new { @class = "checkbox-inline", id = "checkbox-cred" }) @Html.HelpLink("STRMAILAUTHDEF")
+                    </div>
+                    <div class="form-group user-cred">
+                        <label class="control-label">Username @Html.HelpLink("STRMAILUSER")</label>
+                        @Html.TextBoxFor(model => model.Username, new { @class = "form-control" })
+                    </div>
+                    <div class="form-group user-cred">
+                        <label class="control-label">Password @Html.HelpLink("STRMAILPWD")</label>
+                        @Html.TextBoxFor(model => model.Password, new { @class = "form-control", @type = "password" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Delivery method @Html.HelpLink("STRMAILDELIVER")</label>
+                    @Html.EnumDropDownListFor(model => model.DeliveryMethod, new { @class = "form-control", id = "delivery" }, "")
+                </div>
+                <div class="form-group" id="pickup-folder">
+                    <label class="control-label">Pickup Folder</label>
+                    @Html.TextBoxFor(model => model.PickUpFolder, new { @class = "form-control" })
+                </div>
+                <p>@Html.ValidationSummary(false, "", new { @class = "list-group-item-info" })</p>
+            </div>
+            <div class="row"></div>
+            { Html.RenderPartial("_FormButtons"); }
+        }
+    </div>
+    <div class="tab-pane" id="email-spam" role="tabpanel" aria-labelledby="spam-tab">
+        @using (Html.BeginForm("DeleteSpamFilters", "Admin", FormMethod.Post, new { id = "delSpamForm" }))
+        {
+            <div class="form-group clearfix">
+                <div class="col-xs-8">
+                    @Html.TextBoxFor(m => m.EmailDomain, new { @class = "form-control", @placeholder = "New Spam domain, example @test.com" })
+                </div>
+
+                <div class="col-xs-4">
+                    @Html.ActionLink(" ", "AddSpamDomain", "Admin", new { domain = "xxxxxx" }, new { @class = "fa fa-save fa-1_5x add-lnk", title = "Add Domain", data_toggle = "tooltip" })
+                </div>
+            </div>
+            <hr />
+            <div class="form-group clearfix">
+                <div class="col-xs-5 col-sm-3">
+                    <button type="button" href="@Url.Action("Import", "Admin")" class="btn btn-sm btn-primary" data-target="#modal-container" data-toggle="modal">Import Domain Data</button>
+                </div>
+                <div class="col-xs-4 col-sm-6 flip text-right">
+                    <input type="checkbox" class="checkAll" title="Select All" />
+                    <a href="#" class="fa fa-trash fa-1_5x" title="Delete Selected Domain" data_toggle="tooltip" id="del-spam-submit"></a>
+                </div>
+            </div>
+            <div class="container-fluid" style="max-height:500px; overflow-y: scroll;">
+                @Html.DisplayFor(m => m.BannedDomains)
+            </div>
+
+        }
+    </div>
+</div>
+
+<div id='emailModal' class='modal fade in' data-url='@Url.Action("EmailMember", "Account")' aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
+                <h4 class="modal-title" id="myModalLabel">@ResourceManager.GetLocalisedString("dlgEmailMemberTitle", "labels")</h4>
+            </div>
+            <div id='emailContainer' class="modal-body">
+                <div class="container text-center">
+                    <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScripts())
+{
+    <script>
+        $(document).ready(function () {
+            $('#del-spam-submit').on('click', function (e) {
+                e.preventDefault();
+                BootstrapDialog.confirm({
+                    title: 'Delete Spam domains',
+                    message: '<label>Are you sure you want to delete the selected domains? </label><br/>', callback: function (ok) {
+                        if (ok) $('#delSpamForm').submit();
+                    }
+                });
+
+            });
+            $('#emailTab').tabCollapse({
+                tabsClass: 'hidden-xs',
+                accordionClass: 'visible-xs'
+            });
+            $('body').on('change', '.checkAll', function () {
+                var checkboxes = $(this).closest('form').find(':checkbox');
+                if ($(this).is(':checked')) {
+                    checkboxes.prop('checked', true);
+                } else {
+                    checkboxes.prop('checked', false);
+                }
+            });
+        });
+
+
+    </script>
+}

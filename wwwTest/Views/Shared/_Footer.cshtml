@@ -1,0 +1,82 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+
+@if (ClassicConfig.GetIntValue("INTNEWLAYOUT", 0) == 1)
+{
+    string forumTitle = Uri.EscapeDataString(Config.ForumTitle ?? ClassicConfig.ForumTitle);
+    string pageUrl = Uri.EscapeDataString(Request.Url.AbsoluteUri);
+
+    <div id="wrap-footer">
+        <div id="site-footer">
+            <div class="chunk">
+
+                <div id="foot-left">
+                    <ul class="site-footer-nav" role="menubar">
+                        <li><a href="~/" data-navbar-reference="index">@ResourceManager.GetLocalisedString("mnuForumAll", "Menu")</a></li>
+                        <li class="icon-delete-cookies">@Html.ActionLink(ResourceManager.GetLocalisedString("delCookie", "labels"), "ClearCookies", "Account", null, new { title = ResourceManager.GetLocalisedString("delCookie", "labels"), data_toggle = "tooltip" })</li>
+                    </ul>
+                    @*<ul id="foot-social">
+                        <li><a data-toggle="tooltip" title="Share with Facebook" style="text-decoration: none;" class="btn-link fa fa-facebook-square" target="_blank" href="http://www.facebook.com/share.php?u=@pageUrl&amp;title=@forumTitle"></a></li>
+                        <li><a data-toggle="tooltip" title="Share with Twitter" style="text-decoration: none;" class="btn-link fa fa-twitter-square" target="_blank" href="http://twitter.com/home?status=@forumTitle+@pageUrl"></a></li>
+                        <li><a data-toggle="tooltip" title="Share with Reddit" style="text-decoration: none;" class="btn-link fa fa-reddit-square" target="_blank" href="http://reddit.com/submit?url=@pageUrl&amp;title=@forumTitle"></a></li>
+                        <li><a data-toggle="tooltip" title="Share with Stumble" style="text-decoration: none;" class="btn-link fa fa-stumbleupon-circle" target="_blank" href="http://www.stumbleupon.com/submit?url=@pageUrl&amp;title=@forumTitle"></a></li>
+                        <li><a data-toggle="tooltip" title="Share with Digg" style="text-decoration: none;" class="btn-link fa fa-digg" target="_blank" href="http://digg.com/submit?url=@pageUrl&amp;title=@forumTitle"></a></li>
+                    </ul>*@
+                <span id="foot-social">
+                    @{ Html.RenderPartial("_SocialMedia"); }
+                </span>
+                </div>
+
+                <div id="foot-right">
+                    &copy; @Html.Raw(String.Format(ClassicConfig.Copyright, DateTime.UtcNow.Year))
+                    <br /><span class="numbers">[ExecutionTime]</span>
+                </div>
+
+                <div id="foot-copyright">
+                    [POWERED]<br />
+                    @if (ViewContext.Controller.GetType().Assembly.GetName().CodeBase.ToLower().Contains("plugins"))
+                    {
+                        @ViewContext.Controller.GetType().Assembly.GetName().Name
+                        @Html.Raw(" Plugin version ")
+                        @ViewContext.Controller.GetType().Assembly.GetName().Version
+                        <br />
+                    }
+
+                    @Html.Raw("Forum version") @typeof(WWW.Global).Assembly.GetName().Version
+
+                </div>
+            </div>
+        </div>
+
+        <div style="display: none;">
+            <a class="anchor" id="bottom" accesskey="z"></a>
+        </div>
+    </div>
+}
+else
+{
+    <footer class="footer">
+        <div class="container">
+            <p class="text-muted flip text-left small hidden-xs col-sm-6"><span id="clientBrowser"></span> (<span id="clientScreenWidth"></span> x <span id="clientScreenHeight"></span>)</p>
+            <p class="text-muted flip text-right col-xs-12 col-sm-6">&copy; @Html.Raw(String.Format(ClassicConfig.Copyright, DateTime.UtcNow.Year))</p>
+            <p class="text-muted text-center small">
+                [POWERED]<br />
+                @if (ViewContext.Controller.GetType().Assembly.GetName().CodeBase.ToLower().Contains("plugins"))
+                {
+                    @ViewContext.Controller.GetType().Assembly.GetName().Name @Html.Raw(" Plugin version ") @ViewContext.Controller.GetType().Assembly.GetName().Version
+                    <br />
+                }
+
+                @Html.Raw("Forum version") @typeof(WWW.Global).Assembly.GetName().Version
+
+            </p>
+            <p><span class="numbers">[ExecutionTime]</span></p>
+        </div>
+
+    </footer>
+}
+
+
+
+
+

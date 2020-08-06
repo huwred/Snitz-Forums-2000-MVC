@@ -1,0 +1,183 @@
+﻿@using System.Globalization
+@using LangResources.Utility
+@using SnitzConfig
+@using SnitzCore.Filters
+@using SnitzCore.Utility
+@using WWW.Filters
+@using WWW.Views.Helpers
+@{
+    //check the culture so we can set the page direction and language
+    CultureInfo ci = SessionData.Get<CultureInfo>("Culture");
+    string clang = ci.TwoLetterISOLanguageName;
+    bool isRighToLeft = SessionData.Get<bool>("isRighToLeft");
+
+}
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://ogp.me/ns/fb#" lang="@clang" dir="@(isRighToLeft ?  "rtl" : "ltr" )">
+<head>
+    <meta charset="utf-8" />
+    @*<meta http-equiv="X-UA-Compatible" content="IE=edge">*@
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title : @ViewBag.PageTitle</title>
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    @Styles.Render("~/bundles/sitecss" )
+    @Styles.Render("~" + Config.ThemeFolder() + "/snitz.min.css")
+    @if (isRighToLeft)
+    {
+        <!-- Load the default rtl css file -->
+        <link href="~/Content/bootstrap-rtl.min.css" rel="stylesheet">
+        @Html.Raw(Config.ThemeCss("snitz-rtl.min.css"))
+    }
+    @if (Config.TableExists("CAL_EVENTS") && ClassicConfig.GetIntValue("INTCALUPCOMINGEVENTS") == 1 && ClassicConfig.GetIntValue("INTCALPUBLIC") == 1)
+    {
+        @Styles.Render("~/Content/fullcalendar.min.css")
+        @Html.Raw(Config.ThemeCss("fullcalendar.min.css"))
+        if (isRighToLeft)
+        {
+            @Styles.Render("~/Content/fullcalendar-rtl.css")
+        }
+    }
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    @Scripts.Render("~/bundles/oldIEBrowsersSupport")
+    <![endif]-->
+    <script src="@Url.Action("Index","JavaScriptSettings")"></script>
+    <script src="@Url.Action("Resources","JavaScriptSettings")"></script>
+    <script type="text/javascript">
+        /*lets set some global forum variables for js */
+        var activePage = '@ViewBag.ActivePage';
+        var activeTab = '@TempData["ActiveTab"]';
+        var errMsg = '@ViewBag.Error';
+        var errTitle = '@ViewBag.ErrTitle';
+        var succMsg = '@ViewBag.Success';
+        var succTitle = '@ViewBag.SuccessTitle';
+    </script>
+
+    @Scripts.Render("~/bundles/corejs")
+    @RenderSection("styles", required: false)
+
+    @Styles.Render("~/Content/jquery.ui.datepicker.min.css")
+    <style>
+        .centered {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .form-control {
+            width: 90%;
+        }
+
+        .ui-datepicker {
+            background-color: gainsboro
+        }
+    </style>
+</head>
+<body onload="setStyleFromCookie();">
+    <!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <span class="navbar-brand form-inline"><a href="@Config.ForumUrl" data-toggle="tooltip" data-placement="bottom" title="@Html.Raw(Config.ForumTitle??ClassicConfig.ForumTitle)">@Html.ForumLogo()</a></span>
+
+            </div>
+            <div class="collapse navbar-collapse">
+                @if (!SessionData.Contains("SnitzMenu"))
+                {
+                    SessionData.Set("SnitzMenu", Html.Partial("~/Views/Shared/_Menu.cshtml"));
+                }
+                @Session["SnitzMenu"]
+            </div><!--/.nav-collapse -->
+        </div>
+    </div>
+
+    <!-- Begin page content -->
+
+    <div class="container-fluid" style="margin-bottom: 60px;">
+        @if (IsSectionDefined("breadcrumb"))
+        {
+            <div class="breadcrumb col-xs-10">
+                @RenderSection("breadcrumb", required: false)
+            </div>
+        }
+
+        <div class="row-fluid">
+            <h5>@ViewBag.Title : @ViewBag.PageTitle</h5>
+            <hr class="title" />
+            <noscript>
+                <div class="alert">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <strong>Warning!</strong> Please enable JavaScript in your browser!
+                </div>
+            </noscript>
+
+            <div class="col-sm-10" id="main-content">
+                @RenderBody()
+            </div>
+        </div>
+
+    </div>
+<div id="loading" style="display:none" class="modal-backdrop fade in">
+    <div class="centered">
+        <i class="fa fa-spinner fa-4x fa-spin" id="spinWait"></i>
+    </div>
+
+</div>
+
+<div id="onlineUserslist"></div>
+<footer class="footer">
+    <div class="container">
+        <p class="text-muted flip text-left small hidden-xs col-sm-6"><span id="clientBrowser"></span> (<span id="clientScreenWidth"></span> x <span id="clientScreenHeight"></span>)</p>
+        <p class="text-muted flip text-right col-xs-12 col-sm-6">&copy; @Html.Raw(String.Format(ClassicConfig.Copyright, DateTime.UtcNow.Year))</p>
+        <p class="text-muted text-center small">
+            [POWERED]<br />
+            @if (ViewContext.Controller.GetType().Assembly.GetName().CodeBase.ToLower().Contains("plugins"))
+            {
+                @ViewContext.Controller.GetType().Assembly.GetName().Name @Html.Raw(" Plugin version ") @ViewContext.Controller.GetType().Assembly.GetName().Version
+                <br/>
+            }
+
+            @Html.Raw("Snitz version") @typeof(WWW.Global).Assembly.GetName().Version
+        </p>
+        <p><span class="numbers">[ExecutionTime]</span></p>
+    </div>
+
+</footer>
+
+    <div class="modal fade" id="modal-container" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div id="" class="modal-dialog">
+            <div class="modal-content" id="mdlContent">
+            </div>
+        </div>
+    </div>
+
+<input type="hidden" id="displayname" value="@HttpContext.Current.Session.SessionID" />
+
+    @Scripts.Render("~/Scripts/jquery.numeric.min.js")
+
+    @Scripts.Render("~/bundles/dropzonejs")
+
+    @Scripts.Render("~/bundles/Snitzjs")
+    @Scripts.Render("~/Scripts/jquery.twosidedmultiselect.min.js")
+    @Scripts.Render("~/Scripts/snitz.admin.min.js")
+<script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.js"></script>
+    <script type="text/javascript">
+        SnitzVars.tempScrollTop = sessionStorage.getItem('scrollTop');
+        $(document).ready(function () {
+            ready_or_not();
+
+        });
+    </script>
+
+    @RenderSection("scripts", required: false)
+    @Html.PageScripts()
+</body>
+</html>

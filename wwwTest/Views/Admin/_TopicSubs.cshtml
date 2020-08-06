@@ -1,0 +1,33 @@
+﻿@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model IEnumerable<SnitzDataModel.Models.Subscriptions>
+
+@foreach (var topic in Model.GroupBy(s => s.Forum))
+{
+    if (!String.IsNullOrWhiteSpace(topic.Key))
+    {
+        <tr class="bg-info"><td colspan="5" class="bg-primary">Forum: @Html.ActionLink(topic.Key, "Posts", "Forum", new { id = topic.First().ForumId }, new { @class = "title" })</td></tr>
+
+    }
+    foreach (var subscriptions in topic)
+    {
+        <tr>
+            <td colspan="2">
+                @if (String.IsNullOrWhiteSpace(subscriptions.Topic))
+                {
+                    @Html.Raw("Deleted topic")
+                }
+                else
+                {
+                    @Html.DisplayFor(modelItem => subscriptions.Topic)
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => subscriptions.Username)
+            </td>
+            <td></td>
+            <td>@Html.ActionLinkConfirm("Remove subscription", "RemoveSubscription", "Admin", new { id = subscriptions.Id }, "fa fa-trash-o fa-1_5x") <input name="del-subs" value="@subscriptions.Id" type="checkbox" class="selector" /></td>
+        </tr>
+    }
+}

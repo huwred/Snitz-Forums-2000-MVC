@@ -1,0 +1,79 @@
+﻿@using System.Web.Mvc.Html
+@using LangResources.Utility
+@using Snitz.Base
+@using WWW.Views.Helpers
+@model WWW.ViewModels.AdminSubscriptionsViewModel
+@{
+    ViewBag.PageTitle = "Subscriptions";
+    ViewBag.ActivePage = ResourceManager.GetLocalisedString("mnuAdminSubs", "labels");
+    //Layout = "~/Views/Admin/_Layout.cshtml";
+}
+
+<div class="panel panel-primary panel-body clearfix">
+    @using (Html.BeginForm())
+    {
+        <div class="panel-body bg-info clearfix">
+            <label for="SubscriptionLevel" class="control-label col-xs-3">Highest level of Subscription:</label>
+            <div class="col-xs-4">
+                @Html.DisplayTextFor(m => m.SubscriptionLevel)
+            </div>
+            <div class="col-xs-3"></div>
+        </div>           
+    }
+    <div class="panel-body clearfix">
+        <label class="control-label col-xs-12 clearfix">Show Subscriptions for:</label>
+        <ul class="list-unstyled col-xs-3">
+            
+            <li>@Html.ActionLink("Board", "ManageSubs", new {level = Enumerators.SubscriptionLevel.Board})</li>
+            <li>@Html.ActionLink("Category", "ManageSubs", new {level = Enumerators.SubscriptionLevel.Category})</li>
+            <li>@Html.ActionLink("Forum", "ManageSubs", new {level = Enumerators.SubscriptionLevel.Forum})</li>
+            <li>@Html.ActionLink("Topic", "ManageSubs", new {level = Enumerators.SubscriptionLevel.Topic})</li>
+        </ul>
+        <div class="col-xs-3"></div>
+    </div>  
+@if (Model.Subscriptions != null)
+{
+     using (Html.BeginForm("DeleteSubs", "Admin", FormMethod.Post, new {id = "del-subscription-form"}))
+     {
+         <table class="table table-responsive">
+             <thead>
+             <tr>
+                 <th class="col-xs-3"></th>
+                 <th class="col-xs-3"></th>
+                 <th class="col-xs-3"></th>
+                 <th></th>
+                 <th class="col-xs-1"><button type="button" id="remove-subscriptions" class="btn btn-sm btn-primary" title="remove selected subscriptions" data-toggle="tooltip"><i class="fa fa-trash-o fa-1_5x"></i></button> <input type="checkbox" id="checkAll" title="@ResourceManager.GetLocalisedString("tipCheckAll", "Tooltip")"/></th>
+             </tr>
+             </thead>
+             <tbody>
+             @if (Model.Subscriptions.Count < 1)
+             {
+                 <tr><td colspan="5" class="text-center">No @ViewBag.LevelTitle subscriptions</td></tr>
+             }
+             else
+             {
+                 switch (Model.VisibleLevel)
+                 {
+                     case Enumerators.SubscriptionLevel.Board:
+                         @Html.Partial("_BoardSubs", Model.Subscriptions)
+                         break;
+                     case Enumerators.SubscriptionLevel.Category:
+                         @Html.Partial("_CategorySubs", Model.Subscriptions)
+                         break;
+                     case Enumerators.SubscriptionLevel.Forum:
+                         @Html.Partial("_ForumSubs", Model.Subscriptions)
+                         break;
+                     case Enumerators.SubscriptionLevel.Topic:
+                         @Html.Partial("_TopicSubs", Model.Subscriptions)
+                         break;
+
+                 }
+
+             }
+             </tbody>
+         </table>
+         <input type="hidden" name="level" id="level" value="@((int) Model.VisibleLevel)"/>
+     }
+}
+</div>
+

@@ -1,0 +1,28 @@
+﻿@using LangResources.Utility
+@using WWW.Views.Helpers
+@model dynamic
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
+    <h4 class="modal-title">Add Word</h4>
+</div> 
+    @using (Html.BeginForm("AddBadword", "Admin", FormMethod.Post))
+    {
+<div class="modal-body">
+
+        
+        <div class="form-group">
+            <label class="control-label">Word</label>
+            <input type="text" name="word-filter" class="form-control"/>
+        </div>
+        <div class="form-group">
+            <label class="control-label">Replace with</label>
+            <input type="text" name="word-replace" class="form-control"/>
+        </div>        
+
+
+</div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">@ResourceManager.GetLocalisedString("btnCancel", "labels")</button>
+            <button type="submit" id="approve-btn" class="btn btn-success">Save</button>
+        </div>
+    }

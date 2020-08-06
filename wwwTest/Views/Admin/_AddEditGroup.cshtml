@@ -1,0 +1,37 @@
+﻿@using LangResources.Utility
+@model SnitzDataModel.Models.Group
+
+<div id="groupEditor">
+
+    @using (Html.BeginForm("AddEditGroup", "Admin",FormMethod.Post,new{@class="form-horizontal"}))
+    {
+        <div class="container-fluid">
+            <div class="form-group">
+                <label class="col-xs-3">Name</label>
+                <div class="col-xs-5"><input class="form-control" type="text" name="Name" id="GroupName" value="@Model.Name" ></div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-3">Description</label>
+                <div class="col-xs-8"><textarea class="form-control" type="text" name="Description" rows="3" >@Model.Description</textarea></div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-3">Icon</label>
+                <div class="col-xs-5"><input class="form-control" type="text" name="Icon" value="@Model.Icon"></div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-3">Title Image</label>
+                <div class="col-xs-5"><input class="form-control" type="text" name="Image" value="@Model.Image"></div>
+            </div>
+            <input type="hidden" name="Id" value="@Model.Id" />
+
+            <p>@Html.ValidationSummary()</p>
+            <p class="pull-right flip">
+                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-times"></i> @ResourceManager.GetLocalisedString("btnCancel", "labels")</button>
+                <button type="button" class="btn btn-success" id="submitUpdateGroup"><i class="fa fa-check"></i> @ResourceManager.GetLocalisedString("btnSave", "labels")</button>
+
+            </p>
+        </div>
+
+
+                }
+</div>

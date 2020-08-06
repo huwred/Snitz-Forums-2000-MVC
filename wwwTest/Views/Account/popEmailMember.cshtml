@@ -1,0 +1,206 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model  WWW.Models.EmailModel
+
+@{
+    bool self = Model.ToName == WebSecurity.CurrentUserName;
+    bool usecaptcha = ClassicConfig.GetIntValue("INTEMAILCAPTCHA") == 1;
+
+}
+
+<div class="container">
+    <!-- Form itself -->
+    @using (Html.BeginForm("EmailMember", "Account", FormMethod.Post, new { id = "emailMemberForm", enctype = "multipart/form-data" }))
+    {
+        <div class="panel">
+            @if (usecaptcha)
+            {
+                @Html.Partial("_Captcha")
+            }
+
+            <div class="form-horizontal" id="form-continue">
+                @if (Model.AdminEmail)
+                {
+                    <div class="form-group">
+                        <label class="col-xs-1">@ResourceManager.GetLocalisedString("EmailModel_From", "General")</label>
+                        <div class="controls col-xs-11">
+                            @Html.TextBoxFor(m => m.FromName, new { @class = "form-control ltr", placeholder = @ResourceManager.GetLocalisedString("EmailModel_Name", "General") })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-1">@ResourceManager.GetLocalisedString("Email", "General")</label>
+                        <div class="controls col-xs-11">
+                            @Html.TextBoxFor(m => m.FromEmail, new { @class = "form-control ltr", placeholder = ResourceManager.GetLocalisedString("Email", "General") })
+                        </div>
+                    </div>
+                }
+                else if (self)
+                {
+                    <div class="panel-body bg-warning">
+                        <div class="form-group">
+                            <label class="control-label">@ResourceManager.GetLocalisedString("SendEmailSelf", "General")</label>
+                        </div>
+                    </div>
+                }
+                @if (!self)
+                {
+                    <h5>@String.Format(ResourceManager.GetLocalisedString("SendMemberEmail", "General"), Model.ToName)</h5>
+                }
+
+                <div class="form-group">
+                    <div class="controls col-xs-10">
+                        @Html.TextBoxFor(m => m.Subject, new { @class = "form-control", @placeholder = ResourceManager.GetLocalisedString("lblSubject", "labels") })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="controls col-xs-12">
+                        @Html.TextAreaFor(m => m.Message, new { @class = "form-control", placeholder = ResourceManager.GetLocalisedString("Message", "General"), @rows = 10 })
+
+                    </div>
+                </div>
+                @if (User.IsAdministrator())
+                {
+                    <div class="form-group">
+                        <div class=" controls col-xs-8">
+                            <div class="input-group">
+                                <label class="input-group-btn">
+                                    <span class="btn btn-primary">
+                                        … <input style="display: none;" type="file" name="Attachment" id="Attachment">
+                                    </span>
+                                </label>
+                                <input class="form-control" type="text" readonly="" id="Attached" placeholder="Attach File">
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (!Model.AdminEmail)
+                {
+                    @Html.HiddenFor(m => m.FromEmail)
+                    @Html.HiddenFor(m => m.FromName)
+                }
+                @Html.HiddenFor(m => m.MemberId)
+                @Html.HiddenFor(m => m.ToEmail)
+                @Html.HiddenFor(m => m.ToName)
+                @Html.HiddenFor(m => m.ReturnUrl)
+                @Html.HiddenFor(m => m.AdminEmail)
+
+
+            </div>
+
+        </div>
+        <div id="success">@Html.ValidationSummary(false)</div> <!-- For success/fail messages -->
+        <div class="modal-footer">
+            <button type="button" class="btn btn-warning" data-dismiss="modal">@ResourceManager.GetLocalisedString("btnCancel", "labels")</button>
+            <input type="button" id="other" class="btn btn-primary" value="@ResourceManager.GetLocalisedString("btnSend", "labels")" />
+        </div>
+    }
+</div>
+<script type="text/javascript">
+
+        $('#emailMemberForm').submit(function (e) {
+
+            e.preventDefault();
+            $('input[type="submit"]').attr('disabled', 'disabled');
+            var formData = new FormData($(this)[0]);
+            if ($('#Attachment').length > 0) {
+                var fileInput = document.getElementById('Attachment');
+                //Iterating through each files selected in fileInput
+                //There is currently only one
+                for (var i = 0; i < fileInput.files.length; i++) {
+                    //Append each file to FormData object
+                    formData.append(fileInput.files[i].name, fileInput.files[i]);
+                    if (fileInput.files[i].size > (SnitzVars.MaxFileSize * 1024 * 1024)) {
+                        BootstrapDialog.alert(
+                            {
+                                title: Snitzres.ErrTitle,
+                                message: Snitzres.TooLarge
+                            });
+                        return false;
+                    }
+                }
+            }
+
+            if ($(this).valid()) {
+                $.ajax({
+                    url: this.action,
+                    type: 'POST',
+                    data: formData,
+                    async: false,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+
+                    success: function ( data,  textStatus,  jqXHR) {
+                        $('#emailModal').modal('hide');
+                        var dlg = BootstrapDialog.show({
+                            type: BootstrapDialog.TYPE_PRIMARY,
+                            title: '@ResourceManager.GetLocalisedString("dlgEmailMemberTitle", "labels")',
+                            message: '@ResourceManager.GetLocalisedString("SendPMSuccess", "PrivateMessage")'
+                        });
+                        setTimeout(function () {
+                            dlg.close();
+                        }, 2000);
+                    },
+                    error: function (jqXHR, textStatus, error) {
+
+                        BootstrapDialog.alert({
+                            title: Snitzres.ErrTitle,
+                            message: error
+                        });
+                    }
+                });
+            } else {
+                $('input[type="submit"]').removeAttr('disabled');
+            }
+            return false;
+        });
+
+        if ('@ClassicConfig.GetIntValue("INTEMAILCAPTCHA")' === '1') {
+            $('#form-continue').hide();
+            $('.modal-footer').hide();
+        } else {
+            setRequiredFields();
+        }
+
+        $(document).on('click', '.btn-captcha', function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: '@Url.Action("CaptchaCheck","Account")',
+                type: 'POST',
+                data: {
+                    "captcha": $("#Captcha").val()
+                },
+                success: function (data) {
+                    $("#captcha-check").hide();
+                    $('#form-continue').show();
+                    $('.modal-footer').show();
+                },
+                error: function (jqXHR, exception) {
+                    //var errorArray = {};
+                    BootstrapDialog.alert({
+                        title: Snitzres.ErrTitle,
+                        message: '@ResourceManager.GetLocalisedString("CaptchaCheck_Wrong", "ErrorMessage")'
+                    });
+                }
+            });
+            $(this).resetValidation();
+            setRequiredFields();
+        });
+
+
+        $('#emailModal').on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+        });
+
+        $(document).on('change', ':file', function () {
+            var input = $(this),
+                numFiles = input.get(0).files ? input.get(0).files.length : 1,
+                label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+
+            $("#Attached").val(label);
+        });
+</script>

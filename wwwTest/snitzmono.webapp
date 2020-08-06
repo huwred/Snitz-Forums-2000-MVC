@@ -1,0 +1,10 @@
+<web-application>
+        <name>SnitzMono</name>
+        <vpath>/</vpath>
+        <path>/media/pi/dev/Projects/RpiMVC_Test/wwwTest</path>
+    <!-- vhost and port are ignored in xsp.exe -->
+        <vhost>mono.themediawizards.co.uk</vhost>
+        <vport>80</vport>
+    <!-- <enabled> is true by default -->
+    <!-- <enabled>false</enabled> -->
+</web-application>

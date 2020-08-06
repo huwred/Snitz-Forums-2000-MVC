@@ -1,0 +1,324 @@
+﻿@using LangResources.Utility
+@using Snitz.Base
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model WWW.ViewModels.UserProfileViewModel
+@{
+
+    bool currentUserProfile = SnitzMembership.WebSecurity.CurrentUserId == Model.Profile.UserId;
+    bool isAdmin = User.IsAdministrator();
+    string privateclass = "";
+    if (Model.Profile.PrivateProfile == 1)
+    {
+        privateclass = "private-profile";
+    }
+}
+
+    <div class="padding-md row-fluid clearfix">
+        <div class="panel-body">
+            <div class="col-xs-12 col-md-6 col-lg-4 form-horizontal">
+
+                @Html.HiddenFor(model => model.Profile.UserId)
+                @if (Config.ShowAvatar)
+                {
+                    <div class="form-group">
+                        <div class="col-xs-4">
+                            @Html.Avatar(Model.Profile.UserName, Model.Profile.PhotoUrl, "avatar online")
+                            @if (isAdmin)
+                            {
+                                @Model.Profile.PhotoUrl
+                            }
+
+                        </div>
+                        @if (isAdmin)
+                        {
+                            <div class="col-xs-8">
+                                <button id="avatar-remove" class="btn btn-warning" value="@ResourceManager.GetLocalisedString("btnRemoveAvatar", "labels")">@ResourceManager.GetLocalisedString("btnRemoveAvatar", "labels")</button><br />
+                                <div id="result"></div>
+                            </div>
+                        }
+                    </div>
+                }
+                @if (isAdmin || currentUserProfile || Model.Profile.PrivateProfile == 0)
+                {
+                    if (ClassicConfig.GetValue("STRFULLNAME") == "1")
+                    {
+                        <div class="form-group @privateclass">
+                            <div class="col-xs-4">
+                                @Html.LabelFor(model => model.Profile.Firstname)
+                            </div>
+                            <div class="col-xs-8">
+                                @Html.DisplayTextFor(model => model.Profile.Firstname)
+                            </div>
+                        </div>
+                        <div class="form-group @privateclass">
+                            <div class="col-xs-4">
+                                @Html.LabelFor(model => model.Profile.Lastname)
+                            </div>
+                            <div class="col-xs-8">
+                                @Html.DisplayTextFor(model => model.Profile.Lastname)
+                            </div>
+                        </div>
+                    }
+                    if (ClassicConfig.GetValue("STRSEX") == "1")
+                    {
+                        <div class="form-group @privateclass">
+                            <div class="col-xs-4">
+                                @Html.LabelFor(model => model.Profile.Gender)
+                            </div>
+                            <div class="col-xs-8">
+                                @Html.DisplayTextFor(model => model.Profile.Gender)
+                            </div>
+                        </div>
+                    }
+                    if (ClassicConfig.GetValue("STRAGE") == "1")
+                    {
+                        <div class="form-group @privateclass">
+                            <div class="col-xs-4">
+                                @Html.LabelFor(model => model.Profile.Age)
+                            </div>
+                            <div class="col-xs-8">
+                                @Html.DisplayTextFor(model => model.Profile.Age)
+                            </div>
+                        </div>
+                    }
+                    else if (ViewBag.fullView && ClassicConfig.GetValue("STRAGEDOB") == "1")
+                    {
+                        <div class="form-group @privateclass">
+                            <div class="col-xs-4">
+                                @Html.LabelFor(model => model.Profile.Age, DisplayOptions.Humanize)
+                            </div>
+                            <div class="col-xs-8">
+                                @Html.Age(Model.Profile.DateOfBirth)
+                            </div>
+                        </div>
+                    }
+                    if (ClassicConfig.GetValue("STRMARSTATUS") == "1")
+                    {
+                        <div class="form-group @privateclass">
+                            <div class="col-xs-4">
+                                @Html.LabelFor(model => model.Profile.MaritalStatus, DisplayOptions.Humanize)
+                            </div>
+                            <div class="col-xs-4">
+                                @Html.DisplayTextFor(model => model.Profile.MaritalStatus)
+                            </div>
+                        </div>
+
+                    }
+                    if (ClassicConfig.GetValue("STRCITY") == "1")
+                    {
+                        <div class="form-group @privateclass">
+                            <div class="col-xs-4">
+                                @Html.LabelFor(model => model.Profile.City)
+                            </div>
+                            <div class="col-xs-8">
+                                @Html.DisplayTextFor(model => model.Profile.City)
+                            </div>
+                        </div>
+                    }
+                    if (ClassicConfig.GetValue("STRSTATE") == "1")
+                    {
+                        <div class="form-group @privateclass">
+                            <div class="col-xs-4">
+                                @Html.LabelFor(model => model.Profile.State)
+                            </div>
+                            <div class="col-xs-8">
+                                @Html.DisplayTextFor(model => model.Profile.State)
+                            </div>
+                        </div>
+                    }
+                    if (ClassicConfig.GetValue("STRCOUNTRY") == "1")
+                    {
+                        <div class="form-group @privateclass">
+                            <div class="col-xs-4">
+                                @Html.LabelFor(model => model.Profile.Country)
+                            </div>
+                            <div class="col-xs-8">
+                                @Html.DisplayTextFor(model => model.Profile.Country)
+                            </div>
+                        </div>
+                    }
+                    if (ClassicConfig.GetValue("STREXTENDPROFILE") == "1")
+                    {
+                        <div id="TimeZoneUpdate">
+                            @Html.Action("MemberField", "MemberFields", new { id = Model.Profile.UserId, property = "TimeZone" })
+                        </div>
+                    }
+
+                    if (ViewBag.fullView)
+                    {
+                        <div class="panel btn-group hidden">
+                            <div class="btn-group-sm">
+                                @Html.ActionLink(ResourceManager.GetLocalisedString("btnChangeEmail", "labels"), "ChangeEmail", new { id = Model.Profile.UserId }, new { @class = "btn btn-warning modal-link" })
+                                @Html.ActionLink(ResourceManager.GetLocalisedString("btnChangeUsername", "labels"), "ChangeUsername", new { id = Model.Profile.UserId }, new { @class = "btn btn-warning modal-link" })
+                                @Html.ActionLink(ResourceManager.GetLocalisedString("btnChangePassword", "labels"), "ChangePassword", null, new { @class = "btn btn-warning modal-link" })
+                            </div>
+                        </div>
+                    }
+                }
+
+            </div>
+            <div class="col-xs-12 col-md-6 col-lg-4 form-horizontal">
+
+                @if (ViewBag.fullView)
+                {
+                    <div class="form-group">
+                        <div class="col-xs-4">
+                            @Html.LabelFor(model => model.Profile.Email)
+                        </div>
+                        <div class="col-xs-8">
+                            @Html.DisplayTextFor(model => model.Profile.Email)
+                        </div>
+                    </div>
+
+                }
+                <div class="form-group">
+                    <div class="col-xs-4">
+                        @Html.LabelFor(model => model.Profile.UserName)
+                    </div>
+                    <div class="col-xs-8">
+                        @Html.DisplayTextFor(model => model.Profile.UserName)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-xs-4">
+                        @Html.LabelFor(model => model.Profile.ForumTitle)
+                    </div>
+                    <div class="col-xs-8">
+                        @Html.MemberRankingTitle(Model.Profile)
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-xs-4">
+                        @Html.LabelFor(model => model.Profile.PostCount, DisplayOptions.Humanize)
+                    </div>
+                    <div class="col-xs-8">
+                        @Html.DisplayTextFor(model => model.Profile.PostCount)
+                    </div>
+                </div>
+
+                <hr class="title" />
+                @if (ClassicConfig.GetValue("STRHOMEPAGE") == "1")
+                {
+                    <div class="form-group">
+                        <div class="col-xs-4">
+                            @Html.LabelFor(model => model.Profile.Homepage)
+                        </div>
+                        <div class="col-xs-8">
+                            <a href="@Html.DisplayTextFor(model => model.Profile.Homepage)" title="Users home page" target="_new">@Html.DisplayTextFor(model => model.Profile.Homepage)</a>
+                        </div>
+                    </div>
+                }
+                @if (ClassicConfig.GetValue("STRPHOTOALBUM") == "1")
+                {
+                    <div class="form-group">
+                        <div class="col-xs-4">
+                            <label>@String.Format(ResourceManager.GetLocalisedString("lblAlbum", "PhotoAlbum"), Model.Profile.UserName)</label>
+                        </div>
+                        <div class="col-xs-8">
+                            @Html.ActionLink(ResourceManager.GetLocalisedString("lblProfileLink", "PhotoAlbum"), "Member", "PhotoAlbum", new { id = Model.Profile.UserName, sortby = "date", sortorder = "desc" }, null)
+                        </div>
+                    </div>
+
+                }
+                @if (isAdmin || currentUserProfile || Model.Profile.PrivateProfile == 0)
+                {
+
+                    if (ClassicConfig.GetValue("STROCCUPATION") == "1")
+                    {
+                        <div class="form-group @privateclass">
+                            <div class="col-xs-4">
+                                @Html.LabelFor(model => model.Profile.Occupation)
+                            </div>
+                            <div class="col-xs-8">
+                                @Html.DisplayTextFor(model => model.Profile.Occupation)
+                            </div>
+                        </div>
+                    }
+                    if (ClassicConfig.GetValue("STRBIO") == "1")
+                    {
+                        <div class="form-group @privateclass">
+                            <div class="col-xs-6">
+                                @Html.LabelFor(model => model.Profile.Biography)
+                            </div>
+                            <div class="col-xs-10">
+                                @Html.FormatBbCode(Model.Profile.Biography)
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+            <div class="col-xs-12 col-md-6 col-lg-4">
+                <div class="panel panel-primary panel-body padding-md">
+                    @if (Model.Profile.PostCount > 0)
+                    {
+                        TempData["SideBox"] = true;
+                        using (Html.BeginForm("Search", "Forum", null, FormMethod.Post, new { id = "SearchAll" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="OrderBy" value="t" />
+                            <input type="hidden" name="SortDir" value="desc" />
+                            <input type="hidden" name="SearchModel.ForumId" value="0" />
+                            <input type="hidden" name="SearchModel.Term" value="" />
+                            <input type="hidden" name="SearchModel.PhraseType" value="@Enumerators.SearchWordMatch.ExactPhrase" />
+                            <input type="hidden" name="SearchModel.SearchByDays" value="@Enumerators.SearchDays.Any" />
+                            <input type="hidden" name="SearchModel.SearchIn" value="@Enumerators.SearchIn.Message" />
+                            if (Config.FullTextSearch)
+                            {
+                                <input type="hidden" name="SearchModel.FullTextType" value="@Enumerators.FullTextMatch.Exact" />
+                            }
+                            <input type="hidden" name="SearchModel.MemberName" value="@Model.Profile.UserName" />
+                            <a href="#" id="member_posts">@String.Format(ResourceManager.GetLocalisedString("lblProfileAllPosts", "labels"), Model.Profile.UserName)</a>
+                        }
+                        using (Html.BeginForm("Search", "Forum", null, FormMethod.Post, new { id = "SearchRecent" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="OrderBy" value="t" />
+                            <input type="hidden" name="SortDir" value="desc" />
+                            <input type="hidden" name="SearchModel.ForumId" value="0" />
+                            <input type="hidden" name="SearchModel.Term" value="" />
+                            <input type="hidden" name="SearchModel.PhraseType" value="@Enumerators.SearchWordMatch.ExactPhrase" />
+                            <input type="hidden" name="SearchModel.SearchByDays" value="@Enumerators.SearchDays.Since14Days" />
+                            <input type="hidden" name="SearchModel.SearchIn" value="@Enumerators.SearchIn.Message" />
+                            if (Config.FullTextSearch)
+                            {
+                                <input type="hidden" name="SearchModel.FullTextType" value="@Enumerators.FullTextMatch.Exact" />
+                            }
+                            <input type="hidden" name="SearchModel.MemberName" value="@Model.Profile.UserName" />
+                            <a href="#" id="member_recent_posts">@String.Format(ResourceManager.GetLocalisedString("lblProfileRecentPosts", "labels"), Model.Profile.UserName)</a>
+                        }
+                        using (Html.BeginForm("Search", "Forum", null, FormMethod.Post, new { id = "SearchMine" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="OrderBy" value="t" />
+                            <input type="hidden" name="SortDir" value="desc" />
+                            <input type="hidden" name="SearchModel.ForumId" value="0" />
+                            <input type="hidden" name="SearchModel.Term" value="" />
+                            <input type="hidden" name="SearchModel.PhraseType" value="@Enumerators.SearchWordMatch.ExactPhrase" />
+                            <input type="hidden" name="SearchModel.SearchByDays" value="@Enumerators.SearchDays.Any" />
+                            <input type="hidden" name="SearchModel.SearchIn" value="@Enumerators.SearchIn.Subject" />
+                            if (Config.FullTextSearch)
+                            {
+                                <input type="hidden" name="SearchModel.FullTextType" value="@Enumerators.FullTextMatch.Exact" />
+                            }
+                            <input type="hidden" name="SearchModel.MemberName" value="@Model.Profile.UserName" />
+                            <a href="#" id="member_my_posts">@String.Format(ResourceManager.GetLocalisedString("lblProfileMyPosts", "labels"), Model.Profile.UserName)</a>
+                        }
+                    }
+                    else
+                    {
+                        <label>@ResourceManager.GetLocalisedString("lblProfileNoPosts", "labels")</label>
+                    }
+
+                </div>
+                @if (ClassicConfig.GetValue("STRTHANKS") == "1")
+                {
+                    @Html.Action("ThanksProfile", "PostThanks", new { id = Model.Profile.UserId })
+                }
+            </div>
+
+        </div>
+    </div>

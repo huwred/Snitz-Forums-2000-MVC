@@ -1,0 +1,63 @@
+﻿
+@using System.Globalization
+@using LangResources.Utility
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model SnitzDataModel.Models.Poll
+
+@{
+    Layout = null;
+    var totalvotes = Model.Answers.Sum(a=>a.Votes);
+    CultureInfo uk = new CultureInfo("en-GB");
+
+}
+<div class="user-poll-section">
+    <div class="panel @ViewData["panel"]">
+        <div class="panel-heading">
+            @if ((bool)ViewData["featured"])
+            {
+                <h4>@ResourceManager.GetLocalisedString("FeaturedPoll", "Poll")</h4>
+            }
+                <span>@Model.Question @if (!Model.Question.Contains("?")) { Html.Raw("?"); }</span>
+            @if (!(bool)ViewData["featured"] && User.IsAdministrator() && Model.Active == 1)
+            {
+                <span class="pull-right flip"><a href="@Url.Action("MakeFeaturedPoll","Polls",new{id=Model.Id})" title="@ResourceManager.GetLocalisedString("MakeFeaturedPoll", "Poll")" data-toggle="tooltip"><i class="fa fa-bar-chart"></i></a></span>
+            }
+            @if (!(bool)ViewData["featured"] && User.IsAdministrator() && Model.Active != 1)
+            {
+                <span class="pull-right flip">
+                    
+                    @if (Model.Topic == null)
+                    {
+                        <a href="@Url.Action("Delete", "Polls", new {id = Model.Id})" title="Delete Poll" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
+
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("Lock","Polls",new{id=Model.TopicId})" title="Lock Poll" data-toggle="tooltip"><i class="fa fa-lock"></i></a>
+                    }
+                </span>
+            }
+
+        </div>
+        <div class="panel-body">
+            <h5 class="text-danger">@ResourceManager.GetLocalisedString("ResultTitle", "Poll") :</h5>
+            <hr class="title">
+            @foreach (var ans in Model.Answers.OrderBy(a=>a.Order))
+            {
+                var percent = (ans.Votes / (double)totalvotes * 100);
+                <span>@ans.Answer@Html.Raw("&nbsp;")@String.Format(ResourceManager.GetLocalisedString("VoteCount", "Poll"), ans.Votes)</span>
+                <div class="progress progress-striped active">
+                    <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="@percent.ToString("00.00",uk)" aria-valuemin="0" aria-valuemax="100" style="width: @percent.ToString("00.00",uk)%;">
+                        <span class="sr-only">@Html.Raw(percent.ToString("00.00",uk) + "% Complete (success)")</span>
+                    </div>
+                </div>
+            }
+            <label>@ResourceManager.GetLocalisedString("VotesCast", "Poll"):&nbsp;</label>@totalvotes.ToLangNum() <br/>
+            <label>@ResourceManager.GetLocalisedString("LastVote", "Poll"):&nbsp;</label>@if(Model.LastVoteDate.HasValue){@Html.Timeago(Model.LastVoteDate.Value)}
+        </div>
+        <div class="panel-footer">@Html.ActionLink(ResourceManager.GetLocalisedString("ViewComments", "Poll"),"Posts","Topic",new{id=Model.TopicId},null) @String.Format(ResourceManager.GetLocalisedString("CommentCount", "Poll"),Model.CommentCount.ToLangNum()) </div>  
+
+    </div>
+</div>

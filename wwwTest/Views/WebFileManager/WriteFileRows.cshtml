@@ -1,0 +1,39 @@
+﻿@using System.Data
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using WWW.Models;
+@using WWW.Views.Helpers;
+@{
+    Layout = null;
+}
+
+@if (Model.Count == 0 || ViewBag.Error != null)
+{
+    <tr><td colspan="8" class="text-center">@ViewBag.Error</td></tr>
+}
+else
+{
+    foreach (DataRowView row in Model)
+    {
+        bool isFolder = Convert.ToString(row["Attr"]).IndexOf("d") > -1;
+        <tr>
+            <td style="text-align:right"><input type="checkbox" name="checked_@row["Name"]" class="row_check" /></td>
+            <td style="text-align:center"><img src="@Html.FileIcon(row,(string)ViewBag.WebPath)" style="width:16px;height:16px;" /></td>
+            <td>@Html.FileLink(row, (string)ViewBag.WebPath)</td>
+
+            @if (isFolder)
+            {
+                <td></td>
+                <td>&nbsp;</td>
+            }
+            else
+            {
+                <td style="text-align:right">@Html.FormatKB(Convert.ToInt64(row["Size"]))</td>
+                <td>Kb</td>
+            }
+            <td style="text-align:right">@(((DateTime)row["Created"]).ToClientTime().ToFormattedString(true))</td>
+            <td style="text-align:right">@(((DateTime)row["Modified"]).ToClientTime().ToFormattedString(true))</td>
+            <td style="text-align:right">@row["Attr"]</td>
+        </tr>
+    }
+}

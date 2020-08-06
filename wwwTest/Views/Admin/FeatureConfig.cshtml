@@ -1,0 +1,583 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using SnitzDataModel.Models
+@using WWW.Views.Helpers
+@model WWW.ViewModels.AdminFeaturesViewModel
+@{
+    ViewBag.PageTitle = "Feature Configuration";
+    ViewBag.ActivePage = ResourceManager.GetLocalisedString("mnuAdminFeature", "labels");
+    ViewBag.SubmitButton = "";
+    //Layout = "~/Views/Admin/_Layout.cshtml";
+}
+
+@* TAB Header *@
+<ul class="nav nav-tabs" role="tablist" id="featuresTab">
+    <li class="active"><a href="#feature-general" role="tab" data-toggle="tab">General</a></li>
+    <li><a href="#feature-moderation" role="tab" data-toggle="tab">Moderation</a></li>
+    <li><a href="#feature-forum" role="tab" data-toggle="tab">Forum</a></li>
+    <li><a href="#feature-topic" role="tab" data-toggle="tab">Topic</a></li>
+    <li><a href="#feature-posting" role="tab" data-toggle="tab">Posting</a></li>
+    <li><a href="#anti-spam" role="tab" data-toggle="tab">Anti-Spam</a></li>
+    <li><a href="#private-messaging" role="tab" data-toggle="tab">Private Messaging</a></li>
+    <li><a href="#announce" role="tab" data-toggle="tab">Announcement</a></li>
+    <li><a href="#api" role="tab" data-toggle="tab" id="link-tab-api">API</a></li>
+</ul>
+@using (Ajax.BeginForm("SaveFeatureConfig", "Admin", null,
+    new AjaxOptions
+    {
+        OnSuccess = "OnSuccess",
+        OnFailure = "OnFailure",
+        UpdateTargetId = "FeatureConfig",
+        HttpMethod = "POST",
+        LoadingElementId = "loading"
+    }, new { @class = "form-horizontal" }))
+{
+    ViewBag.SubmitButton = ResourceManager.GetLocalisedString("btnSave", "labels");
+    <div class="tab-content row-fluid clearfix">
+        <div class="tab-pane active" id="feature-general" role="tabpanel" aria-labelledby="feature-tab">
+            <div class="form-group">
+                @Html.ConfigToggle("IP Logging:", "STRIPLOGGING", "")
+                <div class="col-xs-12 col-sm-5">
+                    <input type="text" id="iplookupurl" name="striplookup" class="form-control" placeholder="URL to third party lookup service" value="@Model.GetValue("STRIPLOOKUP")" title="Use a third party service to look up the IP address " data-toggle="tooltip" />
+                    <span class="small">use [IP] to indicate where the IP should be passed in the url<br />e.g. http://www.ripe.net/whois?form_type=simple&full_query_string=&searchtext=[IP]</span>
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.ConfigToggle("Use Fulltext search:", "INTFULLTEXT", "")
+            </div>
+            <div class="form-group">
+                @Html.ConfigToggle("Group Categories:", "STRGROUPCATEGORIES", "")
+            </div>
+            <div class="form-group">
+                <label for="" class="control-label col-xs-12 col-sm-3">Highest level of Subscription:</label>
+                <div class="col-xs-12 col-sm-4">
+                    @Html.EnumDropDownListFor(m => m.SubscriptionLevel, new { @class = "form-control inline" }, "")
+                    @Html.HelpLink("STRSUBSCRIPTION", "pull-right")
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.ConfigToggle("Protected Content:", "INTPROTECTCONTENT", "")
+
+            </div>
+            <div class="form-group">
+                @Html.ConfigToggle("Allow members to hide from Online:", "INTALLOWHIDEONLINE", "", "control-label col-xs-12 col-sm-3")
+            </div>
+            <hr class="title"/>
+            <div class="form-group">
+                @Html.ConfigToggle("New Layout:", "INTNEWLAYOUT", "")
+            </div>
+            <div class="form-group">
+                <label for="strlayout" class="control-label col-xs-8 col-sm-3">Single Column:</label>
+                <div class="col-xs-4 col-sm-1">
+                    <input id="layout3" name="layout3" type="checkbox" class="yesno-checkbox" data-size="mini" checked="@(Model.GetValue("STRLAYOUT") == "single")" />
+                </div> @Html.HelpLink("STRLAYOUT", "")
+            </div>
+            <div class="form-group">
+                <label for="strlayout" class="control-label col-xs-8 col-sm-3">Col Layout:</label>
+                <div class="col-xs-4 col-sm-1">
+                    <input id="strlayout1" name="strlayout1" type="checkbox" class="yesno-checkbox" data-size="mini" data-off-color="success" data-on-text="two cols" data-off-text="three cols" checked="@(Model.GetValue("STRLAYOUT") != "threecol")" />
+
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="strlayout" class="control-label col-xs-12 col-sm-3">Content Col align:</label>
+                <div class="col-xs-12 col-sm-6">
+                    <input id="strlayout2" name="strlayout2" type="checkbox" data-size="mini" class="yesno-checkbox" data-off-color="success" data-on-text="left" data-off-text="right" checked="@(Model.GetValue("STRLAYOUT") != "left")" />
+                </div>
+            </div><input type="hidden" value="@Model.GetValue("STRLAYOUT")" name="strlayout" id="strlayout" />
+            <div class="form-group">
+                <label for="pagesize" class="control-label col-xs-8 col-sm-3">Default page size:</label>
+                <div class="col-xs-4 col-sm-2">
+                    <input id="pagesize" name="strpagesize" type="number" maxlength="2" class="form-control inline" value="@Model.GetValue("STRPAGESIZE")" style="width: 70px;" />
+                    @Html.HelpLink("STRPAGESIZE", "pull-right")
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="" class="control-label col-xs-8 col-sm-3">Members Page size:</label>
+                <div class="col-xs-4 col-sm-2">
+                    <input id="accountpagesizes" name="straccountpagesizes" type="text" class="form-control inline" value="@Model.GetValue("STRACCOUNTPAGESIZES","20")" style="width: 170px;" />
+                    @Html.HelpLink("STRACCOUNTPAGESIZES", "pull-right")
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane" id="feature-moderation" role="tabpanel" aria-labelledby="moderation-tab">
+            <div class="row-fluid clearfix">
+                <div class="form-group">
+                    @Html.ConfigToggle("Allow Topic Moderation:", "STRMODERATION", "")
+                </div>
+                <div class="form-group">
+                    @Html.ConfigToggle("Show Moderators:", "STRSHOWMODERATORS", "")
+                </div>
+                <div class="form-group">
+                    @Html.ConfigToggle("Restrict Topic move:", "STRMOVETOPICMODE", "")
+                </div>
+                <div class="form-group">
+                    @Html.ConfigToggle("Email author when moving topics:", "STRMOVENOTIFY", "")
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane" id="feature-forum" role="tabpanel" aria-labelledby="forum-tab">
+            <div class="row-fluid clearfix">
+                <div class="form-group">
+                    @Html.ConfigToggle("Private Forums:", "STRPRIVATEFORUMS", "")
+                </div>
+                <div class="form-group">
+                    @Html.ConfigToggle("Archive Functions:", "STRARCHIVESTATE", "")
+                </div>
+                <div class="form-group">
+                    @Html.ConfigToggle("Allow Topic Rating:", "INTTOPICRATING", "")
+                </div>
+                <div class="form-group">
+                    @Html.ConfigToggle("Show Detailed Statistics:", "STRSHOWSTATISTICS", "")
+                </div>
+                <div class="form-group">
+                    @Html.ConfigToggle("Show Jump To Last Post Link:", "STRJUMPLASTPOST", "")
+                </div>
+                <div class="form-group">
+                    @Html.ConfigToggle("Show Quick Paging:", "STRSHOWPAGING", "")
+                </div>
+                <div class="form-group">
+                    @Html.ConfigToggle("Show RSS Link:", "INTFORUMRSS", "")
+                </div>
+                <div class="form-group">
+                    <label for="" class="control-label col-xs-8 col-sm-3">Pagenumbers per row:</label>
+                    <div class="col-xs-4 col-sm-2">
+                        <input id="pagesrow" name="strpagenumbersize" type="number" max="99" class="form-control inline" value="@Model.GetValue("STRPAGENUMBERSIZE")" style="width: 70px;" />
+                        @Html.HelpLink("STRPAGENUMBERSIZE", "pull-right flip")
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="" class="control-label col-xs-8 col-sm-3">Page size:</label>
+                    <div class="col-xs-4 col-sm-2">
+                        <input id="forumpagesizes" name="strforumpagesizes" type="text" class="form-control inline" value="@Model.GetValue("STRFORUMPAGESIZES","10,25,50,100")" style="width: 170px;" />
+                        @Html.HelpLink("STRFORUMPAGESIZES", "pull-right flip")
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="" class="control-label col-xs-8 col-sm-3">Search results Page size:</label>
+                    <div class="col-xs-4 col-sm-2">
+                        <input id="searchpagesizes" name="strsearchpagesizes" type="text" class="form-control inline" value="@Model.GetValue("STRSEARCHPAGESIZES","10")" style="width: 170px;" />
+                        @Html.HelpLink("STRSEARCHPAGESIZES", "pull-right flip")
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane" id="feature-topic" role="tabpanel" aria-labelledby="topic-tab">
+            <div class="row-fluid clearfix">
+
+                <div class="form-group">
+                    @Html.ConfigToggle("Allow Sticky Topics:", "STRSTICKYTOPIC", "")
+                </div>
+                <div class="form-group">
+                    @Html.ConfigToggle("Hot Topics:", "STRHOTTOPIC", "")
+                    <div class="col-xs-12 col-sm-2">
+                        <input id="hotcount" name="inthottopicnum" type="number" maxlength="2" class="form-control" value="@Model.GetValue("INTHOTTOPICNUM")" style="width: 70px;" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.ConfigToggle("Show edited by on Date:", "STREDITEDBYDATE", "")
+                </div>
+
+                <div class="form-group">
+                    @Html.ConfigToggle("Show Prev / Next Topic:", "STRSHOWTOPICNAV", "")
+                </div>
+
+                <div class="form-group">
+                    @Html.ConfigToggle("Show send Topic to a friend link:", "STRSHOWSENDTOFRIEND", "")
+                </div>
+                <div class="form-group">
+                    @Html.ConfigToggle("Show printer friendly link:", "STRSHOWPRINTERFRIENDLY", "")
+                </div>
+                <div class="form-group">
+                    @Html.ConfigToggle("Social Media:", "STRSOCIALSHARE", "")
+                </div>
+                <div class="form-group">
+                    @Html.ConfigToggle("Show Topic on all pages:", "INTTOPICDISPLAY", "")
+                </div>
+                <div class="form-group">
+                    <label for="" class="control-label col-xs-8 col-sm-3">Page size:</label>
+                    <div class="col-xs-4 col-sm-2">
+                        <input id="topicpagesizes" name="strtopicpagesizes" type="text" class="form-control inline" value="@Model.GetValue("STRTOPICPAGESIZES","10,25,50,100")" style="width: 170px;" />
+                        @Html.HelpLink("STRTOPICPAGESIZES", "pull-right flip")
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="" class="control-label col-xs-8 col-sm-3">Active Topics page size:</label>
+                    <div class="col-xs-4 col-sm-2">
+                        <input id="activepagesizes" name="stractivepagesizes" type="text" class="form-control inline" value="@Model.GetValue("STRACTIVEPAGESIZES","10,20,50")" style="width: 170px;" />
+                        @Html.HelpLink("STRACTIVEPAGESIZES", "pull-right flip")
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="" class="control-label col-xs-8 col-sm-3">Recent Topics list:</label>
+                    <div class="col-xs-4 col-sm-2">
+                        <input id="recentcount" name="intrecentcount" type="number" max="99" class="form-control inline" value="@ClassicConfig.GetIntValue("INTRECENTCOUNT",5)" style="width: 70px;" />
+                        @Html.HelpLink("INTRECENTCOUNT", "pull-right flip")
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="tab-pane" id="feature-posting" role="tabpanel" aria-labelledby="posting-tab">
+            <div class="row-fluid clearfix">
+                @Html.ValidationSummary(false)
+                <div class="form-group">
+                    @Html.ConfigToggle("Flood Control:", "STRFLOODCHECK", "")
+                    <div class="col-xs-12 col-sm-5 form-inline">
+                        <input type="number" id="floodtime" name="strfloodchecktime" class="form-control inline" value="@Model.GetValue("STRFLOODCHECKTIME","30")" style="width: 70px;" />
+                        <span class="control-label form-inline">(seconds)</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.ConfigToggle("Bad Word Filter:", "STRBADWORDFILTER", "")
+                </div>
+                <div class="form-group">
+                    @Html.ConfigToggle("Allow Forum Code:", "STRALLOWFORUMCODE", "")
+                </div>
+                <div class="form-group">
+                    @Html.ConfigToggle("Images in Posts:", "STRIMGINPOSTS", "")
+                </div>
+                <div class="form-group">
+                    @Html.ConfigToggle("Icons:", "STRICONS", "")
+                </div>
+                <div class="form-group">
+                    @Html.ConfigToggle("Allow Signatures:", "STRSIGNATURES", "")
+                </div>
+                <div class="form-group">
+                    @Html.ConfigToggle("Allow Dynamic Signatures:", "STRDSIGNATURES", "")
+                </div>
+                <div class="form-group">
+                    @Html.ConfigToggle("Show Format Buttons:", "STRSHOWFORMATBUTTONS", "")
+                </div>
+                <div class="form-group">
+                    @Html.ConfigToggle("Show Smilies Table:", "STRSHOWSMILIESTABLE", "")
+                </div>
+                <div class="form-group">
+                    @Html.ConfigToggle("Show Quick Reply:", "STRSHOWQUICKREPLY", "")
+                </div>
+                <div class="form-group">
+                    @Html.ConfigToggle("Allow File Attachments", "STRALLOWUPLOADS", "")
+                </div>
+                <div class="form-group">
+                    @Html.ConfigInt("Max File size (Mb):", "INTMAXFILESIZE", 1, 20, "1", false, "control-label col-xs-8 col-sm-3", "col-xs-4 col-sm-2")
+                </div>
+                <div id="upload-options" style="display: none;">
+                    @Html.ConfigString("Allowed Extensions:", "STRFILETYPES", false, "comma seperated list e.g  .txt,.pdf,.zip,.png,.jpg")
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane" id="anti-spam" role="tabpanel" aria-labelledby="spam-tab">
+            <div class="row-fluid">
+                <p>
+                    The captcha automatically generates an image containing a simple maths question,
+                    You can choose which operators to use below
+                </p>
+            </div>
+            <div class="form-group">
+                <label for="captchareg" class="control-label col-xs-7 col-sm-4">Captcha Operators:</label>
+                <div class="col-xs-5 col-sm-3">
+                    @Html.CheckboxListForEnum(model => model.CaptchaOperators)
+                </div>
+                example captcha:<br /><img alt="Captcha" class="captcha" src="@Html.Action("CaptchaImage","Account")" style="" />
+            </div>
+            <div class="form-group">
+                @Html.ConfigToggle("Use Captcha for Registration:", "STRUSECAPTCHA", "", "control-label col-xs-8 col-sm-4")
+            </div>
+            <div class="form-group">
+                @Html.ConfigToggle("Use Captcha when Emailing:", "INTEMAILCAPTCHA", "", "control-label col-xs-8 col-sm-4")
+            </div>
+        </div>
+        <div class="tab-pane" id="private-messaging" role="tabpanel" aria-labelledby="messaging-tab">
+            <div class="form-group">
+                @Html.ConfigToggle("Allow Private Messages", "STRPMSTATUS", "")
+            </div>
+            @Html.ConfigInt("Max PM recipients:", "INTMAXPMRECIPIENTS", 0, 100, "1", false, "control-label col-xs-8 col-sm-3", "col-xs-4 col-sm-3 inline")
+
+            @Html.ConfigInt("Message Limit:", "STRPMLIMIT", 1, 1000, "1", false, "control-label col-xs-8 col-sm-3", "col-xs-4 col-sm-3 inline")
+
+            <div class="form-group">
+                @Html.ConfigToggle("Play notification sound", "STRPMSOUND", "")
+            </div>
+
+            @if (ClassicConfig.GetIntValue("STRALLOWUPLOADS") == 1)
+            {
+                <div class="form-group">
+                    @Html.ConfigToggle("Allow Attachments", "STRPMATTACH", "")
+                </div>
+            }
+            @if (Model.Config.ContainsKey("STRPMSIG"))
+            {
+                <div class="form-group">
+                    @Html.ConfigToggle("Allow Signatures", "STRPMSIG", "")
+                </div>
+            }
+            @*<div class="form-group">
+                    @Html.ConfigToggle("Allow Chat", "INTALLOWCHAT", "")
+                </div>*@
+        </div>
+        <div class="tab-pane" id="announce" role="tabpanel" aria-labelledby="announc-tab">
+            <div class="form-group">
+                @Html.ConfigToggle("Show Announcement", "STRSHOWANNOUNCE", "")
+            </div>
+            <div class="form-group">
+                <label for="announceMessage" class="control-label col-xs-2">Message </label>
+                <div class="col-xs-12 col-sm-9" id="editorDiv">
+                    @Html.Partial("_EditorBar", Model)
+                    <textarea id="announceMessage" maxlength="255" name="strannounce" rows="4" class="bbc-code-editor multi-line form-control">@if (Model.Config.ContainsKey("STRANNOUNCE"))
+                                                                                                                                               {@Model.Config["STRANNOUNCE"]}</textarea>
+                    <span id="count"></span>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane" id="api" role="tabpanel" aria-labelledby="api-tab">
+            @Html.ConfigInt("[API] Max images per post", "INTAPIMAXUPLOADS", 0, 5, "1", false, "control-label col-xs-8 col-sm-3", "col-xs-4 col-sm-2")
+            <div class="form-group">
+                <label class="control-label col-xs-8 col-sm-3">Allowed Forums</label>
+                <div class="col-xs-4">
+                    <div>
+                        @Html.ListBoxFor(x => x.AllowedForums, new SelectList(Model.AllowedForums, "Key", "Value", ClassicConfig.GetValue("STRFILETYPES").Split(',')), new { @class = "form-control" })
+                        <button type="button" id="rem-allowed" class="btn btn-primary btn-sm" title="Remove Forum">Remove Selected</button>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-4">Add Forum</label>
+                        <div class="col-xs-7">
+                            @Html.DropDownListFor(model => model.ForumId, new SelectList(Model.ForumList, "Key", "Value"), new { @class = "form-control", @tabindex = 1 })
+                        </div>
+                        <div class="col-xs-1"><button type="button" id="add-allowed" class="btn btn-primary btn-sm" title="Add Forum"><i class="fa fa-plus"></i></button></div>
+                    </div>
+                </div>
+            </div>
+            <label class="control-label col-xs-8 col-sm-3">Audiences</label>
+            <div class="panel panel-primary col-xs-6">
+                <div class="panel-body">
+                    <table class="table table-bordered  table-striped table-condensed">
+                        <thead class="table-header">
+                            <tr>
+                                <th>Name</th>
+                                <th colspan="2">Key</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var aud in AudiencesStore.AudiencesList)
+                            {
+
+                                <tr>
+                                    <td>
+                                        <label class="form-label col-xs-4">@aud.Value.Name</label>
+                                    </td>
+                                    <td>
+                                        <label class="form-label col-xs-7">@aud.Value.Base64Secret</label>
+                                    </td>
+                                    <td><a href="@Url.Action("RemoveAudience")" data-val="@aud.Value.ClientId" class="remove-audience" title="Remove API access" data-toggle="tooltip"><i class="fa fa-trash-o fa-1_5x"></i></a></td>
+                                </tr>
+
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td>
+                                    <input type="text" class="form-control" id="new-audience" placeholder="new audience name" />
+                                </td>
+                                <td><a href="@Url.Action("AddAudience")" id="add-audience" class="btn btn-sm" title="Add new Audience" data-toggle="tooltip"><i class="fa fa-plus fa-1_5x"></i></a></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-xs-12 col-sm-10">@{ Html.RenderPartial("_FormButtons"); }</div>
+
+    </div>
+}
+
+@using (Html.BeginScripts())
+{
+    <script>
+        $(document).ready(function () {
+            $("#count").text("Characters left: " + (255 - $("#announceMessage").val().length));
+            $("#announceMessage").keyup(function () {
+                $("#count").text("Characters left: " + (255 - $(this).val().length));
+            });
+
+        if ('@ClassicConfig.GetValue("STRALLOWUPLOADS")' === '1') {
+                $('#upload-options').show();
+                $('#strfiletypes').rules("add", {
+                    required: true,
+                    messages: {
+                        required: "Required File types e.g  gif,png,zip,jpg"
+                    }});
+            }
+            $('#featuresTab').tabCollapse({
+                tabsClass: 'hidden-xs',
+                accordionClass: 'visible-xs'
+            });
+            $('#feature-posting').on('switchChange.bootstrapSwitch', '#strallowuploads', function (event, state) {
+                        if (state) {
+                            $('#upload-options').show();
+                            $('#strfiletypes').rules("add", {
+                                required: true,
+                                messages: {
+                                    required: "Required input e.g  gif,png,zip,jpg"
+                                }
+                            });
+                        } else {
+                            $('#upload-options').hide();
+                            $('#strfiletypes').rules("remove", "required");
+                        }
+                    });
+            $('#feature-general').on('switchChange.bootstrapSwitch', "#strlayout1", function (event, state) {
+
+                if (state) {
+
+                    $("#strlayout2").bootstrapSwitch('toggleDisabled');
+                    if ($("#strlayout2").bootstrapSwitch('state')) {
+                        $("#strlayout").val('right');
+                    } else {
+                        $("#strlayout").val('left');
+                    }
+
+
+                } else {
+                    $("#strlayout2").bootstrapSwitch('toggleDisabled');
+                    $("#strlayout").val('threecol');
+                }
+            });
+            if ($('#layout3').bootstrapSwitch('state')) {
+                $("#strlayout").val('single');
+                $("#strlayout1").bootstrapSwitch('disabled', 'disabled');
+                $("#strlayout2").bootstrapSwitch('disabled', 'disabled');
+            }
+            if ($('#strlayout1').bootstrapSwitch('state')) {
+                //$("#strlayout2").bootstrapSwitch('toggleDisabled');
+                if ($("#strlayout2").bootstrapSwitch('state')) {
+                    $("#strlayout").val('right');
+                } else {
+                    $("#strlayout").val('left');
+                }
+            } else {
+                $("#strlayout2").bootstrapSwitch('toggleDisabled');
+                $("#strlayout").val('threecol');
+            }
+
+            $('#feature-general').on('switchChange.bootstrapSwitch', "#strlayout2", function (event, state) {
+
+                if (state) {
+                    $("#strlayout").val('right');
+
+                } else {
+                    $("#strlayout").val('left');
+                }
+            });
+
+            $('#feature-general').on('switchChange.bootstrapSwitch', "#layout3", function (event, state)
+             {
+                $("#strlayout1").bootstrapSwitch('state', true);
+                $("#strlayout2").bootstrapSwitch('state', true);
+                if (state) {
+                    $("#strlayout").val('single');
+                    $("#strlayout1").bootstrapSwitch('disabled','disabled');
+                    $("#strlayout2").bootstrapSwitch('disabled', 'disabled');
+
+                } else {
+
+                    $("#strlayout1").bootstrapSwitch('toggleDisabled');
+                    $("#strlayout2").bootstrapSwitch('toggleDisabled');
+                    $("#strlayout").val('right');
+                }
+            });
+
+            $('body').on('click', '#add-audience', function (evt) {
+                evt.preventDefault();
+                BootstrapDialog.confirm({
+                    title: 'Add Audience',
+                    message: '<label>Are you sure you want to add a new Audience? </label><br/>', callback: function (ok) {
+                if (ok) {
+                    var data = {};
+
+                    data.id = $('#new-audience').val();
+
+                    $.ajax({
+                        url: SnitzVars.baseUrl + 'Admin/AddAudience',
+                        data: data,
+                        type: "POST",
+                        cache: false,
+                        success: function (response) {
+                            window.location.reload();
+                            $("#link-tab-api").tab('show');
+                            return false;
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            BootstrapDialog.show({
+                                type: BootstrapDialog.TYPE_WARNING,
+                                title: textStatus,
+                                message: errorThrown
+                            });
+
+                        }
+                    });
+                }
+            }
+        });
+
+    });
+            $('body').on('click', '.remove-audience', function (evt) {
+                var data = {};
+
+                data.id = $(this).data("val");
+                evt.preventDefault();
+                BootstrapDialog.confirm({
+                    title: 'Remove Audience',
+                    message: '<label>Are you sure you want to remove Audience? </label><br/>', callback: function (ok) {
+                if (ok) {
+
+                    $.ajax({
+                        url: SnitzVars.baseUrl + 'Admin/RemoveAudience',
+                        data: data,
+                        type: "POST",
+                        cache: false,
+                        success: function (response) {
+                            window.location.reload();
+                            $("#link-tab-api").tab('show');
+                            return false;
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            BootstrapDialog.show({
+                                type: BootstrapDialog.TYPE_WARNING,
+                                title: textStatus,
+                                message: errorThrown
+                            });
+
+                        }
+                    });
+                }
+            }
+        });
+
+    });
+        $("#add-allowed").on('click', function (e) {
+        e.preventDefault();
+        $('#AllowedForums').append($('<option/>', {
+            value: $("#ForumId option:selected").val(),
+            text: $("#ForumId option:selected").text()
+        }));
+
+    });
+    $("#rem-allowed").on('click', function (e) {
+        e.preventDefault();
+        $('#AllowedForums').find('option:selected').remove();
+
+    });
+        $("#btn-submit").on('click', function (e) {
+        $('#AllowedForums option').prop('selected', true);
+    });
+        });
+    </script>
+}

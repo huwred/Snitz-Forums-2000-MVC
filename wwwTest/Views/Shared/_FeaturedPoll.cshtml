@@ -1,0 +1,16 @@
+﻿@using SnitzDataModel
+@model WWW.ViewModels.PollViewModel
+
+@{
+    Layout = null;
+}
+@if (Model.Voted)
+{
+    @Html.DisplayFor(m=>m.Poll,new{panel="panel-primary",featured=true})
+}
+else
+{
+    @Html.EditorFor(m=>m.Poll,new{panel="panel-primary",featured=true})
+}
+
+

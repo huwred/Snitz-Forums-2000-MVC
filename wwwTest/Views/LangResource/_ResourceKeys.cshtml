@@ -1,0 +1,16 @@
+﻿@model List<LangResources.Models.ResourceEntry>
+
+@{ Layout = null;}
+
+        <div class="panel panel-primary" id="resource-list">
+            <div class="panel-heading">Resource Keys</div>
+            <div class="panel-body bg-silver" >
+                <label>@ViewBag.ResSet</label>
+                <div class="list-group bg-white" style="max-height:300px; overflow-y: scroll;overflow-x: hidden;">
+                    @foreach (var langres in Model.Where(r => r.Culture == "en").OrderBy(r=>r.Name))
+                    {
+                        <a href="#" class="list-group-item resource-string" data-id="@langres.Name" data-set="@ViewBag.ResSet">@langres.Name</a>
+                    }
+                </div>
+            </div>
+        </div>

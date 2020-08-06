@@ -1,0 +1,80 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@model WWW.Models.ProfileEditModel
+
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
+    <h4 class="modal-title">@ResourceManager.GetLocalisedString("tipUploadAvatar", "Tooltip")</h4>
+</div>
+<div class="modal-body" style="min-width: 360px;">
+    <section id="avatar-upload-box">
+        @using (Ajax.BeginForm("_Upload", "Avatar",
+            new AjaxOptions() { HttpMethod = "POST" },
+            new { enctype = "multipart/form-data", id = "avatar-upload-form" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="input-group">
+                <span class="input-group-btn">
+                    <span class="btn btn-primary btn-file" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipUploadAvatar", "Tooltip")">
+                        @ResourceManager.GetLocalisedString("btnUpload", "labels")
+                        <input type="file" name="files">
+                    </span>
+                </span>
+                <input class="form-control" type="text" readonly="" />
+            </div>
+            <div class="upload-file-notice">
+                <span id="avatar-max-size">@String.Format(ResourceManager.GetLocalisedString("maxFileSize", "labels"), ClassicConfig.GetValue("INTMAXFILESIZE"))</span><br />
+                <span id="avatar-allowed-types">@String.Format(ResourceManager.GetLocalisedString("allowedFiles", "labels"), ClassicConfig.GetValue("STRIMAGETYPES"))</span>
+            </div>
+        }
+        <div class="upload-progress col-md-6 hidden">
+            <div class="upload-percent-value pull-left">0%</div>
+            <div class="upload-percent-bar pull-left"></div>
+        </div>
+        <div id="upload-status"></div>
+    </section>
+    <section id="avatar-crop-box" class="hidden">
+        <p>
+            <div id="target-pane" class="">
+                <img id="crop-avatar-target" alt="Uploaded image" />
+            </div>
+            <div id="preview-pane" class="">
+                <div class="preview-container">
+                    <img class="jcrop-preview" alt="Preview" />
+                </div>
+            </div>
+        </p>
+        <p></p>
+    </section>
+    <div id="avatar-result" class="hidden">
+        <img alt="Final Image" />
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-default" onclick=" saveAvatar() ">@ResourceManager.GetLocalisedString("btnSave", "labels")</button>
+</div>
+
+<script>
+$(function () {
+    if (typeof $('#avatar-upload-form') !== undefined) {
+        initAvatarUpload();
+        $('#avatar-upload-form input:file').on("change", function (e) {
+            var files = e.currentTarget.files;
+            for (var x in files) {
+                if (files[x].name != "item" && typeof files[x].name != "undefined") {
+                    if (files[x].size <= maxSizeInBytes) {
+                        // Submit the selected file
+                        $('#avatar-upload-form .upload-file-notice').removeClass('bg-danger');
+                        $('#avatar-upload-form').submit();
+                    } else {
+                        // File too large
+                        $('#avatar-upload-form .upload-file-notice').addClass('bg-danger');
+                    }
+                }
+            }
+        });
+    }
+});    
+
+</script>

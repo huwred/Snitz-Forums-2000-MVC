@@ -1,0 +1,190 @@
+﻿@using LangResources.Utility
+@using Microsoft.Ajax.Utilities
+@using Snitz.Base
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using SnitzDataModel.Models
+@using WWW.Helpers
+@using WWW.Views.Helpers
+@model SnitzDataModel.Models.Topic
+
+@{
+    int hottopicount = 0;
+    if (ClassicConfig.GetIntValue("STRHOTTOPIC") == 1)
+    {
+        hottopicount = ClassicConfig.GetIntValue("INTHOTTOPICNUM");
+    }
+
+    var tracked = SnitzCookie.Tracked(Model.Id.ToString());
+    bool newPosts;
+    if (tracked != null)
+    {
+        var today = DateTime.UtcNow.ToString("yyyyMM");
+        newPosts = (today + tracked).ToDateTime() < Model.LastPostDate;
+        if ((DateTime)ViewData["LastVisitDateTime"] > Model.LastPostDate)
+        {
+            SnitzCookie.ClearTracking(Model.Id.ToString());
+            newPosts = (DateTime)ViewData["LastVisitDateTime"] < Model.LastPostDate;
+        }
+
+    }
+    else
+    {
+        newPosts = (DateTime)ViewData["LastVisitDateTime"] < Model.LastPostDate;
+    }
+
+    //string forumsubject = Model.Forum != null ? Model.Forum.Subject : Model.ForumSubject;
+    bool allowrating = Model.Forum != null ? Model.Forum.AllowTopicRating : Model.ForumAllowRating == 1;
+    allowrating = allowrating && Model.AllowRating == 1 && ClassicConfig.GetIntValue("INTTOPICRATING", 0) == 1;
+    string unmoderatedClass = "";
+    int replies = Model.ReplyCount;
+    var searchterms = ViewData["Terms"];
+    int pagesize = Config.TopicPageSize;
+    string forumtitle = ResourceManager.GetLocalisedString("lblOldPosts", "labels");
+
+    string rolecssLP = Roles.IsUserInRole(Model.LastPostAuthorName, "Administrator") ? "administrator" : Roles.IsUserInRole(Model.LastPostAuthorName, "Moderator") ? "moderator" : "member";
+    string rolecssAU = Roles.IsUserInRole(Model.PostAuthorName, "Administrator") ? "administrator" : Roles.IsUserInRole(Model.PostAuthorName, "Moderator") ? "moderator" : "member";
+
+    string postsclass = "ico_topic_read";
+    if (newPosts)
+    {
+        postsclass = "ico_topic_unread";
+
+    }
+
+    switch (Model.PostStatus)
+    {
+        case Enumerators.PostStatus.UnModerated:
+            unmoderatedClass = "topic-unmoderated";
+            break;
+        case Enumerators.PostStatus.OnHold:
+            unmoderatedClass = "topic-onhold";
+            break;
+        case Enumerators.PostStatus.Draft:
+            unmoderatedClass = "topic-draft";
+            break;
+        case Enumerators.PostStatus.Closed:
+            postsclass = "ico_topic_read_locked";
+            break;
+    }
+
+
+
+    if (User.IsAdministrator() || User.IsForumModerator(Model.ForumId))
+    {
+        replies += Model.UnmoderatedReplyCount.GetValueOrDefault(0);
+        if (Model.UnmoderatedReplyCount.GetValueOrDefault(0) > 0)
+        {
+            unmoderatedClass = "topic-unmoderated";
+            postsclass = "ico_topic_unmoderated";
+        }
+    }
+
+    if (Context.Request.Cookies.AllKeys.Contains("topic-pagesize") && ClassicConfig.GetValue("STRTOPICPAGESIZES", Config.DefaultPageSize.ToString()).Split(',').Count() > 1)
+    {
+        var pagesizeCookie = Context.Request.Cookies["topic-pagesize"];
+        if (pagesizeCookie != null)
+        {
+            pagesize = Convert.ToInt32(pagesizeCookie.Value);
+        }
+    }
+    if (Model.IsSticky == 1)
+    {
+        postsclass = postsclass.Replace("_topic", "_sticky");
+    }
+    if (hottopicount > 0)
+    {
+        if (Model.ReplyCount >= hottopicount)
+        {
+            postsclass += "_hot";
+        }
+    }
+    if (Model.LastPostAuthorId == WebSecurity.CurrentUserId && String.IsNullOrWhiteSpace(unmoderatedClass))
+    {
+        postsclass += "_mine";
+    }
+    forumtitle = ResourceManager.GetLocalisedString(postsclass, "icoTooltip");
+    if (!String.IsNullOrWhiteSpace(unmoderatedClass))
+    {
+        forumtitle = postsclass.Replace("_mine", "");
+        forumtitle += "_" + unmoderatedClass;
+        forumtitle = ResourceManager.GetLocalisedString(forumtitle, "icoTooltip");
+    }
+    switch (Model.PostStatus)
+    {
+        case Enumerators.PostStatus.UnModerated:
+            postsclass = "ico_topic_unmoderated";
+            break;
+        case Enumerators.PostStatus.OnHold:
+            postsclass = "ico_topic_onhold";
+            break;
+    }
+
+    bool hasevent = false;
+    if (ClassicConfig.GetIntValue("INTCALEVENTS") == 1)
+    {
+        hasevent = (bool)CustomAssemblyResolver.ExecuteMethod("SnitzEvents", "SnitzEvents.Helpers.Methods", "HasEvent", new object[] { Model.Id });
+    }
+    if (hasevent)
+    {
+        postsclass = "ico_topic_event";
+        if (newPosts)
+        {
+            postsclass = "ico_topic_event_unread";
+        }
+    }
+    if (Model.IsPoll == 1)
+    {
+        postsclass = "ico_topic_poll";
+        if (newPosts)
+        {
+            postsclass = "ico_topic_poll_unread";
+        }
+    }
+
+}
+@if (Model.PostStatus != Enumerators.PostStatus.Draft || (Model.PostStatus == Enumerators.PostStatus.Draft && Model.AuthorId == SnitzMembership.WebSecurity.CurrentUserId))
+{
+    <li class="row @ViewBag.bg recent-topic" data-val="@Model.ForumSubject" data-id="@Model.ForumId">
+        <dl class="icon @unmoderatedClass">
+            <dt class="col-xs-8 col-md-7">
+                <span class="@postsclass " data-title="@forumtitle" data-toggle="tooltip"></span>
+                <div class="list-inner">
+                    <a href="@Url.Action("Posts", "Topic", new {id = Model.GenerateSlug(), pagenum = 1, archived = Model.Archived, terms = searchterms})" data-toggle="popover" class="topictitle" data-lastpost="@Model.Id" data-original-title='@Html.FormatBbCode(Model.Subject, false)'>@Html.FormatBbCode(Model.Subject, false)</a><br>
+                    <span class="text-muted">@ResourceManager.GetLocalisedString("lblPostedBy", "labels") </span>@Html.ActionLink(" " + Model.PostAuthorName, "UserProfile", "Account", new { id = Model.PostAuthorName }, new { title = ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip"), data_toggle = "tooltip", @class = rolecssAU })
+                    @ResourceManager.GetLocalisedString("lblin", "labels") @Html.ActionLink(@Model.ForumSubject, "Posts", "Forum", new { id = Model.ForumId, pagenum = 1, archived = Model.Archived }, new { title = ResourceManager.GetLocalisedString("tipViewForum", "Tooltip"), data_toggle = "tooltip" }) @Html.Timeago(Model.Date)
+                <div class="r-lastpost-container">
+                    
+                    <a href="@Url.Action("Posts", "Topic", new {id = Model.GenerateSlug(), pagenum = -1, archived = Model.Archived})" title="@ResourceManager.GetLocalisedString("tipLastPost", "Tooltip")" data-toggle="popover" data-lastpost="@Model.LastPostReplyId" class="r-lastpost"><i class="fa fa-arrow-right"></i></a>
+                </div>
+
+                </div>
+            </dt>
+            <dd class="posts hidden-xs hidden-sm col-md-1">@replies <dfn>Replies</dfn></dd>
+            <dd class="posts hidden-xs hidden-sm col-md-1">@Model.ViewCount <dfn>Views</dfn></dd>
+            <dd class="lastpost col-xs-4 col-sm-3 col-md-2">
+                <span>
+                    <span class="text-muted">@ResourceManager.GetLocalisedString("lblLastPost", "labels") @ResourceManager.GetLocalisedString("lblPostedBy", "labels")&nbsp;</span>@Html.ActionLink(Model.LastPostAuthorName, "UserProfile", "Account", new { id = Model.LastPostAuthorName }, new { data_title = ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip"), data_toggle = "tooltip", @class = rolecssLP })
+                    @if (Model.LastPostReplyId > 0)
+                    {
+                        <span class="fa fa-search lastpost-hint faded" tooltip-title="click to preview last post" data-toggle="popover" data-lastpost="@Model.LastPostReplyId" data-title="@ResourceManager.GetLocalisedString("tipLastPostPreview", "Tooltip")"></span> 
+                        <a href="@Url.Action("Posts", "Topic", new {id = Model.GenerateSlug(), pagenum = -1, archived = Model.Archived})#@Model.LastPostReplyId" data-toggle="tooltip" class="lastpost-last" data-title="@ResourceManager.GetLocalisedString("tipLastPost", "Tooltip")"><i class="fa fa-1_5x fa-arrow-right"></i></a>
+                    }
+                    <br>@Html.Timeago(Model.LastPostDate)
+                </span>
+                @if (allowrating)
+                {
+                    <input id="star-rating-demo" value="@Model.GetTopicRating()" type="number" class="rating" min=0 max=5 step=0.1 data-size="xs" />
+                }
+            </dd>
+            <dd class="mark hidden-xs topic-btns">
+                @{
+                    Html.RenderPartial("_TopicButtons", Model, this.ViewData);
+                }
+            </dd>
+
+        </dl>
+
+    </li>
+}

@@ -1,0 +1,13 @@
+﻿@model SnitzDataModel.Models.SpamFilter
+<div class="form-group">
+    @Html.HiddenFor(m=>m.Id)
+    <div class="col-xs-8">
+        @Html.TextBoxFor(m=>m.SpamServer,new {@class="form-control"})
+    </div>
+    
+    <div class="col-xs-4">
+        @Html.ActionLink(" ", "DeleteSpamDomain","Admin",new {id = Model.Id},new{@class="fa fa-trash fa-1_5x", title="Delete Domain",data_toggle="tooltip"})
+        @Html.ActionLink(" ", "SaveSpamDomain","Admin",new {id = Model.Id, domain="xxxxxx"},new{@class="fa fa-save fa-1_5x save-lnk", title="Save Changes",data_toggle="tooltip"})
+        <input type="checkbox" value="@Model.Id" name="del-spam-check" />
+    </div>
+</div>

@@ -1,0 +1,71 @@
+﻿@using SnitzConfig
+@using WWW.Views.Helpers
+@model WWW.Models.ProfileEditModel
+
+<div class="padding-md row-fluid clearfix">
+    <div class="col-xs-12 col-sm-5">
+        <div class="form-group">
+            @if (ClassicConfig.GetValue("STRAIM") == "1")
+            {
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Profile.AIM, new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.Profile.AIM, new { @class = "form-control ltr", @placeholder = "Instant Messenger ID" })
+                </div>
+            }
+            @if (ClassicConfig.GetValue("STRICQ") == "1")
+            {
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Profile.ICQ, new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.Profile.ICQ, new { @class = "form-control ltr", @placeholder = "ICQ username" })
+                </div>
+            }
+            @if (ClassicConfig.GetValue("STRMSN") == "1")
+            {
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Profile.MSN, new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.Profile.MSN, new { @class = "form-control ltr", @placeholder = "Skype username" })
+                </div>
+            }
+            @if (ClassicConfig.GetValue("STRYAHOO") == "1")
+            {
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Profile.YAHOO, new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.Profile.YAHOO, new { @class = "form-control ltr", @placeholder = "Yahoo iD" })
+                </div>
+            }
+        </div>
+    </div>
+    <div class="col-sm-1"></div>
+    <div class="col-xs-12 col-sm-6 form-horizontal">
+
+        @if (ClassicConfig.GetValue("STRHOBBIES") == "1")
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.Profile.Hobbies, new { @class = "control-label" })
+                @Html.TextAreaFor(model => model.Profile.Hobbies, new { @class = "form-control", @rows = 5, @placeholder = "Hobbies" })
+            </div>
+        }
+        @if (ClassicConfig.GetValue("STRLNEWS") == "1")
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.Profile.LatestNews, new { @class = "control-label" })
+                @Html.TextAreaFor(model => model.Profile.LatestNews, new { @class = "form-control", @rows = 5, @placeholder = "Latest News" })
+            </div>
+        }
+
+        @if (ClassicConfig.GetValue("STRQUOTE") == "1")
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.Profile.FavQuote, new { @class = "control-label" })
+                @Html.TextAreaFor(model => model.Profile.FavQuote, new { @class = "form-control", @rows = 5, @placeholder = "Favourite quote" })
+
+            </div>
+
+        }
+    </div>
+    <div class="col-xs-12">
+        @{ Html.RenderPartial("_FormButtons"); }
+
+    </div>
+
+</div>

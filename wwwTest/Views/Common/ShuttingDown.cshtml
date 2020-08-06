@@ -1,0 +1,8 @@
+﻿@model dynamic
+
+@{ Layout = null;}
+
+@if (ViewBag.ShutDown > 0)
+{
+    <div class="featured">Forum is shutting down in @ViewBag.ShutDown Minutes</div>
+}

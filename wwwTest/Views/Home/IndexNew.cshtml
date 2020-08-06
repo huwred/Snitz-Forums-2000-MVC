@@ -1,0 +1,185 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@using SnitzCore.Utility
+@using SnitzDataModel.Models
+@using WWW.Views.Helpers
+@model  List<Category>
+
+@{
+    ViewBag.Title = Config.ForumTitle;
+    bool isRighToLeft = SessionData.Get<bool>("isRighToLeft");
+    var colLayout = ClassicConfig.GetValue("STRLAYOUT");
+}
+
+<!-- Meta data for page -->
+@section pageMeta
+{
+    <meta name="description" content="@Config.ForumDescription.Replace("&amp;","&")">
+    <meta name="author" content="@(Config.ForumTitle ?? ClassicConfig.ForumTitle)">
+    <!-- default image for facebook links -->
+    <meta property="og:image" content="@{String.Format("{0}Content/Themes/snitz/images/logo.png", Config.ForumUrl);}" />
+
+}
+@section styles{
+
+    @Styles.Render("~/Content/bootstrapnews.css")
+
+}
+
+@if (ClassicConfig.GetIntValue("STRSHOWANNOUNCE") == 1)
+{
+    @section featured {
+        <section class="featured">
+            <h3 class="text-warning">@ResourceManager.GetLocalisedString("lblAnnounce", "labels")</h3>
+            @Html.FormatBbCode(ClassicConfig.GetValue("STRANNOUNCE"))
+        </section>
+    }
+}
+@if (User.Identity.IsAuthenticated)
+{
+    @section topicsearchbox{
+        @* search box for small screens, replaces sidebox search so search appears at top of page *@
+        <div class="side-box">
+            @{ Html.RenderPartial("_SearchForums", new ViewDataDictionary(this.ViewData) { { "Category", -1 }, { "ForumId", -1 }, { "langStr", "SearchAllPosts" } }); }
+        </div>
+    }
+}
+<!-- Banner Ads -->
+@if (ClassicConfig.GetIntValue("intTopBanner") == 1)
+{
+    @section topBanner{
+        <div id="banner-ad-top" class="hidden-xs">@{ Html.RenderAction("TopBanner", "Ad"); }</div>
+    }
+}
+
+@if (ClassicConfig.GetIntValue("intSideBanner") == 1)
+{
+    @section sideBanner{
+        <div id="banner-ad-side" class="hidden-xs">@{ Html.RenderAction("SideBanner", "Ad"); }</div>
+    }
+}
+
+<!-- side Column Content -->
+@section sidebox{
+    <div class="side-box">
+        @{ Html.RenderPartial("_SearchForums", new ViewDataDictionary(this.ViewData) { { "Category", -1 }, { "ForumId", -1 }, { "langStr", "SearchAllPosts" } }); }
+    </div>
+    @Html.Partial("_RightColumn", new ViewDataDictionary(this.ViewData) { { "show", new List<string>() { "online", "donate", "recent","widget|PVOutput" } } })
+
+}
+@if (colLayout == "left")
+{
+    @section thirdcol{
+
+        @Html.Partial("_LeftColumn")
+
+    }
+}
+
+<!-- Main Content below -->
+@if (ClassicConfig.GetIntValue("STRGROUPCATEGORIES") == 1)
+{
+    using (Html.BeginForm())
+    {
+        Html.RenderPartial("_CategoryFilter");
+    }
+}
+
+<div id="wrap-body">
+    <div class="chunk-main">
+        <div id="forumlist">
+            <div id="forumlist-inner">
+                
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    @Html.DisplayFor(x => x[i], "CategoryNew")
+                }
+                
+            </div>
+        </div>
+    </div>
+    <div class="chunk-main">
+        @if (ClassicConfig.GetValue("STRSHOWSTATISTICS") == "1")
+        {
+            Html.RenderAction("ForumStats");
+        }
+    </div>
+    @if (ClassicConfig.GetIntValue("INTEMBEDED", 0) == 0)
+    {
+        <div class="chunk-main">
+            <div class="panel panel-body">
+                <div class="col-xs-12 col-md-6">
+                    @if (ClassicConfig.GetValue("STRMANAGEFILES") == "1")
+                    {
+                        <div class="side-box" id="releases">
+                            @{ Html.RenderAction("Downloads", "Files"); }
+                        </div>
+                    }
+                </div>
+                <div class="col-xs-12 col-md-6">
+
+                </div>
+            </div>
+        </div>
+
+    }
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+
+        $(document)
+            .ready(function () {
+                $('.admin-btns').each(function() {
+                    if ($(this).is(':empty') || !$(this).html().trim()) {
+                        var parent = $(this).closest('dl');
+                        $("dt", parent).attr("class", "col-xs-10 col-md-7");
+                    }
+                });
+                $(document).on("click", ".fa-minus-square",
+                    function () {
+                        var active = $(this).attr('data-val');
+                        var panels = localStorage.panels === undefined ? new Array() : JSON.parse(localStorage.panels);
+                        if ($.inArray(active, panels) == -1) {
+                            panels.push(active);
+                        }
+                        localStorage.panels = JSON.stringify(panels);
+                        $("#" + active).hide();
+                        $(this).attr("class", "fa fa-plus-square");
+
+                    });
+                $(document).on("click", ".fa-plus-square",
+                    function () {
+                        var active = $(this).attr('data-val');
+                        var panels = localStorage.panels === undefined ? new Array() : JSON.parse(localStorage.panels);
+                        var elementIndex = $.inArray(active, panels);
+                        if (elementIndex !== -1) //check the array
+                        {
+                            panels.splice(elementIndex, 1); //remove item from array
+                        }
+                        localStorage.panels = JSON.stringify(panels); //save array on localStorage
+                        $("#" + active).show();
+                        $(this).attr("class", "fa fa-minus-square");
+                    });
+
+                var panels = localStorage.panels === undefined ? new Array() : JSON.parse(localStorage.panels); //get all panels
+                for (var i in panels) {
+                    if (panels.hasOwnProperty(i)) { //<-- panel is the name of the localstorage object
+                        if ($("#" + panels[i]).find("div .new-posts").length !== 0) {
+                            //if it has new posts then don't collapse it
+                        } else {
+                            $("#" + panels[i]).hide();
+                            //get header
+
+                            var header = $("#" + panels[i]).prev();
+                            var headlink = header.find("[data-val='" + panels[i] + "']");
+                            //alert(headlink.attr("class"));
+                            headlink.attr("class", "fa fa-plus-square");
+                        }
+
+                    }
+                }
+            });
+
+    </script>
+}

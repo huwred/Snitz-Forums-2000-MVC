@@ -1,0 +1,14 @@
+﻿@using LangResources.Utility
+@model List<string>
+
+<div class="form-group">
+    <div class="theme-changer">
+        <select id="theme-change" class="form-control" title="@ResourceManager.GetLocalisedString("tipChangeTheme", "Tooltip")" data-toggle="tooltip">
+            @foreach (var theme in Model)
+            {
+                
+                <option name="@theme" value="@theme.ToLower()" id="@theme">@theme Theme</option>
+            }
+        </select>
+    </div>
+</div>

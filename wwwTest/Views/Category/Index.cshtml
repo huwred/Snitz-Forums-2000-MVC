@@ -1,0 +1,88 @@
+﻿@using LangResources.Utility
+@using Snitz.Base
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model SnitzDataModel.Models.Category
+
+@{
+    ViewBag.Title = Model.Title;
+}
+
+@section breadcrumb
+{
+    @Html.BuildBreadcrumbNavigation()
+}
+@section sidebox{
+    @Html.Partial("_RightColumn", new ViewDataDictionary(this.ViewData) { { "show", new List<string>() { "poll", "catlist", "online" } } })
+
+}
+@if (User.IsAdministrator())
+{
+    <div class="row-fluid flip text-right">
+        @if (Model.Status == Enumerators.Status.Open)
+        {
+            @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfLockCategory", "labels"), "Lock", "Category", new { id = Model.Id, @lock = true }, "fa fa-lock fa-1_5x")
+        }
+        else
+        {
+            @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfUnlockCategory", "labels"), "Lock", "Category", new { id = Model.Id, @lock = false }, "fa fa-unlock-alt fa-1_5x")
+        }
+        @Html.ActionLink(" ", "CreateEdit", "Category", new { id = Model.Id }, new { @class = "fa fa-edit fa-1_5x modal-link", title = ResourceManager.GetLocalisedString("tipEditCategory", "Tooltip"), data_toggle = "tooltip" })
+        @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfDeleteCategory", "labels"), "Delete", "Category", new { id = Model.Id }, "fa fa-trash-o fa-1_5x")
+        @Html.ActionLink(" ", "CreateEdit", "Forum", new { id = 0, catid = Model.Id }, new { @class = "fa fa-folder-o fa-1_5x", title = ResourceManager.GetLocalisedString("tipNewForum", "Tooltip"), data_toggle = "tooltip" })
+    </div>
+
+}
+
+
+<div class="panel panel-primary panel-category">
+    <div class="panel-heading clearfix">
+        <div class="row-fluid">
+            <div class="col-xs-6">@Model.Title</div>
+            <div class="col-xs-1">@ResourceManager.GetLocalisedString("lblTopics", "labels").</div>
+            <div class="col-xs-1">@ResourceManager.GetLocalisedString("lblPosts", "labels").</div>
+            <div class="col-xs-4 flip text-right">
+                @Html.CategorySubscriptionLink(Model.Id, User)
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="panel-group">
+            @for (int i = 0; i < Model.Forums.Count; i++)
+            {
+                var forumid = Model.Forums[i].Id;
+                switch (Model.Forums[i].PrivateForums)
+                {
+                    case Enumerators.ForumAuthType.All:
+                        @Html.DisplayFor(x => x.Forums[i], "Forum")
+                        break;
+                    case Enumerators.ForumAuthType.AllowedMembers:
+                    case Enumerators.ForumAuthType.AllowedMemberPassword:
+                        if (User.IsInRole("FORUM_" + forumid) || User.IsAdministrator() || User.IsForumModerator(forumid))
+                        {
+                            @Html.DisplayFor(x => x.Forums[i], "Forum")
+                        }
+                        break;
+                    case Enumerators.ForumAuthType.Members:
+                    case Enumerators.ForumAuthType.MembersPassword:
+                        @Html.DisplayFor(x => x.Forums[i], "Forum")
+                        break;
+                    case Enumerators.ForumAuthType.PasswordProtected:
+                        @Html.DisplayFor(x => x.Forums[i], "Forum")
+                        break;
+
+                }
+
+            }
+        </div>
+    </div>
+    <div class="panel-footer">
+        <div class="row pager-bottom">
+            <div class="col-xs-6 col-xs-offset-3"></div>
+            <div class="col-xs-3">@{ Html.RenderPartial("_JumpTo"); }</div>
+        </div>
+    </div>
+</div>
+

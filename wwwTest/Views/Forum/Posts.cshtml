@@ -1,0 +1,238 @@
+﻿@using BbCodeFormatter
+@using LangResources.Utility
+@using SnitzConfig
+@using Snitz.Base
+@using SnitzCore.Extensions
+@using SnitzDataModel.Models
+@using WWW.Views.Helpers
+@using System.Web.Mvc.Html
+@using SnitzDataModel.Extensions
+@using WWW.Helpers
+@using WebSecurity = SnitzMembership.WebSecurity
+
+@model WWW.ViewModels.ForumViewModel
+@{
+    ViewBag.Title = ResourceManager.GetLocalisedString("lblForum", "labels") + ":" + Model.Forum.Subject;
+    ViewBag.CategorySubscription = Model.Forum.Category.Subscription;
+    ViewBag.ForumSubscription = Model.Forum.Subscription;
+
+    if (ClassicConfig.GetIntValue("STRTHANKS") == 1)
+    {
+        ViewData["allowThanks"] = CustomAssemblyResolver.ExecuteMethod("Snitz.PostThanks", "PostThanks.Helpers.Methods", "Allowed", new object[] { Model.Forum.Id });
+    }
+
+}
+
+@section pageMeta
+{
+    <meta name="description" content="@BbCodeProcessor.StripTags(Model.Forum.Description).TruncateLongString(160)">
+    <meta name="author" content="@(Config.ForumTitle ?? ClassicConfig.ForumTitle)">
+}
+@section styles
+{
+    @if (Model.Forum.PrivateForums.In(Enumerators.ForumAuthType.All))
+    {
+        <link rel="alternate" type="application/rss+xml" title="@ResourceManager.GetLocalisedString("tipForumRss", "Tooltip") @ViewBag.Title" href="@Url.Action("Forum","RSSFeed", new {id=Model.Id})" />
+    }
+    @if (ViewBag.RequireAuth)
+    {
+        <style>
+            .modal-backdrop.in {
+                opacity: 1.0
+            }
+        </style>
+    }
+    <style>
+        .forum-strap {
+            display: none;
+        }
+
+    </style>
+}
+
+@section breadcrumb
+{
+    @Html.BuildBreadcrumbNavigation()
+
+}
+@section topicsearchbox
+{
+    <div class="side-box">
+    @{ Html.RenderPartial("_Search", new SearchModel() { ForumId = @Model.Forum.Id }); }
+        </div>
+}
+@section sidebox
+{
+    <div class="panel-group">
+        <div class="side-box hidden-xs hidden-sm">
+            @{ Html.RenderPartial("_Search", new SearchModel() { ForumId = @Model.Forum.Id }); }
+        </div>
+        @Html.Partial("_RightColumn", new ViewDataDictionary(this.ViewData) { { "show", new List<string>() { "catlist", "online" } } })
+ 
+    </div>
+
+}
+    <div class="container-fluid col-lg-11 padding-none">
+        @if (!ViewBag.RequireAuth)
+        {
+
+            if (WebSecurity.IsAuthenticated)
+            {
+        <div class="row-fluid clearfix">
+            @if (User.IsAdministrator() || User.IsForumModerator(Model.Id))
+            {
+                <a title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipNewTopic", "Tooltip")" data-toggle="tooltip" href="@Url.Action("PostMessage", "Topic", new { id = 0, forumid = Model.Id, catid = Model.Forum.CatId })" class="btn btn-sm btn-primary hidden-sm hidden-md hidden-lg pull-right flip">
+                    <i class="fa fa-comment"></i>
+                    <span class="">@LangResources.Utility.ResourceManager.GetLocalisedString("btnNewTopic", "labels")</span>
+                </a>
+                <div class="hidden-xs col-md-6 flip text-right pull-right flip">
+                    @(Model.Forum.Status == Enumerators.PostStatus.Open ? Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfLockForum", "labels"), "Lock", "Forum", new { id = Model.Id, catid = Model.Forum.CatId, @lock = true }, "fa fa-lock fa-1_5x") : Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfUnlockForum", "labels"), "Lock", "Forum", new { id = Model.Id, catid = Model.Forum.CatId, @lock = false }, "fa fa-unlock-alt fa-1_5x"))
+                    @if (User.IsAdministrator())
+                    {
+                        @Html.ActionLink(" ", "CreateEdit", "Forum", new { id = Model.Id, catid = Model.Forum.CatId }, new { @class = "fa fa-edit fa-1_5x", title = ResourceManager.GetLocalisedString("tipEditForum", "Tooltip"), data_toggle = "tooltip" })
+                        @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfDeleteForum", "labels"), "Delete", "Forum", new { id = Model.Id, catid = Model.Forum.CatId }, "fa fa-trash-o fa-1_5x")
+                        if (ClassicConfig.GetValue("STRARCHIVESTATE") == "1")
+                        {
+                            @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfArchiveForum", "labels"), "ArchiveForum", "Forum", new { id = Model.Id }, "fa fa-archive fa-1_5x")
+                        }
+                    }
+                </div>
+            }
+            else if (WebSecurity.IsAuthenticated && Model.Forum.Status == Enumerators.PostStatus.Open)
+            {
+                <a title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipNewTopic", "Tooltip")" data-toggle="tooltip" href="@Url.Action("PostMessage", "Topic", new { id = 0, forumid = Model.Id, catid = Model.Forum.CatId })" class="btn btn-sm btn-primary hidden-sm hidden-md hidden-lg pull-right flip">
+                    <i class="fa fa-comment"></i>
+                    <span class="">@LangResources.Utility.ResourceManager.GetLocalisedString("btnNewTopic", "labels")</span>
+                </a>
+            }
+
+        </div>
+            }
+                <div class="input-group col-xs-9 col-lg-4 pull-right flip padding-none ">
+                    @if (WebSecurity.IsAuthenticated && Model.Forum.Status == Enumerators.PostStatus.Open)
+                    {
+                        <span class="input-group-btn hidden-xs">
+                            <a title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipNewTopic", "Tooltip")" data-toggle="tooltip" href="@Url.Action("PostMessage", "Topic", new {id = 0, forumid = Model.Id, catid = Model.Forum.CatId})" class="btn btn-primary">
+                                <i class="fa fa-comment"></i>
+                                <span class="hidden-xs">@LangResources.Utility.ResourceManager.GetLocalisedString("btnNewTopic", "labels")</span>
+                            </a>
+                        </span>
+
+                    }
+                    @using (Html.BeginForm("Posts","Forum",new{id=Model.Id,pagenum=Model.Page}))
+                    {
+                        @Html.EnumDropDownListFor(model => model.DefaultDays, new { onchange = "$(this).closest('form').submit();", @class = "form-control" }, "")
+                    }
+                    <span class="input-group-addon hidden-xs">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            if (ClassicConfig.GetIntValue("INTPOLLS") == 1 && Model.Forum.PollsAuth != Enumerators.PollAuth.Disallow)
+                            {
+                                <span class="input-group-text">
+                                    @if ((Model.Forum.PollsAuth == Enumerators.PollAuth.Members && WebSecurity.IsAuthenticated) || (Model.Forum.PollsAuth == Enumerators.PollAuth.AdminModerators && (User.IsAdministrator() || User.IsModerator())))
+                                    {
+                                        <a title="@ResourceManager.GetLocalisedString("tipAddPoll", "Poll")" data-toggle="tooltip" href="@Url.Action("PostMessage", "Topic", new {id = 0, forumid = Model.Forum.Id, catid = Model.Forum.CatId, ispoll = true})">
+                                            <i class="fa fa-bar-chart fa-1_5x"></i>
+                                            @*<span class="hidden-xs hidden-sm">New Poll</span>*@
+                                        </a>
+                                    }
+                                </span>
+                            }
+                            if (Model.Forum.Subscription == Enumerators.Subscription.ForumSubscription)
+                            {
+                                <span class="input-group-text">@Html.ForumSubscriptionLink(Model.Forum.CatId, Model.Id, User)</span>
+                            }
+
+                        }
+                        @if (ClassicConfig.GetIntValue("INTFORUMRSS") == 1)
+                        {
+                            <span class="input-group-text" id="basic-addon2">
+                                @Html.ActionLink(" ", "Forum", "RssFeed", new { id = Model.Id }, new { @class = "fa fa-rss fa-1_5x", title = ResourceManager.GetLocalisedString("tipForumRss", "Tooltip"), data_toggle = "tooltip" })
+                            </span>
+
+                        }
+                    </span>
+
+                </div>
+            <h5 class="title clearfix">
+                
+                @ResourceManager.GetLocalisedString("lblTopics", "labels")
+                <small>
+                    @if (Model.Forum.Status == Enumerators.PostStatus.Closed)
+                    {
+                        @Html.Raw("<i class='fa fa-lock'></i> " + ResourceManager.GetLocalisedString("ForumLocked", "labels"))
+                    }
+                </small>
+            </h5>
+                    <hr class="title" />
+                    <div id="topic-panel">
+                        @if (Convert.ToInt32(Model.PageCount) > 1)
+                        {
+                            <div class="row">
+                                <div class="col-xs-9">@{ Html.RenderPartial("_Pager"); }</div>
+                                <div class="col-xs-3 pull-right flip padding-xs">@{ Html.RenderPartial("_PageSize"); }</div>
+                            </div>
+
+                        }
+
+                        @if (Model.StickyTopics != null && Model.StickyTopics.Any() && Model.Page < 2)
+                        {
+                            <div id="sticky-panel" class="topiclist forums">
+                                @Html.DisplayFor(m => m.StickyTopics)
+                            </div>
+                        }
+
+                        <div class="topiclist">@Html.DisplayFor(m => m.Topics)</div>
+                        <div class="row pager-bottom">
+
+                            @if (Convert.ToInt32(Model.PageCount) > 1)
+                            {
+                                <div class="col-xs-6 col-md-8">@{ Html.RenderPartial("_Pager"); }</div>
+                                <div class="col-xs-3 col-md-2">@{ Html.RenderPartial("_JumpTo"); }</div>
+                                <div class="col-xs-3 col-md-2 pull-right flip padding-xs">@{ Html.RenderPartial("_PageSize"); }</div>
+                            }
+                            else
+                            {
+                                <div class="col-xs-12 pull-right flip">@{ Html.RenderPartial("_JumpTo"); }</div>
+                            }
+                        </div>
+                        <div class="row-fluid hidden-xs">
+                            @{ Html.RenderPartial("_IconGlossary"); }
+                        </div>
+                    </div>
+
+                    }
+                </div>
+
+@section scripts
+{
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('.admin-btns').each(function () {
+                if ($(this).is(':empty') || !$(this).html().trim()) {
+                    var parent = $(this).closest('dl');
+                    $("dt", parent).attr("class", "col-xs-10 col-md-7");
+                }
+            });
+            $("span.input-group-addon").filter(function () {
+                return this.innerText.length === 0;
+            }).hide();
+
+            if ('@ViewBag.RequireAuth' === 'True') {
+                window.passwordDialog('@Url.Action("Posts", "Forum",new{id=Model.Forum.Id,pagenum=1})', '@Model.Forum.Id', '0');
+            }
+
+            $('.collapse')
+                .on('shown.bs.collapse', function () {
+                    $(this).parent().find(".fa-plus").removeClass("fa-plus").addClass("fa-minus");
+                    $(this).parent().find(".btn-primary").removeClass("hidden");
+                })
+                .on('hidden.bs.collapse', function () {
+                    $(this).parent().find(".fa-minus").removeClass("fa-minus").addClass("fa-plus");
+                    $(this).parent().find(".btn-primary").addClass("hidden");
+                });
+
+        });
+    </script>
+}

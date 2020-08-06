@@ -1,0 +1,75 @@
+﻿@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model WWW.ViewModels.UserProfileViewModel
+<div class="padding-md row-fluid form-horizontal">
+    <div class="panel panel-info">
+        <div class="panel-body">
+            <div class="form-group">
+                <div class="col-xs-3">
+                    @Html.LabelFor(model => model.Profile.CreatedDate, DisplayOptions.Humanize)
+                </div>
+                <div class="control-label col-xs-2 pull-left flip">
+                    @Html.DisplayDateFor(model => model.Profile.Created, true)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-3">
+                    @Html.LabelFor(model => model.Profile.LastVisitDate, DisplayOptions.Humanize)
+                </div>
+                <div class="control-label col-xs-2 pull-left flip">
+                    @Html.DisplayDateFor(model => model.Profile.LastVisit, true)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-3">
+                    @Html.LabelFor(model => model.Profile.LastPostDate, DisplayOptions.Humanize)
+                </div>
+                <div class="control-label col-xs-2 pull-left flip">
+                    @Html.DisplayDateFor(model => model.Profile.LastPost, true)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-3">
+                    @Html.LabelFor(model => model.Profile.Locked, DisplayOptions.Humanize)
+                </div>
+                <div class="control-label col-xs-2 pull-left flip">
+                    @Html.DisplayFor(model => model.Profile.Locked)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-3">
+                    @Html.LabelFor(model => model.Profile.MLev, DisplayOptions.Humanize)
+                </div>
+                <div class="control-label col-xs-2 pull-left flip">
+                    @Html.DisplayNameForEnum(Model.Profile.MLev)
+
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-3">
+                    @Html.LabelFor(model => model.Profile.AllowSendEmail, DisplayOptions.Humanize)
+                </div>
+                <div class="control-label col-xs-2 pull-left flip">
+                    @Html.DisplayFor(model => model.Profile.AllowSendEmail)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-3">
+                    @Html.LabelFor(model => model.IsApproved, DisplayOptions.Humanize)
+                </div>
+                <div class="control-label col-xs-2 pull-left flip">
+                    @Html.DisplayFor(model => model.IsApproved)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-3">
+                    @Html.LabelFor(model => model.IsLockedout, DisplayOptions.Humanize)
+                </div>
+                <div class="control-label col-xs-2 pull-left flip">
+                    @Html.DisplayFor(model => model.IsLockedout)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

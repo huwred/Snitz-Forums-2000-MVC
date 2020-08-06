@@ -1,0 +1,73 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30225.117
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnitzCore", "SnitzCore\SnitzCore.csproj", "{1AECEA23-B1DC-47C5-8A13-2A3CBF11BE13}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snitz.Base", "Snitz.Base\Snitz.Base.csproj", "{48355CCF-D5AB-48A7-AA8C-25BF581D1737}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LangResources", "LangResources\LangResources.csproj", "{CC53562A-AD0E-4354-A036-858C47DCFC1C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnitzDataModel", "SnitzDataModel\SnitzDataModel.csproj", "{879E284F-A8AD-4D0C-BFD3-329FDD077B10}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BbCodeFormatter", "BbCodeFormatter\BbCodeFormatter.csproj", "{9FB6A878-7FF1-49EC-8172-371EF94567B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnitzMembership", "SnitzMembership\SnitzMembership.csproj", "{ABF9C840-6A07-4E5E-A4D2-29045E4AB063}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wwwTest", "wwwTest\wwwTest.csproj", "{7D57ED30-D065-4A29-9A59-CACDC3871B54}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnitzApi", "SnitzApi\SnitzApi.csproj", "{1787A15F-CB6B-47F7-BF24-C51C9F9492E9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1AECEA23-B1DC-47C5-8A13-2A3CBF11BE13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AECEA23-B1DC-47C5-8A13-2A3CBF11BE13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AECEA23-B1DC-47C5-8A13-2A3CBF11BE13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AECEA23-B1DC-47C5-8A13-2A3CBF11BE13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48355CCF-D5AB-48A7-AA8C-25BF581D1737}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48355CCF-D5AB-48A7-AA8C-25BF581D1737}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48355CCF-D5AB-48A7-AA8C-25BF581D1737}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48355CCF-D5AB-48A7-AA8C-25BF581D1737}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC53562A-AD0E-4354-A036-858C47DCFC1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC53562A-AD0E-4354-A036-858C47DCFC1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC53562A-AD0E-4354-A036-858C47DCFC1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC53562A-AD0E-4354-A036-858C47DCFC1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{879E284F-A8AD-4D0C-BFD3-329FDD077B10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{879E284F-A8AD-4D0C-BFD3-329FDD077B10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{879E284F-A8AD-4D0C-BFD3-329FDD077B10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{879E284F-A8AD-4D0C-BFD3-329FDD077B10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FB6A878-7FF1-49EC-8172-371EF94567B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FB6A878-7FF1-49EC-8172-371EF94567B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FB6A878-7FF1-49EC-8172-371EF94567B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FB6A878-7FF1-49EC-8172-371EF94567B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABF9C840-6A07-4E5E-A4D2-29045E4AB063}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABF9C840-6A07-4E5E-A4D2-29045E4AB063}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABF9C840-6A07-4E5E-A4D2-29045E4AB063}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABF9C840-6A07-4E5E-A4D2-29045E4AB063}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D57ED30-D065-4A29-9A59-CACDC3871B54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D57ED30-D065-4A29-9A59-CACDC3871B54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D57ED30-D065-4A29-9A59-CACDC3871B54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D57ED30-D065-4A29-9A59-CACDC3871B54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1787A15F-CB6B-47F7-BF24-C51C9F9492E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1787A15F-CB6B-47F7-BF24-C51C9F9492E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1787A15F-CB6B-47F7-BF24-C51C9F9492E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1787A15F-CB6B-47F7-BF24-C51C9F9492E9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {51B4E2D1-2B54-4F96-8596-7D75F11737F0}
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		Policies = $0
+		$0.DotNetNamingPolicy = $1
+		$1.DirectoryNamespaceAssociation = PrefixedHierarchical
+		$0.StandardHeader = $2
+		$2.Text = @/*\n####################################################################################################################\n##\n## ${FileNameWithoutExtension}\n##   \n## Author:\t\t${AuthorName}\n## Copyright:\t${CopyrightHolder}\n## based on code from Snitz Forums 2000 (c) Huw Reddick, Michael Anderson, Pierre Gorissen and Richard Kinser\n## Created:\t\t${Date}\n## \n## The use and distribution terms for this software are covered by the \n## Eclipse License 1.0 (http://opensource.org/licenses/eclipse-1.0)\n## which can be found in the file Eclipse.txt at the root of this distribution.\n## By using this software in any fashion, you are agreeing to be bound by \n## the terms of this license.\n##\n## You must not remove this notice, or any other, from this software.  \n##\n#################################################################################################################### \n*/
+	EndGlobalSection
+EndGlobal

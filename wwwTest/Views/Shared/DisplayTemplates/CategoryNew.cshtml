@@ -1,0 +1,57 @@
+﻿@using LangResources.Utility
+@using Snitz.Base
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model SnitzDataModel.Models.Category
+
+@{
+    Model.Forums = Model.Forums.OrderBy(f => f.Order).ThenBy(f => f.Subject).ToList();
+
+    bool hasMatch = User.CanViewCategory(Model.Id, null);
+
+}
+@if (hasMatch)
+{
+    <div class="forabg">
+        <div class="inner">
+            <ul class="topiclist">
+                <li class="header">
+                    <dl class="icon">
+                        <dt><div class="list-inner"><i class="fa fa-minus-square" data-val="@Model.Id"></i> @Html.ActionLink(Model.Title, "Index", "Category", new { id = Model.GenerateSlug() }, null)</div></dt>
+                    </dl>
+                </li>
+            </ul>
+            <ul class="topiclist forums" id="@Model.Id">
+                @for (int i = 0; i < Model.Forums.Count; i++)
+                {
+                    var id = Model.Forums[i].Id;
+                    switch (Model.Forums[i].PrivateForums)
+                    {
+                        case Enumerators.ForumAuthType.All:
+                            @Html.DisplayFor(x => x.Forums[i], "ForumNew")
+                            break;
+                        case Enumerators.ForumAuthType.AllowedMembers:
+                        case Enumerators.ForumAuthType.AllowedMemberPassword:
+                            if (User.IsInRole("FORUM_" + id) || User.IsAdministrator() || User.IsForumModerator(id))
+                            {
+                                @Html.DisplayFor(x => x.Forums[i], "ForumNew")
+                            }
+                            break;
+                        case Enumerators.ForumAuthType.Members:
+                        case Enumerators.ForumAuthType.MembersPassword:
+                            @Html.DisplayFor(x => x.Forums[i], "ForumNew")
+                            break;
+                        case Enumerators.ForumAuthType.PasswordProtected:
+                            @Html.DisplayFor(x => x.Forums[i], "ForumNew")
+                            break;
+                    }
+
+
+                }
+            </ul>
+
+        </div>
+    </div>
+
+}

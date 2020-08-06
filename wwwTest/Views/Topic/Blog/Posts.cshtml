@@ -1,0 +1,274 @@
+﻿
+@using Cyotek.Web.BbCodeFormatter
+@using LangResources.Utility
+@using Snitz.Base
+@using SnitzConfig
+@using SnitzDataModel
+@using SnitzDataModel.Extensions
+@using SnitzDataModel.Models
+@using WWW.Views.Helpers
+@model WWW.ViewModels.TopicViewModel
+@section pageMeta
+{
+    <meta name="description" content="@BbCodeProcessor.StripTags(Model.Topic.Message).TruncateLongString(360)">
+    <meta name="author" content="@Model.Topic.Author.Username">
+}
+@section styles
+{
+    @Html.Raw(Config.ThemeCss("star-rating.min.css"))
+    @if (ViewBag.RequireAuth)
+    {
+        <style>
+            .modal-backdrop.in {
+                opacity: 1.0;
+            }
+
+        </style>    
+    }
+    @Html.Raw(Config.ThemeCss("highlight.min.css"))
+
+}
+
+
+@{
+    ViewBag.Title = ResourceManager.GetLocalisedString("ttlBlog", "BlogPages") + " - " + Html.FormatBbCode(Model.Topic.Subject,false) + " | " + (Config.ForumTitle ?? ClassicConfig.ForumTitle);
+    ViewBag.Topic = Model.Topic;
+    ViewBag.hasForumSubscription = User.ForumSubscriptions().Contains(Model.ForumId);
+    ViewBag.ForumSubscription = Enumerators.Subscription.None;
+    if (Model.Forum != null)
+    {
+        ViewBag.ForumSubscription = Model.Forum.Subscription;
+    }
+   
+}
+@section breadcrumb
+{
+    @Html.BuildBreadcrumbNavigation()
+
+}
+@section topicsearchbox
+{
+    @* search box for small screens, replaces sidebox search so search appears at top of page *@
+    <h5>@ResourceManager.GetLocalisedString("srchBlog", "BlogPages")</h5>
+    @{ Html.RenderPartial("_Search", new SearchModel() {TopicId = Model.Id}); }
+}
+@section sidebox
+{
+    <div class="panel-group">
+        <div class="side-box">
+            <h5>@ResourceManager.GetLocalisedString("srchBlog", "BlogPages")</h5>
+            @{ Html.RenderPartial("_Search", new SearchModel() { TopicId = Model.Id }); }
+        </div>
+        <div class="side-box">
+
+            @Html.Action("BlogList", new {id = Model.Forum.Id})
+        </div>
+        <div class="side-box">
+            @{ Html.RenderPartial("_CategoryForumList"); }
+        </div>
+    </div>
+}
+
+@if (!ViewBag.RequireAuth)
+{
+    <div class="btn-toolbar padding-sm">
+        @if (ClassicConfig.GetIntValue("STRSHOWPRINTERFRIENDLY") == 1)
+        {
+            <a title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipPrintBlog", "BlogPages")" data-toggle="tooltip" href="@Url.Action("Print", "Topic", new { id = Model.Id, archived = Model.Topic.Archived })" class="btn btn-sm btn-primary" target="_blank">
+                <i class="fa fa-print"></i>
+                <span class="hidden-xs hidden-sm">@LangResources.Utility.ResourceManager.GetLocalisedString("btnPrintBlog", "BlogPages")</span>
+            </a>
+        }
+    <div class="pull-right flip text-right">
+        @{ Html.RenderPartial("_SocialMedia"); }
+    </div>
+        
+    </div>
+    
+    <hr class="title" />
+    <div class="row-fluid clearfix">
+        @{ Html.RenderPartial(ClassicConfig.GetIntValue("INTNEWLAYOUT", 0) == 1 ? "Blog/_TopicNew" : "Blog/_Topic", Model.Topic, this.ViewData); }
+    </div>
+    if (Model.PageCount > 0)
+            {
+                <div class="col-xs-9 col-xs-offset-2 clearfix">
+                    <h4>@ResourceManager.GetLocalisedString("lblComments", "BlogPages")</h4>
+                    <hr class="title" />
+                </div>
+         <div class="col-xs-9 col-xs-offset-3 clearfix">
+             <div class="nopadding pull-left flip">@{ Html.RenderPartial("_Pager", Model); }</div>
+         </div>
+
+         <div class="row-fluid accordion-group clearfix" id="comments">
+             @foreach (var item in Model.Replies)
+             {
+                 item.ForumStatus = Model.Forum.Status;
+                 if (item.topic == null)
+                 {
+                     item.topic = Model.Topic;
+                 }
+                 <a id="@item.Id"></a>
+                 if (ClassicConfig.GetIntValue("INTNEWLAYOUT", 0) == 1)
+                 {
+
+                     Html.RenderPartial("Blog/_ReplyNew", item, this.ViewData);
+
+                 }
+                 else
+                 {
+                     Html.RenderPartial("Blog/_Reply", item, this.ViewData);
+                 }
+
+             }
+        </div>
+         <div class="col-xs-9 col-xs-offset-3 clearfix">
+            <div class="pull-left flip">@{ Html.RenderPartial("_Pager", Model); }</div>
+         </div>
+     }
+    else
+    {
+        if (Model.Forum.Status == Enumerators.PostStatus.Open && !Config.DisablePosting && Model.Topic.Archived != 1)
+        {
+            if (User.Identity.IsAuthenticated && ClassicConfig.ShowQuickReply && Model.Topic.PostStatus == Enumerators.PostStatus.Open)
+            {
+                <div class="col-xs-9 col-xs-offset-2" id="qr-container">
+                    @{Html.RenderPartial("Blog/_QuickReply", ViewData["quickreply"],new ViewDataDictionary(this.ViewData) { {"noToolbar", true }});}
+                </div>
+            }
+        }
+    }
+    if (Model.Forum.Status == Enumerators.PostStatus.Open && !Config.DisablePosting && Model.Topic.Archived != 1)
+    {
+        if (User.Identity.IsAuthenticated && ClassicConfig.ShowQuickReply && Model.Topic.PostStatus == Enumerators.PostStatus.Open)
+        {
+            <div class="row-fluid" id="qr-dummy" style="display: none;">
+                @{Html.RenderPartial("Blog/_QuickReply", ViewData["quickreply"],new ViewDataDictionary(this.ViewData) { {"noToolbar", true }});}
+            </div>
+        }
+    }
+}
+
+@{Html.RenderPartial("_ModalPopups");}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/dropzonejs")
+    @Scripts.Render("~/Scripts/highlight.pack.min.js") 
+    @*@Scripts.Render("~/Scripts/highlightjs-line-numbers.min.js")*@
+    @Scripts.Render("~/Scripts/star-rating.min.js") 
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            try {
+                Dropzone.autoDiscover = false;
+            } catch (e) {
+                console.log('Dropzone not loaded');
+            } 
+            $(".bbc-codecontent").each(function () {
+                var test = $(this).html().replace(/&nbsp;/g, ' ').replace(/<br.*?>/g, '&#13;&#10;');
+                $(this).html(test);
+            });
+            $('.modal').on('hidden.bs.modal', function () {
+                $(this).removeData('bs.modal');
+
+                //if ($(this).attr("id") == '#modal-sendpm') {
+                //    $("#pm-editorDiv").html('');
+                //}
+            });
+            //var dir = 'ltr';
+            //if (window.SnitzVars.forumlang === 'fa') {
+            //    dir = 'rtl';
+            //}
+            $("#PostRating").rating({ language: window.SnitzVars.forumlang, 'showClear': true, 'showCaption': false, rtl: false });
+            // Insert Emoticon
+            $("body").on('click','.emote', function (event) {
+                var emotiText = $(event.target).attr("rel");
+                //get the id of the textarea
+                var parentDiv = $(this).closest("[id^=editorDiv]");
+                var textId = parentDiv.find(".bbc-code-editor")[0].id;
+                $("#" + textId).insertAtCaret(emotiText);
+            });
+            if ('@ViewBag.RequireAuth' === 'True') {
+                window.passwordDialog('@Url.Action("Posts", "Topic", new { id = Model.Topic.Id, pagenum = 1 })', '@Model.Topic.ForumId', '@Model.Topic.Id');
+                                    }
+                            
+
+            $('#approve-btn').on('click', function () {
+                $('#modal-container').modal('hide');
+            });
+            $('input[type="submit"]').prop('disabled', true);
+
+            $('body').on('keyup', '.bbc-code-editor', function () {
+                var textareaValue = $(this).val();
+                $(this).css('background-color', '#ffffff');
+                if (textareaValue !== '') {
+                    $('input[type="submit"]').attr('disabled', false);
+                } else {
+                    $('input[type="submit"]').attr('disabled', true);
+                }
+            });
+            $('body').on('mouseup', ".emote", function () {
+                $('input[type="submit"]').attr('disabled', false);
+                $('textarea').css('background-color', '#ffffff');
+            });
+            $('body').on('mouseup', ".btn", function () {
+                $('input[type="submit"]').attr('disabled', false);
+            });
+
+            if (window.location.hash) {
+                // smooth scroll to the anchor id
+                if (window.location.hash !== '#0') {
+                    $('html, body').animate({
+                        scrollTop: ($(window.location.hash).offset().top - 50) + 'px'
+                    }, 500, 'swing');
+                }
+            }
+            setConditionalValidators();
+        });
+            //QuickReply POST
+        $('body').on('click', 'input[type="submit"]', function (event) {
+                alert("submit me");
+
+                $(this).attr('disabled', 'disabled');
+                var serializedForm = $("#quickpostForm").serialize();
+                event.preventDefault();
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("PostMessage", "Reply")',
+                    data: serializedForm,
+                    dataType: "json",
+                    success: function (data) {
+                        var arr = data.responseText.split('|');
+
+                        window.location.href = arr[1];
+                        window.location.hash = arr[2];
+                        window.location.reload(true);
+                        return false;
+
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        //debugger;
+                        var decoded = JSON.parse(xhr.responseText);
+                        BootstrapDialog.alert(
+                        {
+                            title: "Error ",
+                            message: decoded
+                        });
+                    }
+                });
+
+            });
+
+        $('.collapse').on('show.bs.collapse', function() {
+            $('#comments').find('.collapse.in').collapse('hide');
+
+        });
+        $('.collapse').on('shown.bs.collapse', function (e) {
+            //alert("load quick reply here");
+            $(this).html($('#qr-dummy').html());
+            lazyload();
+
+        }).on('hidden.bs.collapse', function () {
+            $(this).html('');
+        });
+    </script>
+}

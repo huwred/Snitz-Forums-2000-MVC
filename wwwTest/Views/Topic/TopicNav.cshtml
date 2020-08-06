@@ -1,0 +1,16 @@
+﻿@using LangResources.Utility
+@model WWW.ViewModels.TopicNavViewModel
+
+<div class="row text-center">
+@if (Model.NextTopic > 0)
+{
+    <a href="@Url.Action("Posts", "Topic", new { id = Model.NextTopic })" title="@ResourceManager.GetLocalisedString("tipPrevTopic", "Tooltip")" data-toggle="tooltip">
+        <i class="fa fa-1_5x fa-chevron-left"></i></a>
+}
+@Html.Raw("&nbsp;")
+@if (Model.PreviousTopic > 0)
+{
+    <a href="@Url.Action("Posts", "Topic", new { id = Model.PreviousTopic })" title="@ResourceManager.GetLocalisedString("tipNextTopic", "Tooltip")" data-toggle="tooltip">
+        <i class="fa fa-1_5x fa-chevron-right"></i></a>
+}
+</div>

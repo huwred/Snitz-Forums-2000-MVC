@@ -1,0 +1,220 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@using WWW.Views.Helpers
+@model WWW.Models.RegisterModel
+
+
+<fieldset class="form-signin" id="profile_account" style="display: none">   
+    <legend class="form-signin-heading">@ResourceManager.GetLocalisedString("personalInfo", "Registration")</legend>
+    <div id="div-account">
+        @if (Model.RegisterFields.ContainsKey("Firstname"))
+        {
+            <div class="form-group">
+                @Html.LabelFor(m => m.Profile.Firstname,new { @class = "sr-only" })
+                @Html.TextBoxFor(m =>  m.Profile.Firstname,new{@class="form-control", placeholder = ResourceManager.GetLocalisedString("ProfileFirstname", "General") })
+            </div>               
+        }
+        @if (Model.RegisterFields.ContainsKey("Lastname"))
+        {
+            <div class="form-group">
+                @Html.LabelFor(m => m.Profile.Lastname,new { @class = "sr-only" })
+                @Html.TextBoxFor(m =>  m.Profile.Lastname,new{@class="form-control", placeholder = ResourceManager.GetLocalisedString("ProfileLastname", "General") })
+
+            </div>               
+        }
+        @if (Model.RegisterFields.ContainsKey("Age"))
+        {
+            <div class="form-group">
+                @Html.LabelFor(m => m.Profile.Age,new { @class = "sr-only" })
+                @Html.TextBoxFor(m =>  m.Profile.Age,new{@class="form-control", placeholder = ResourceManager.GetLocalisedString("ProfileAge", "General") })
+            </div>                                                            
+        }
+        @if (Model.RegisterFields.ContainsKey("DateOfBirth"))
+        {
+            var currentyear = DateTime.Now.Year;
+            var startyear = currentyear - 90;
+            <div class="form-group">
+                @Html.LabelFor(m => m.Profile.DateOfBirth,new { @class = "col-sm-12" })
+                <div class="col-sm-4 padding-xs">@Html.DropDownList("Year", new SelectList(Enumerable.Range(startyear, currentyear - startyear), -1), " Year ", new { @class = "form-control padding-xs dobdropdown", id="ddYear" })</div>
+                <div class="col-sm-4 padding-xs">@Html.DropDownList("Month", new SelectList(Enumerable.Range(1, 12), -1), " Month ", new { @class = "form-control padding-xs dobdropdown", id="ddMonth", disabled="disabled" })</div>
+                <div class="col-sm-4 padding-xs">@Html.DropDownList("Day", new SelectList(Enumerable.Range(1, 31), -1), " Day ", new { @class = "form-control padding-xs dobdropdown", id="ddDay", disabled="disabled" })</div>
+                
+                @Html.HiddenFor(m=>m.Profile.DateOfBirth,new{@class="form-control"})
+                
+                <input type="hidden" id="MinAge" value="@ClassicConfig.MinAge"/>
+            </div>                                                            
+        }
+        @if (Model.RegisterFields.ContainsKey("Gender"))
+        {
+            <div class="form-group">
+                @Html.LabelFor(m => m.Profile.Gender,new { @class = "sr-only" })
+                @{
+                    List<SelectListItem> listItems = new List<SelectListItem>();
+                    listItems.Add(new SelectListItem
+                    {
+                        Text = ResourceManager.GetLocalisedString("GenderList_Male", "General"),
+                        Value = ResourceManager.GetLocalisedString("GenderList_Male", "General")
+                    });
+                    listItems.Add(new SelectListItem
+                    {
+                        Text = ResourceManager.GetLocalisedString("GenderList_Female", "General"),
+                        Value = ResourceManager.GetLocalisedString("GenderList_Female", "General")
+                    });
+                    listItems.Add(new SelectListItem
+                    {
+                        Text = ResourceManager.GetLocalisedString("GenderList_Other", "General"),
+                        Value = ResourceManager.GetLocalisedString("GenderList_Other", "General")
+                    });
+                }
+                @Html.DropDownListFor(model => model.Profile.Gender, listItems, ResourceManager.GetLocalisedString("DefaultSelect", "General"), new { @class = "form-control" })
+
+            </div>
+        }
+        @if (Model.RegisterFields.ContainsKey("MaritalStatus"))
+        {
+            <div class="form-group">
+                @Html.LabelFor(m => m.Profile.MaritalStatus,new { @class = "sr-only" })
+                @Html.TextBoxFor(m =>  m.Profile.MaritalStatus,new{@class="form-control", placeholder = ResourceManager.GetLocalisedString("ProfileMarStatus", "General") })
+
+            </div>     
+        }
+        @if (Model.RegisterFields.ContainsKey("City"))
+        {
+            <div class="form-group">
+                @Html.LabelFor(m => m.Profile.City,new { @class = "sr-only" })
+                @Html.TextBoxFor(m =>  m.Profile.City,new{@class="form-control", placeholder = ResourceManager.GetLocalisedString("ProfileCity", "General") })
+
+            </div>     
+        }
+        @if (Model.RegisterFields.ContainsKey("State"))
+        {
+            <div class="form-group">
+                @Html.LabelFor(m => m.Profile.State,new { @class = "sr-only" })
+                @Html.TextBoxFor(m =>  m.Profile.State,new{@class="form-control", placeholder = ResourceManager.GetLocalisedString("ProfileState", "General") })
+
+            </div>     
+        }
+        @if (Model.RegisterFields.ContainsKey("Country"))
+        {
+            <div class="form-group">
+                @Html.LabelFor(m => m.Profile.Country,new { @class = "sr-only" })
+                @Html.DropDownListFor(model => model.Profile.Country, (IEnumerable<SelectListItem>)ViewBag.CountryList, ResourceManager.GetLocalisedString("DefaultSelect", "General"), new{@class="form-control"}) 
+            </div>     
+        }
+    </div>
+    <div class="form-actions pull-right flip">
+        <button class="btn btn-primary btn-next" type="button" id="btn-account">@ResourceManager.GetLocalisedString("Next", "General")</button>
+    </div>
+</fieldset>
+
+<fieldset class="form-signin" id="profile_extras" style="display: none;">
+    <legend class="form-signin-heading">@ResourceManager.GetLocalisedString("Options", "labels")</legend>
+    <div id="div-extras">
+        @if (Model.RegisterFields.ContainsKey("PhotoUrl"))
+        {
+            <div class="form-group">
+                @Html.LabelFor(m => m.Profile.PhotoUrl,new { @class = "sr-only" })
+                @Html.TextBoxFor(m =>  m.Profile.PhotoUrl,new{@class="form-control", placeholder = ResourceManager.GetLocalisedString("ProfileAvatar", "General") })
+
+            </div>
+        }
+        @if (Model.RegisterFields.ContainsKey("Occupation"))
+        {
+            <div class="form-group">
+                @Html.LabelFor(m => m.Profile.Occupation,new { @class = "sr-only" })
+                @Html.TextBoxFor(m =>  m.Profile.Occupation,new{@class="form-control", placeholder = ResourceManager.GetLocalisedString("ProfileOccupation", "General"), @rows=3})
+
+            </div>     
+        }
+        @if (Model.RegisterFields.ContainsKey("Homepage"))
+        {
+            <div class="form-group">
+                @Html.LabelFor(m => m.Profile.Homepage,new { @class = "sr-only" })
+                @Html.TextBoxFor(m =>  m.Profile.Homepage,new{@class="form-control ltr", placeholder = ResourceManager.GetLocalisedString("ProfileHomePage", "General") })
+
+            </div>     
+        }
+        @if (Model.RegisterFields.ContainsKey("LatestNews"))
+        {
+            <div class="form-group">
+                @Html.LabelFor(m => m.Profile.LatestNews,new { @class = "sr-only" })
+                @Html.TextAreaFor(m =>  m.Profile.LatestNews,new{@class="form-control", placeholder = ResourceManager.GetLocalisedString("ProfileNews", "General") })
+
+            </div>                     
+        }
+        @if (Model.RegisterFields.ContainsKey("Biography"))
+        {
+            <div class="form-group">
+                @Html.LabelFor(m => m.Profile.Biography,new { @class = "sr-only" })
+                @Html.TextAreaFor(m =>  m.Profile.Biography,new{@class="form-control", placeholder = ResourceManager.GetLocalisedString("ProfileBio", "General"), @rows=3})
+
+            </div>
+        }
+        @if (Model.RegisterFields.ContainsKey("AIM"))
+        {
+            <div class="form-group">
+                @Html.LabelFor(m => m.Profile.AIM,new { @class = "sr-only" })
+                @Html.TextBoxFor(m =>  m.Profile.AIM,new{@class="form-control ltr", placeholder = "AIM User"})
+
+            </div>     
+        }
+        @if (Model.RegisterFields.ContainsKey("ICQ"))
+        {
+            <div class="form-group">
+                @Html.LabelFor(m => m.Profile.ICQ,new { @class = "sr-only" })
+                @Html.TextBoxFor(m =>  m.Profile.ICQ,new{@class="form-control ltr", placeholder = "ICQ User"})
+
+            </div>     
+        }
+        @if (Model.RegisterFields.ContainsKey("MSN"))
+        {
+            <div class="form-group">
+                @Html.LabelFor(m => m.Profile.MSN,new { @class = "sr-only" })
+                @Html.TextBoxFor(m =>  m.Profile.MSN,new{@class="form-control ltr", placeholder = "Skype username"})
+
+            </div>                
+        }
+        @if (Model.RegisterFields.ContainsKey("YAHOO"))
+        {
+            <div class="form-group">
+                @Html.LabelFor(m => m.Profile.YAHOO,new { @class = "sr-only" })
+                @Html.TextBoxFor(m =>  m.Profile.YAHOO,new{@class="form-control ltr", placeholder = "Yahoo username"})
+
+            </div>                
+        }    
+        @if (Model.RegisterFields.ContainsKey("Hobbies"))
+        {
+            <div class="form-group">
+                @Html.LabelFor(m => m.Profile.Hobbies,new { @class = "sr-only" })
+                @Html.TextAreaFor(m =>  m.Profile.Hobbies,new{@class="form-control", placeholder = ResourceManager.GetLocalisedString("ProfileHobby", "General"), @rows=3})
+
+            </div>                
+        }
+        @if (Model.RegisterFields.ContainsKey("FavQuote"))
+        {
+            <div class="form-group">
+                @Html.LabelFor(m => m.Profile.FavQuote,new { @class = "sr-only" })
+                @Html.TextAreaFor(m =>  m.Profile.FavQuote,new{@class="form-control", placeholder = ResourceManager.GetLocalisedString("ProfileQuote", "General"), @rows=3})
+
+            </div>                
+        }
+    </div>
+    <div class="form-actions pull-right flip">
+        <button class="btn btn-primary btn-next" type="button" id="btn-extras">@ResourceManager.GetLocalisedString("Next", "General")</button>
+    </div>
+</fieldset>
+
+@using (Html.BeginScripts())
+{
+    <script type="text/javascript">
+    $(document)
+        .ready(function() {
+
+            $("#form1")
+                .removeData("validator") /* added by the raw jquery.validate plugin */
+                .removeData("unobtrusiveValidation"); /* added by the jquery unobtrusive plugin */
+            setRequiredFields();
+            $.validator.unobtrusive.parse($("#form1"));
+        });
+    </script>
+}

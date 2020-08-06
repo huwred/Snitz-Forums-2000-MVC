@@ -1,0 +1,33 @@
+﻿@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model IEnumerable<SnitzDataModel.Models.Subscriptions>
+
+@foreach (var category in Model.GroupBy(s => s.Category))
+{
+    if (!String.IsNullOrWhiteSpace(category.Key))
+    {
+        <tr class="bg-info"><td colspan="5" class="bg-category">Category: @Html.ActionLink(category.Key, "Posts", "Forum", new { id = category.First().ForumId }, new { @class = "title" })</td></tr>
+
+    }
+    else
+    {
+        <tr class="bg-info"><td colspan="5" class="bg-category">Category: Deleted Categories</td></tr>
+
+    }
+
+    foreach (var subscriptions in category)
+    {
+        <tr>
+            <td colspan="2">
+                @Html.Raw("Category Level Subscription")
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => subscriptions.Username)
+            </td>
+            <td>@Html.DisplayFor(modelItem => subscriptions.UserStatus)</td>
+            <td>@Html.ActionLinkConfirm("Remove subscription", "RemoveSubscription", "Admin", new { id = subscriptions.Id }, "fa fa-trash-o fa-1_5x") <input name="del-subs" value="@subscriptions.Id" type="checkbox" class="selector" /></td>
+        </tr>
+    }
+
+}

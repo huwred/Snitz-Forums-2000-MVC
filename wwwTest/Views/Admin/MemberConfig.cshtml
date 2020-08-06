@@ -1,0 +1,362 @@
+﻿
+@using BbCodeFormatter
+@using LangResources.Utility
+@using SnitzConfig
+@using WWW.Views.Helpers
+@model WWW.ViewModels.AdminViewModel
+@{
+    ViewBag.PageTitle = "Membership Configuration";
+    ViewBag.ActivePage = ResourceManager.GetLocalisedString("mnuAdminMember", "labels");
+    ViewBag.SubmitButton = ResourceManager.GetLocalisedString("btnSave", "labels");
+    //Layout = "~/Views/Admin/_Layout.cshtml";
+}
+
+<div class="panel panel-primary panel-body">
+    <div class="row-fluid">
+        <a href="@Url.Action("CreateUser")" class="btn btn-sm btn-success modal-link pull-right flip">Create User</a>
+        <h5>Create User Account</h5>
+
+
+    </div>
+</div>
+<div class="content">
+
+
+    <ul class="nav nav-tabs" role="tablist" id="membersTab">
+        <li class="active"><a href="#member-profile" role="tab" data-toggle="tab">Account</a></li>
+        <li><a href="#member-extras" role="tab" data-toggle="tab">Profile</a></li>
+        <li><a href="#member-registration" role="tab" data-toggle="tab">Registration</a></li>
+        <li><a href="#private-messaging" role="tab" data-toggle="tab">Private Messaging</a></li>
+    </ul>
+@using (Ajax.BeginForm("SaveMemberConfig", "Admin", null,
+    new AjaxOptions
+    {
+        OnSuccess = "OnSuccess",
+        OnFailure = "OnFailure",
+        UpdateTargetId = "MemberConfig",
+        HttpMethod = "POST",
+        LoadingElementId = "loading"
+    }, new { @class = "form-horizontal" }))
+{
+
+
+    <div class="tab-content">
+    <div class="tab-pane active" id="member-profile" role="tabpanel" aria-labelledby="profile-tab">
+        <div class="form-group">
+            <label for="fullname" class="control-label col-xs-3">Fullname:</label>
+            <div class="col-xs-6">
+                <input id="fullname" type="checkbox" class="yesno-checkbox" name="fullname" data-size="mini" checked="@(ClassicConfig.GetValue("STRFULLNAME") == "1")" />
+                <input id="fullnameReq" type="checkbox" class="yesno-checkbox" name="req-fullname" data-size="mini" data-on-text="Required" data-off-text="Optional" checked="@(ClassicConfig.GetValue("STRREQFULLNAME") == "1")" />
+                @Html.HelpLink("STRFULLNAME")
+            </div>
+        </div>
+        <div class="form-group prof-age">
+            <label for="age" class="control-label col-xs-3">Age:</label>
+            <div class="col-xs-6">
+                <input id="age" type="checkbox" class="yesno-checkbox" name="age" data-size="mini" checked="@(ClassicConfig.GetValue("STRAGE") == "1")" />
+                <input id="ageReq" type="checkbox" class="yesno-checkbox" name="req-age" data-size="mini" data-on-text="Required" data-off-text="Optional" checked="@(ClassicConfig.GetValue("STRREQAGE") == "1")" />
+                @Html.HelpLink("STRAGE")
+            </div>
+        </div>
+        <div class="form-group prof-dob">
+            <label for="dob" class="control-label col-xs-3">Date of Birth:</label>
+            <div class="col-xs-6">
+                <input id="dob" type="checkbox" class="yesno-checkbox" name="agedob" data-size="mini" checked="@(ClassicConfig.GetValue("STRAGEDOB") == "1")" />
+                <input id="dobReq" type="checkbox" class="yesno-checkbox" name="req-agedob" data-size="mini" data-on-text="Required" data-off-text="Optional" checked="@(ClassicConfig.GetValue("STRREQAGEDOB") == "1")" />
+                @Html.HelpLink("STRAGEDOB")
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="minage" class="control-label col-xs-3">Min Age:</label>
+            <div class="col-xs-4">
+                <input id="minage" type="number" class="form-control inline" name="min-age" value="@ClassicConfig.GetValue("STRMINAGE")" style="width: 70px;" />
+                @Html.HelpLink("STRMINAGE")
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="gender" class="control-label col-xs-3">Gender:</label>
+            <div class="col-xs-6">
+                <input id="gender" type="checkbox" class="yesno-checkbox" name="gender" data-size="mini" checked="@(ClassicConfig.GetValue("STRSEX") == "1")" />
+                <input id="genderReq" type="checkbox" class="yesno-checkbox" name="req-gender" data-size="mini" data-on-text="Required" data-off-text="Optional" checked="@(ClassicConfig.GetValue("STRREQSEX") == "1")" />
+                @Html.HelpLink("STRSEX")
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="marital" class="control-label col-xs-3">Marital Status:</label>
+            <div class="col-xs-6">
+                <input id="marital" type="checkbox" class="yesno-checkbox" name="marstatus" data-size="mini" checked="@(ClassicConfig.GetValue("STRMARSTATUS") == "1")" />
+                <input id="maritalReq" type="checkbox" class="yesno-checkbox" name="req-marstatus" data-size="mini" data-on-text="Required" data-off-text="Optional" checked="@(ClassicConfig.GetValue("STRREQMARSTATUS") == "1")" />
+                @Html.HelpLink("STRMARSTATUS")
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="city" class="control-label col-xs-3">City:</label>
+            <div class="col-xs-6">
+                <input id="city" type="checkbox" class="yesno-checkbox" name="city" data-size="mini" checked="@(ClassicConfig.GetValue("STRCITY") == "1")" />
+                <input id="cityReq" type="checkbox" class="yesno-checkbox" name="req-city" data-size="mini" data-on-text="Required" data-off-text="Optional" checked="@(ClassicConfig.GetValue("STRREQCITY") == "1")" />
+                @Html.HelpLink("STRCITY")
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="state" class="control-label col-xs-3">State:</label>
+            <div class="col-xs-6">
+                <input id="state" type="checkbox" class="yesno-checkbox" name="state" data-size="mini" checked="@(ClassicConfig.GetValue("STRSTATE") == "1")" />
+                <input id="stateReq" type="checkbox" class="yesno-checkbox" name="req-state" data-size="mini" data-on-text="Required" data-off-text="Optional" checked="@(ClassicConfig.GetValue("STRREQSTATE") == "1")" />
+                @Html.HelpLink("STRSTATE")
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="country" class="control-label col-xs-3">Country:</label>
+            <div class="col-xs-6">
+                <input id="country" type="checkbox" class="yesno-checkbox" name="country" data-size="mini" checked="@(ClassicConfig.GetValue("STRCOUNTRY") == "1")" />
+                <input id="countryReq" type="checkbox" class="yesno-checkbox" name="req-country" data-size="mini" data-on-text="Required" data-off-text="Optional" checked="@(ClassicConfig.GetValue("STRREQCOUNTRY") == "1")" />
+                @Html.HelpLink("STRCOUNTRY")
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane" id="member-extras" role="tabpanel" aria-labelledby="extras-tab">
+        <div class="tab-content row-fluid clearfix">
+            <div class="form-group">
+                <label for="picture" class="control-label col-xs-3">Avatar:</label>
+                <div class="col-xs-6">
+                    <input id="picture" type="checkbox" class="yesno-checkbox" name="picture" data-size="mini" checked="@(ClassicConfig.GetValue("STRPICTURE") == "1")" />
+                    <input id="pictureReq" type="checkbox" class="yesno-checkbox" name="req-picture" data-size="mini" data-on-text="Required" data-off-text="Optional" checked="@(ClassicConfig.GetValue("STRREQPICTURE") == "1")" />
+                    @Html.HelpLink("STRPICTURE")
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="occupation" class="control-label col-xs-3">Occupation:</label>
+                <div class="col-xs-6">
+                    <input id="occupation" type="checkbox" class="yesno-checkbox" name="occupation" data-size="mini" checked="@(ClassicConfig.GetValue("STROCCUPATION") == "1")" />
+                    <input id="occupationReq" type="checkbox" class="yesno-checkbox" name="req-occupation" data-size="mini" data-on-text="Required" data-off-text="Optional" checked="@(ClassicConfig.GetValue("STRREQOCCUPATION") == "1")" />
+                    @Html.HelpLink("STROCCUPATION")
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="homepage" class="control-label col-xs-3">Homepage:</label>
+                <div class="col-xs-6">
+                    <input id="homepage" type="checkbox" class="yesno-checkbox" name="homepage" data-size="mini" checked="@(ClassicConfig.GetValue("STRHOMEPAGE") == "1")" />
+                    <input id="homepageReq" type="checkbox" class="yesno-checkbox" name="req-homepage" data-size="mini" data-on-text="Required" data-off-text="Optional" checked="@(ClassicConfig.GetValue("STRREQHOMEPAGE") == "1")" />
+                    @Html.HelpLink("STRHOMEPAGE")
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="bio" class="control-label col-xs-3">Bio:</label>
+                <div class="col-xs-6">
+                    <input id="bio" type="checkbox" class="yesno-checkbox" name="bio" data-size="mini" checked="@(ClassicConfig.GetValue("STRBIO") == "1")" />
+                    <input id="bioReq" type="checkbox" class="yesno-checkbox" name="req-bio" data-size="mini" data-on-text="Required" data-off-text="Optional" checked="@(ClassicConfig.GetValue("STRREQBIO") == "1")" />
+                    @Html.HelpLink("STRBIO")
+                </div>
+            </div>
+            <!-- Messenger Links -->
+            <div class="form-group">
+                <label for="aim" class="control-label col-xs-3">AIM:</label>
+                <div class="col-xs-6">
+                    <input id="aim" type="checkbox" class="yesno-checkbox" name="aim" data-size="mini" checked="@(ClassicConfig.GetValue("STRAIM") == "1")" />
+                    <input id="aimReq" type="checkbox" class="yesno-checkbox" name="req-aim" data-size="mini" data-on-text="Required" data-off-text="Optional" checked="@(ClassicConfig.GetValue("STRREQAIM") == "1")" />
+                    @Html.HelpLink("STRAIM")
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="icq" class="control-label col-xs-3">ICQ:</label>
+                <div class="col-xs-6">
+                    <input id="icq" type="checkbox" class="yesno-checkbox" name="icq" data-size="mini" checked="@(ClassicConfig.GetValue("STRICQ") == "1")" />
+                    <input id="icqReq" type="checkbox" class="yesno-checkbox" name="req-icq" data-size="mini" data-on-text="Required" data-off-text="Optional" checked="@(ClassicConfig.GetValue("STRREQICQ") == "1")" />
+                    @Html.HelpLink("STRICQ")
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="msn" class="control-label col-xs-3">Skype (was MSN):</label>
+                <div class="col-xs-6">
+                    <input id="msn" type="checkbox" class="yesno-checkbox" name="msn" data-size="mini" checked="@(ClassicConfig.GetValue("STRMSN") == "1")" />
+                    <input id="msnReq" type="checkbox" class="yesno-checkbox" name="req-msn" data-size="mini" data-on-text="Required" data-off-text="Optional" checked="@(ClassicConfig.GetValue("STRREQMSN") == "1")" />
+                    @Html.HelpLink("STRMSN")
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="yahoo" class="control-label col-xs-3">YAHOO!:</label>
+                <div class="col-xs-6">
+                    <input id="yahoo" type="checkbox" class="yesno-checkbox" name="yahoo" data-size="mini" checked="@(ClassicConfig.GetValue("STRYAHOO") == "1")" />
+                    <input id="yahooReq" type="checkbox" class="yesno-checkbox" name="req-yahoo" data-size="mini" data-on-text="Required" data-off-text="Optional" checked="@(ClassicConfig.GetValue("STRREQYAHOO") == "1")" />
+                    @Html.HelpLink("STRYAHOO")
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="fav" class="control-label col-xs-3">Favorite Links:</label>
+                <div class="col-xs-6">
+                    <input id="fav" type="checkbox" class="yesno-checkbox" data-size="mini" name="favlinks" checked="@(ClassicConfig.GetValue("STRFAVLINKS") == "1")" />
+                    <input id="favReq" type="checkbox" class="yesno-checkbox" data-size="mini" name="req-favlinks" data-on-text="Required" data-off-text="Optional" checked="@(ClassicConfig.GetValue("STRREQFAVLINKS") == "1")" />
+                    @Html.HelpLink("STRFAVLINKS")
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="hobby" class="control-label col-xs-3">Hobbies:</label>
+                <div class="col-xs-6">
+                    <input id="hobby" type="checkbox" class="yesno-checkbox" data-size="mini" name="hobbies" checked="@(ClassicConfig.GetValue("STRHOBBIES") == "1")" />
+                    <input id="hobbyReq" type="checkbox" class="yesno-checkbox" data-size="mini" name="req-hobbies" data-on-text="Required" data-off-text="Optional" checked="@(ClassicConfig.GetValue("STRREQHOBBIES") == "1")" />
+                    @Html.HelpLink("STRHOBBIES")
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="news" class="control-label col-xs-3">Latest News:</label>
+                <div class="col-xs-6">
+                    <input id="news" type="checkbox" class="yesno-checkbox" data-size="mini" name="lnews" checked="@(ClassicConfig.GetValue("STRLNEWS") == "1")" />
+                    <input id="newsReq" type="checkbox" class="yesno-checkbox" data-size="mini" name="req-lnews" data-on-text="Required" data-off-text="Optional" checked="@(ClassicConfig.GetValue("STRREQLNEWS") == "1")" />
+                    @Html.HelpLink("STRLNEWS")
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="quote" class="control-label col-xs-3">Quote:</label>
+                <div class="col-xs-6">
+                    <input id="quote" type="checkbox" class="yesno-checkbox" data-size="mini" name="quote" checked="@(ClassicConfig.GetValue("STRQUOTE") == "1")" />
+                    <input id="quoteReq" type="checkbox" class="yesno-checkbox" data-size="mini" name="req-quote" data-on-text="Required" data-off-text="Optional" checked="@(ClassicConfig.GetValue("STRREQQUOTE") == "1")" />
+                    @Html.HelpLink("STRQUOTE")
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="quote" class="control-label col-xs-3">Recent Topics:</label>
+                <div class="col-xs-6">
+                    <input id="recenttopics" type="checkbox" class="yesno-checkbox" data-size="mini" name="recenttopics" checked="@(ClassicConfig.GetValue("STRRECENTTOPICS") == "1")" />
+                    @Html.HelpLink("STRRECENTTOPICS")
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane" id="member-registration" role="tabpanel" aria-labelledby="registration-tab">
+        <div class="tab-content row-fluid clearfix">
+
+            <div class="form-group">
+                <label for="uniqueemail" class="control-label col-xs-4">Require Unique Email:</label>
+                <div class="col-xs-6">
+                    <input id="uniqueemail" type="checkbox" class="yesno-checkbox" name="uniqemail" data-size="mini" checked="@(ClassicConfig.GetValue("STRUNIQUEEMAIL") == "1")" />
+                    @Html.HelpLink("STRUNIQUEEMAIL")
+                </div>
+            </div>
+            @if (ClassicConfig.GetIntValue("STREMAIL") == 1)
+            {
+                <div class="form-group">
+                    <label for="emailval" class="control-label col-xs-4">Email validation:</label>
+                    <div class="col-xs-6">
+                        <input id="emailval" type="checkbox" class="yesno-checkbox" data-size="mini" name="emailval" checked="@(ClassicConfig.GetValue("STREMAILVAL") == "1")" />
+                        @Html.HelpLink("STREMAILVAL")
+                    </div>
+                </div>
+
+            }
+            else
+            {
+                <input type="hidden" id="emailval" name="emailval" value="0" />
+            }
+            @*<div class="form-group">
+                <label for="restrictreg" class="control-label col-xs-4">Restrict registration:</label>
+                <div class="col-xs-6">
+                    <input id="restrictreg" type="checkbox" class="yesno-checkbox" name="restrictreg" data-size="mini" checked="@(ClassicConfig.GetValue("STRRESTRICTREG") == "1")" />
+                    @Html.HelpLink("STRRESTRICTREG")
+                </div>
+            </div>*@
+            <div class="form-group">
+                <label for="emaillogon" class="control-label col-xs-4">Logon to send email:</label>
+                <div class="col-xs-6">
+                    <input id="emaillogon" type="checkbox" class="yesno-checkbox" data-size="mini" name="logonemail" checked="@(ClassicConfig.GetValue("STRLOGONFORMAIL") == "1")" />
+                    @Html.HelpLink("STRLOGONFORMAIL")
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="emailpostcount" class="control-label col-xs-4">Number of posts to allow sending email:</label>
+                <div class="col-xs-2">
+                    <input id="emailpostcount" class="form-control inline" type="number" name="emailpostcount" value="@(ClassicConfig.GetIntValue("INTMAXPOSTSTOEMAIL"))" />
+
+                </div>
+                <div class="col-xs-1">@Html.HelpLink("INTMAXPOSTSTOEMAIL", "pull-left flip")</div>
+                <div class="col-xs-5">
+                    <textarea id="emailpostcount-error" class="form-control" name="emailpostcount-message" rows="4">@(ClassicConfig.GetValue("STRNOMAXPOSTSTOEMAIL"))</textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane" id="private-messaging" role="tabpanel" aria-labelledby="messaging-tab">
+        <div class="form-group">
+            @Html.ConfigToggle("Allow Private Messages", "STRPMSTATUS", "")
+        </div>
+        @Html.ConfigInt("Max PM recipients:", "INTMAXPMRECIPIENTS", 0, 100, "1", false, "control-label col-xs-8 col-sm-3", "col-xs-4 col-sm-3 inline")
+
+        @Html.ConfigInt("Message Limit:", "STRPMLIMIT", 1, 1000, "1", false, "control-label col-xs-8 col-sm-3", "col-xs-4 col-sm-3 inline")
+
+        <div class="form-group">
+            @Html.ConfigToggle("Play notification sound", "STRPMSOUND", "")
+        </div>
+
+        @if (ClassicConfig.GetIntValue("STRALLOWUPLOADS") == 1)
+        {
+            <div class="form-group">
+                @Html.ConfigToggle("Allow Attachments", "STRPMATTACH", "")
+            </div>
+        }
+        @if (Model.Config.ContainsKey("STRPMSIG"))
+        {
+            <div class="form-group">
+                @Html.ConfigToggle("Allow Signatures", "STRPMSIG", "")
+            </div>
+        }
+        <div class="form-group">
+            @Html.ConfigToggle("Allow Chat", "INTALLOWCHAT", "")
+        </div>
+    </div>
+
+    @{ Html.RenderPartial("_FormButtons"); }
+
+    </div>
+}
+</div>
+
+@using (Html.BeginScripts())
+{
+    <script>
+        $(document).ready(function() {
+            if ($("#age").is(":checked")) {
+                $(".prof-age").removeClass("disableddiv");
+                $(".prof-dob").addClass("disableddiv");
+            } else if ($("#dob").is(":checked")) {
+                $(".prof-dob").removeClass("disableddiv");
+                $(".prof-age").addClass("disableddiv");               
+            }
+            $("#age").on('switchChange.bootstrapSwitch', function (event, state) {
+                if (state) {
+                    $(".prof-dob").addClass("disableddiv");
+                } else {
+                    $(".prof-dob").removeClass("disableddiv");
+                }
+            });
+
+            $('#dob').on('switchChange.bootstrapSwitch', function(event, state) {
+                if (state) {
+                    $(".prof-age").addClass("disableddiv");
+                } else {
+                    $(".prof-age").removeClass("disableddiv");
+                }
+            }); 
+
+        });
+
+        $('body').on('click', '#approve-user-btn', function () {
+            
+            $.ajax({
+                url: '@Url.Action("CreateUser", "Admin")',
+                type: 'POST',
+                data: $("#createForm").serialize(),
+                success: function (data) {
+                    if (data.result) {
+                        $(':input', '#createForm')
+                            .not(':button, :submit, :reset, :hidden')
+                            .val('')
+                            .removeAttr('checked')
+                            .removeAttr('selected');
+                        $("#resultDiv").append("User created successfully");
+                    } else {
+                        $("#resultDiv").append(data.responseText);
+                    }
+                }
+            });
+        });
+    </script>
+}

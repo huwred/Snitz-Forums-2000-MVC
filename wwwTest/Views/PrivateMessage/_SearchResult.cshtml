@@ -1,0 +1,55 @@
+﻿@using LangResources.Utility
+@using SnitzCore.Extensions
+@using SnitzDataModel.Extensions
+@model List<SnitzDataModel.Models.PrivateMessage>
+
+<div class="container padding-lg">
+    <h4>@ResourceManager.GetLocalisedString("SearchResults", "Titles")</h4>
+    @if (Model.Count == 0)
+    {
+    <span class="text-center">@ResourceManager.GetLocalisedString("SearchEmpty", "PrivateMessage")</span>
+    }
+    else
+    {
+
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>@ResourceManager.GetLocalisedString("Subject", "PrivateMessage")</th>
+                    <th></th>
+                    <th>@ResourceManager.GetLocalisedString("Sent", "PrivateMessage")</th>
+                </tr>
+            </thead>
+            <tbody class="small">
+                @foreach (var msg in Model)
+                {
+                    var inbox = msg.FromMemberId == SnitzMembership.WebSecurity.CurrentUserId ? 0 : 1;
+                    <tr class="getMessage padding-xs" data-val="@msg.Id" data-inbox="@inbox">
+                        <td class="col-xs-1 padding-xs">
+                            @if (msg.Read != 1)
+                    {
+                                <i class="fa fa-envelope-o" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipUnread", "PrivateMessage")"></i>
+                            }
+                            else
+                            {
+                                <i class="fa fa-envelope-open-o" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipRead", "PrivateMessage")"></i>
+                            }
+                        </td>
+                        <td class="col-xs-4 padding-xs">@msg.Subject</td>
+
+                        <td class="col-xs-3">@(inbox == 1 ? @ResourceManager.GetLocalisedString("From", "PrivateMessage") + " " + msg.FromUsername : @ResourceManager.GetLocalisedString("To", "PrivateMessage") + " " + msg.ToUsername)</td>
+                        <td class="col-xs-3 padding-xs">@msg.SentDate.ToClientTime().ToFormattedString()</td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+<script>
+    $(document).ready(function () {
+        $('input[type="submit"]').removeAttr('disabled');
+    });
+    
+</script>

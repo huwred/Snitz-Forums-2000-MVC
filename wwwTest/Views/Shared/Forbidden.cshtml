@@ -1,0 +1,16 @@
+﻿
+@using LangResources.Utility
+
+@model System.Web.Mvc.HandleErrorInfo
+@{
+    //Layout = "";
+    ViewBag.Title = "Forbidden";
+}
+
+<div class="alert alert-warning col-xs-4 col-xs-offset-4 text-center">
+
+    @Model.Exception.Message<br/><br/>
+    <p>@Html.ActionLink(ResourceManager.GetLocalisedString("lnkReturn", "labels"), "Index", "Home")</p>
+</div>
+<div class="row"></div>
+<div class="row"></div>

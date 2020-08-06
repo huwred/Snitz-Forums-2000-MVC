@@ -1,0 +1,10 @@
+﻿@using LangResources.Utility
+@{
+    ViewBag.Title = "Account not Approved";
+}
+
+<h5>Not Approved</h5>
+<hr class="title"/>
+<p>Your account is still awaiting approval, please be patient.</p>
+<p>&nbsp;</p>
+<p>@Html.ActionLink(ResourceManager.GetLocalisedString("gotoHomeUrl", "General"), "Index", "Home")</p>

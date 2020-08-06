@@ -1,0 +1,437 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzDataModel
+@using SnitzDataModel.Extensions
+@using SnitzDataModel.Models
+@using WWW.ViewModels
+@using WWW.Views.Helpers
+@using Topic = SnitzDataModel.Models.Topic
+@model WWW.ViewModels.PostMessageViewModel
+@section pageMeta
+{
+    <meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
+}
+@section styles{
+
+    @Styles.Render("~/Content/jquery-ui-timepicker-addon.min.css")
+    <style>
+        .ui-wrapper {padding-right: 1px !important;padding-bottom:1px !important;}
+        .ui-wrapper textarea{width:100% !important;height:100% !important;}
+        @if (ViewBag.RequireAuth != null && ViewBag.RequireAuth)
+        {
+            @Html.Raw(".modal-backdrop.in {opacity: 1.0}");
+        }
+    </style>
+}
+@{
+    string controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    var txtEnv = 
+                //ResourceManager.GetLocalisedString("bugPlatform", "labels") + Environment.NewLine +
+               //ResourceManager.GetLocalisedString("bugOS", "labels") + Environment.NewLine +
+               ResourceManager.GetLocalisedString("bugBrowser", "labels") + Environment.NewLine +
+               ResourceManager.GetLocalisedString("bugUrl", "labels") + Environment.NewLine;
+    var txtResults = ResourceManager.GetLocalisedString("bugExpected", "labels") + Environment.NewLine +
+               "---------------" + Environment.NewLine + Environment.NewLine + Environment.NewLine + Environment.NewLine +
+               ResourceManager.GetLocalisedString("bugActual", "labels") + Environment.NewLine +
+               "---------------" + Environment.NewLine + Environment.NewLine + Environment.NewLine + Environment.NewLine;
+
+}
+@section breadcrumb
+{
+    @Html.BuildBreadcrumbNavigation()
+}
+
+<div class="container-fluid">
+    @using (Html.BeginForm("PostMessage", controllerName, FormMethod.Post, new { @class = "form-horizontal col-sm-11 col-md-9 form-post-message", id = "postForm" }))
+    {
+        <h5>@ResourceManager.GetLocalisedString("bugReport", "Title")</h5>
+        <hr class="title" />
+        ViewBag.SubmitButton = ResourceManager.GetLocalisedString("btnPost", "labels");
+        <div id="afToken">@Html.AntiForgeryToken()</div>
+        <input type="hidden" id="pagenum" name="pagenum" value="@Model.pagenum" />
+        @Html.ValidationSummary(false)
+        if (Model.Type == PostType.Topic)
+        {
+            if (User.IsAdministrator() || User.IsForumModerator(Model.ForumId))
+            {
+                <div class="form-group">
+                    <label class="control-label col-xs-2">@ResourceManager.GetLocalisedString("lblForum", "labels")</label>
+                    <div class="col-xs-8">
+                        @Html.DropDownListFor(model => model.ForumId, new SelectList(Model.ForumList, "Key", "Value"), new { @class = "form-control", @tabindex = 1 })
+                    </div>
+                </div>
+            }
+            else
+            {
+                @Html.HiddenFor(model => model.ForumId)
+            }
+            if (User.IsAdministrator() || Model.IsAuthor || User.IsForumModerator(Model.ForumId))
+            {
+                <div class="form-group">
+                    <label class="control-label col-xs-2">@ResourceManager.GetLocalisedString("bugSubject", "labels")</label>
+                    <div class="col-xs-8">
+
+                        <input type="text" tabindex="2" data-val="true" data-val-required="@String.Format(ResourceManager.GetLocalisedString("PropertyRequired", "ErrorMessage"),ResourceManager.GetLocalisedString("lblSubject", "labels"))" class="form-control" value="@WebUtility.HtmlDecode(Html.CleanBbCode(Model.Subject).ToString())" id="Subject" name="Subject" />
+
+                    </div>
+                </div>
+            }
+            else
+            {
+                @Html.HiddenFor(model => model.Subject)
+            }
+
+        }
+
+        else
+        {
+            @Html.HiddenFor(model => model.ForumId)
+        }
+        <div class="form-group">
+            @Html.ValidationMessageFor(model => model.Message, null, new { @class = "validation-summary-errors" })
+        </div>
+        <div id="editorDiv">
+            <div class="form-group">
+                <div class="col-xs-12 col-sm-8 col-sm-offset-3 text-info">
+                    @Html.FormatBbCode(ResourceManager.GetLocalisedString("bugDesc", "General"),true)
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-xs-12 col-sm-10 col-sm-offset-2">
+                    <label for="bugEnv">@ResourceManager.GetLocalisedString("bugEnv", "labels")</label>
+                    <textarea tabindex="4" rows="6" class="form-control" id="bugEnv" name="bugEnv">@txtEnv</textarea>
+                    <label for="Message">@ResourceManager.GetLocalisedString("bugSummary", "labels")</label>
+                    <textarea tabindex="5" rows="6" class="form-control" id="Message" name="Message" data-val-required="@ResourceManager.GetLocalisedString("MessageRequired", "General")" data-val="true"></textarea>
+                    <label for="bugSteps">@ResourceManager.GetLocalisedString("bugSteps", "labels")</label>
+                    <textarea tabindex="6" rows="8" name="bugSteps" class="form-control" id="bugSteps"></textarea>
+                    <label for="bugResults">@ResourceManager.GetLocalisedString("bugResults", "labels")</label>
+                    <textarea tabindex="7" rows="14" name="bugResults" class="form-control" id="bugResults">@txtResults</textarea>
+                    <div name="buttonBar" class="form-group">
+                        <div class="col-sm-2 hidden-xs"></div>
+                        <div class="col-sm-10" style="padding-left: 20px;">
+                            <div id="popup-btns2" class="btn-toolbar editor-buttons hidden-xs" role="toolbar" style="position: absolute;top:0;right:0;margin-right:15px;">
+                                <div class="btn-group btn-group-sm">
+                                    @if (ClassicConfig.GetValue("STRALLOWUPLOADS") == "1")
+                                    {
+                                        <a href="@Url.Action("FileUpload", "Home")" class="btn btn-default modal-link" title="@ResourceManager.GetLocalisedString("tipAttach", "Tooltip")"><span class="fa fa-paperclip"></span></a>
+
+                                    }
+                                    @if (ClassicConfig.GetIntValue("STRPHOTOALBUM") == 1 || ClassicConfig.GetIntValue("INTCOMMONALBUM") == 1)
+                                    {
+                                    <a href="@Url.Action("UploadFile", "PhotoAlbum",new{fields=false})" class="btn btn-default gallery-link" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipUpload", "PhotoAlbum")"><span class="fa fa-file-image-o"></span></a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <label for="bugExtras">@ResourceManager.GetLocalisedString("bugExtras", "labels")</label>
+                    <textarea tabindex="8" rows="6" name="bugExtras" class="bbc-code-editor form-control" id="bugExtras"></textarea>
+                </div>
+            </div>
+            <div class="form-group hidden">
+                <div class="col-sm-2 hidden-xs"></div>
+                <div class="col-sm-10">
+                    @{ Html.RenderPartial("_PostOptions"); }
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-2 hidden-xs"></div>
+                <div class="col-sm-10">
+                    @{ Html.RenderPartial("_FormButtons"); }
+                </div>
+            </div>
+
+        </div>
+
+        @Html.HiddenFor(model => model.CatId)
+        @Html.HiddenFor(model => model.TopicId)
+        @Html.HiddenFor(model => model.ReplyId)
+        @Html.HiddenFor(model => model.Referrer)
+        @Html.HiddenFor(model => model.IsPoll)
+
+    }
+
+    <div class="col-md-3 pull-right flip hidden-xs hidden-sm dz-container">
+        @if (ClassicConfig.GetValue("STRALLOWUPLOADS") == "1")
+        {
+            <form action="@Url.Action("Upload","Home")" method="post" enctype="multipart/form-data" class="dropzone" id="dropzoneForm" style="background: none;">
+                <div class="fallback">
+                    Use regular upload buttons
+                </div>
+            </form>
+
+        }
+        @if (ClassicConfig.GetValue("STRPHOTOALBUM") == "1")
+        {
+
+            <form action="@Url.Action("Upload","PhotoAlbum")" method="post" enctype="multipart/form-data" class="dropzone" id="dropzoneForm2" style="background: none;">
+                <div class="fallback">
+                    Use regular upload buttons
+                </div>
+            </form>
+
+        }
+    </div>
+
+
+
+</div>
+@if (Model.TopicId > 1)
+{
+    <div class="container-fluid">
+        @{ Html.RenderPartial("_TopicPreview", Topic.WithAuthor(Model.TopicId)); }
+    </div>
+}
+<div class="modal fade" id="modal-gallery-upload" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div id="" class="modal-dialog"><div class="modal-content"></div></div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/dropzonejs")
+    @Scripts.Render("~/bundles/post")
+
+    @if (ClassicConfig.GetIntValue("STRPHOTOALBUM") == 1)
+    {
+        @Scripts.Render("~/Scripts/jquery.contextMenu.min.js")
+        @Scripts.Render("~/Scripts/snitz.photoalbum.min.js")
+        @Scripts.Render("~/Scripts/snitz.gallery.upload.min.js")
+    }
+    <script type="text/javascript">
+            try {
+                Dropzone.autoDiscover = false;
+            } catch (e) {
+                console.log('Dropzone not loaded');
+            }
+            $(document).ready(function () {
+                if ('@ViewBag.RequireAuth' === 'True') {
+                                window.passwordDialog('', '@Model.ForumId', '0');
+
+                }
+            setRequiredFields();
+            $("#Message").resizable();
+                function displayValidationErrors(errors) {
+                    //var $ul = $('div.validation-summary-valid.text-danger > ul');
+
+                    BootstrapDialog.alert(
+                        {
+                            title: '@ResourceManager.GetLocalisedString("lblError", "labels")',
+                            message: errors.errors
+                        });
+                }
+            //POST the MESSAGE FORM - use this to hook into the Form post
+            $('input[type="submit"]').on('click', function (event) {
+                $(this).attr('disabled', 'disabled');
+                var env = $("#bugEnv").val();
+                var desc = $("#Message").val();
+                var steps = $("#bugSteps").val();
+                var res = $("#bugResults").val();
+                var ext = $("#bugExtras").val();
+                //bugSteps
+                //bugResults
+                //bugExtras
+
+                $("#Message").val(env + '\n[b]' + '@ResourceManager.GetLocalisedString("bugSummary", "labels")' + '[/b]\n' + desc + '\n[b]' + '@ResourceManager.GetLocalisedString("bugSteps", "labels")' + '[/b]\n' + steps + '\n[b]' + '@ResourceManager.GetLocalisedString("bugResults", "labels")' + '[/b]\n' + res + '\n[b]' + '@ResourceManager.GetLocalisedString("bugExtras", "labels")' + '[/b]\n' + ext);
+
+                var serializedForm = $("#postForm").serialize();
+                event.preventDefault();
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("PostMessage", @controllerName)',
+                    data: serializedForm,
+                    dataType: "json",
+                    success: function (data) {
+
+                        if (data.success) {
+                            postPostMessage(event, data);
+                        } else {
+                            displayValidationErrors(data);
+                        }
+                    },
+                    error: function (result) {
+                        var decoded = JSON.parse(result.responseText);
+                        BootstrapDialog.alert(
+                        {
+                            title: '@ResourceManager.GetLocalisedString("lblError", "labels")',
+                            message: decoded
+                        });
+                    }
+                });
+
+            });
+
+            // create the dropzone, and setup the event listeners
+            if ('@ClassicConfig.GetValue("STRALLOWUPLOADS")' === '1') {
+                var fileDropzone = new Dropzone("#dropzoneForm", {
+                    autoProcessQueue: true,
+                    addRemoveLinks: true,
+                    maxFilesize: SnitzVars.MaxFileSize,
+                    acceptedFiles: "@ClassicConfig.GetValue("STRFILETYPES")",
+                    accept: function (file, done) {
+                        if (file.name.length > 255) {
+                            done("Filename exceeds 255 characters!");
+                        }
+                        else { done(); }
+                    },
+                    paramName: "fileInput",
+                    dictDefaultMessage: "@Html.Raw(ResourceManager.GetLocalisedString("AttachFile","Dropzone"))" //+ "<b>Attach file:</b><br/>Click or drop file here to attach to post"
+                });
+
+                fileDropzone.on("complete", function (data) {
+                    //File Upload response from the server
+                    var arr = data.xhr.responseText.split('|');
+                    if (arr[0] === "error") {
+                        BootstrapDialog.alert(
+                        {
+                            title: '@ResourceManager.GetLocalisedString("lblError", "labels")',
+                            message: '@ResourceManager.GetLocalisedString("UploadError", "Dropzone")'
+                        });
+                    } else {
+                        var textId = $("#editorDiv").find(".bbc-code-editor")[0].id;
+
+                        if (arr[1].indexOf("pdf") >= 0) {
+                            $("#" + textId).insertAtCaret("[pdf]" + arr[0].replace('"', '') + "[/pdf]");
+                        } else if (arr[1].indexOf("image") >= 0) {
+                            $("#" + textId).insertAtCaret("[img]" + arr[0].replace('"', '') + "[/img]");
+                        } else {
+                            $("#" + textId).insertAtCaret("[file]" + arr[0].replace('"', '') + "[/file]");
+                        }
+                        fileDropzone.removeAllFiles();
+                        $('input[type="submit"]').attr('disabled', false);
+                        $("#" + textId).css('background-color', '#ffffff');
+                    }
+                });
+            }
+
+            if ('@ClassicConfig.GetValue("STRPHOTOALBUM")' === '1') {
+                var imgDropzone = new Dropzone("#dropzoneForm2", {
+                    autoProcessQueue: true,
+                    addRemoveLinks: true,
+                    maxFilesize: SnitzVars.MaxFileSize,
+                    acceptedFiles: SnitzVars.allowedimagetypes,
+                    accept: function (file, done) {
+                        if (file.name.length > 255) {
+                            done("Filename exceeds 255 characters!");
+                        }
+                        else { done(); }
+                    },
+                    paramName: "ImageFile",
+                    dictDefaultMessage: "@Html.Raw(ResourceManager.GetLocalisedString("UploadImage","Dropzone"))" //"<b>Upload Image:</b><br/>Click or drop image here to add to your album."
+                });
+                imgDropzone.on("sending", function (file, xhr, formData) {
+                    // Will send the filesize along with the file as POST data.
+                    formData.append("Description", file.name);
+                });
+                imgDropzone.on('error', function (file, response) {
+                    $(file.previewElement).find('.dz-error-message').text(response);
+                });
+
+                imgDropzone.on("complete", function (data) {
+                    //File Upload response from the server
+                    var arr = data.xhr.responseText.split('|');
+                    if (arr[0] === "error") {
+                        BootstrapDialog.alert(
+                        {
+                            title: '@ResourceManager.GetLocalisedString("lblError", "labels") ',
+                            message: "@ResourceManager.GetLocalisedString("UploadError","Dropzone")" //'Error uploading'
+                        });
+                    } else {
+                        var textId = $("#editorDiv").find(".bbc-code-editor")[0].id;
+
+                        if (arr[2].replace('"', '')=="true") {
+                            $("#" + textId).insertAtCaret("[cimage=" + arr[1].replace('"', '') + "]");
+                        } else {
+                            $("#" + textId).insertAtCaret("[image=" + arr[1].replace('"', '') + "]");
+                        }
+                        imgDropzone.removeAllFiles();
+                        $('input[type="submit"]').attr('disabled', false);
+                        $("#" + textId).css('background-color', '#ffffff');
+                    }
+                });
+            }
+
+            /*disable the submit button*/
+            $('input[type="submit"]').prop('disabled', true);
+            /*disable poll editing*/
+            var pollcheck = '@Model.IsPoll';
+            if (pollcheck != "False" && '@ViewBag.Votes' !== '0') {
+                $("#topic-poll-container :input").attr("readonly", true);
+                $("#topic-poll-container :input").addClass('disabled');
+            }
+
+            /*re-enable submit button if any data changes*/
+            $("#ForumId").on('change', function() {
+                $('input[type="submit"]').attr('disabled', false);
+            });
+            $(".emote").on('mouseup', function() {
+                $('input[type="submit"]').attr('disabled', false);
+                $('textarea').css('background-color', '#ffffff');
+            });
+            $(".btn").on('mouseup', function() {
+                $('input[type="submit"]').attr('disabled', false);
+            });
+            $('input[type="checkbox"]').on('mouseup', function() {
+                $('input[type="submit"]').attr('disabled', false);
+            });
+            $('input[type="text"]').on('keyup', function() {
+                var textValue = $(this).val();
+                $(this).css('background-color', '#ffffff');
+                if (textValue != '') {
+                    $('input[type="submit"]').attr('disabled', false);
+                } else {
+                    $('input[type="submit"]').attr('disabled', true);
+                }
+            });
+            $('textarea').on('keyup', function() {
+                var textareaValue = $(this).val();
+                $(this).css('background-color', '#ffffff');
+                if (textareaValue != '') {
+                    $('input[type="submit"]').attr('disabled', false);
+                } else {
+                    $('input[type="submit"]').attr('disabled', true);
+                }
+            });
+
+            setConditionalValidators();
+        });
+
+        function postPostMessage(event, data) {
+
+            var arr = data.responseText.split('|');
+            /* Event Calendar code */
+            //alert(arr[1] + arr[2]);
+            if ($("#cal-addTopicEvent").length > 0) {
+                postEvent(event, arr);
+            } else {
+                if (typeof (arr[2]) == 'undefined') {
+                    window.location.href = arr[1];
+                } else {
+                    window.location.href = arr[1] + arr[2];
+                }
+
+                return false;
+            }
+            /* Event Calendar code */
+        }
+
+        var timer = null;
+        function isTyping() {
+            clearTimeout(timer);
+            var value = $('#Message').val();
+            if (value) {
+                $("#popup-btns").hide();
+                timer = setTimeout(notTyping, 2000);// that's 2 seconds of not typing
+            }
+            else {
+                notTyping();
+            }
+        }
+
+        function notTyping() {
+            $("#popup-btns").show();
+        }
+
+    </script>
+}

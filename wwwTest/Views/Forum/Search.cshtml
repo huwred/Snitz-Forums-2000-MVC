@@ -1,0 +1,212 @@
+﻿@using LangResources.Utility
+@using Snitz.Base
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzCore.Utility
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model WWW.ViewModels.SearchViewModel
+@{
+    //if (!WebSecurity.IsAuthenticated)
+    //{
+    //    Response.Redirect(Url.Action("Login","Account", new { returnUrl = Url.Action("Search","Forum") }));
+    //}
+    ViewBag.Title = ResourceManager.GetLocalisedString("Search", "labels") + " " + Config.ForumTitle;
+    ViewBag.SubmitButton = ResourceManager.GetLocalisedString("btnFind", "labels");
+}
+
+@section breadcrumb
+{
+    @Html.BuildBreadcrumbNavigation()
+}
+@section sidebox{
+    @Html.Partial("_RightColumn", new ViewDataDictionary(this.ViewData) { { "show", new List<string>() { "recent", "calendar", "catlist" } } })
+
+}
+
+<h5>@ResourceManager.GetLocalisedString("Search_Title", "labels")</h5>
+<hr class="title" />
+@if (ClassicConfig.GetIntValue("INTNEWLAYOUT", 0) == 1)
+{
+
+}
+else
+{
+
+    <div class="container-fluid  form-horizontal">
+        @using (Html.BeginForm("Search", "Forum", null, FormMethod.Post, new { id = "SearchForm", @class = "panel panel-primary panel-body padding-md" }))
+        {
+
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+
+                @Html.LabelFor(model => model.SearchModel.Term, new { @class = "col-xs-4 control-label" })
+
+                <div class="col-xs-7">
+                    @Html.TextBoxFor(model => model.SearchModel.Term, new { @class = "form-control", placeholder = ResourceManager.GetLocalisedString("plhSearchTerm", "Controls") })
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-4">&nbsp;</div>
+                <div class="col-xs-7">
+                    @Html.RadioButtonForSelectList(model => model.SearchModel.PhraseType, Model.SearchModel.PhraseType.ToSelectList(), Enumerators.Position.Vertical)
+                </div>
+
+            </div>
+            if (Config.FullTextSearch)
+            {
+                <div class="form-group">
+                    <div class="col-sm-3">&nbsp;</div>
+                    <div class="col-sm-9">
+                        @Html.RadioButtonForSelectList(model => model.SearchModel.FullTextType, Model.SearchModel.FullTextType.ToSelectList(), Enumerators.Position.Vertical)
+                    </div>
+                </div>
+                <div class="form-group srch-full">
+                    <div class="col-sm-3">&nbsp;</div>
+                    <div class="col-sm-9">
+                        @ResourceManager.GetLocalisedString("fulltextSearch", "General")
+
+                    </div>
+                </div>
+
+            }
+            <div class="form-group">
+                @{
+                    var lst = new SelectList(Model.SearchModel.CategoryList, "Id", "Title").ToList();
+                    lst.Insert(0, new SelectListItem { Text = ResourceManager.GetLocalisedString("Search_AllCategories", "labels"), Value = "-1" });
+
+                }
+                @Html.LabelFor(model => model.SearchModel.Category, new { @class = "col-xs-4 control-label" })
+                <div class="col-xs-6">
+                    @Html.DropDownListFor(model => model.SearchModel.Category, lst, new { @class = "form-control", @tabindex = 1 })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.SearchModel.ForumId, new { @class = "col-xs-4 control-label" })
+                <div class="col-xs-7">
+                    @Html.DropDownListFor(model => model.SearchModel.ForumId, new SelectList(Model.ForumList, "Key", "Value"), new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.SearchModel.SearchIn, new { @class = "col-xs-4 control-label" })
+                <div class="col-xs-5">
+                    @Html.EnumDropDownListFor(model => model.SearchModel.SearchIn, new { @class = "form-control" }, "")
+                </div>
+            </div>
+            <div class="form-group clearfix ">
+                @Html.LabelFor(model => model.SearchModel.Archived, new { @class = "col-xs-4 control-label" })
+                <div class="col-xs-7">
+                    <input type="checkbox" name="SearchModel.Archived" class="checkbox" checked="@Model.SearchModel.Archived" value="true" />
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.SearchModel.SearchByDays, new { @class = "col-xs-4 control-label" })
+                <div class="col-xs-4">
+
+                    @Html.EnumDropDownListFor(model => model.SearchModel.SearchByDays, new { @class = "form-control" }, "")
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.SearchModel.MemberName, new { @class = "col-xs-4 control-label" })
+                <div class="col-xs-5">
+                    @Html.TextBoxFor(model => model.SearchModel.MemberName, new { @class = "form-control", data_autocomplete_url = Url.Action("AutoCompleteUsername"), placeholder = ResourceManager.GetLocalisedString("plhUsername", "Controls") })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-4 control-label">Sort by</label>
+                <div class="col-xs-5">
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            <select name="OrderBy" id="sk" class="form-control">
+                                <option @if (Model.OrderBy == "a") { @Html.Raw("selected='selected'") }
+                                        value="a">
+                                    Topic Author
+                                </option>
+                                <option @if (Model.OrderBy == "r") { @Html.Raw("selected='selected'") }
+                                        value="r">
+                                    Last post Author
+                                </option>
+                                <option @if (Model.OrderBy == "t") { @Html.Raw("selected='selected'") }
+                                        value="t">
+                                    Post time
+                                </option>
+                                <option @if (Model.OrderBy == "f") { @Html.Raw("selected='selected'") }
+                                        value="f">
+                                    Forum
+                                </option>
+                                <option @if (Model.OrderBy == "i") { @Html.Raw("selected='selected'") }
+                                        value="i">
+                                    Topic subject
+                                </option>
+                            </select>
+                        </span>
+                        <span class="input-group-btn">
+                            <select name="SortDir" id="sd" class="form-control">
+                                <option @if (Model.SortDir == "ASC") { @Html.Raw("selected='selected'") }
+                                        value="ASC">
+                                    Ascending
+                                </option>
+                                <option @if (Model.SortDir == "DESC") { @Html.Raw("selected='selected'") }
+                                        value="DESC">
+                                    Descending
+                                </option>
+                            </select>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group ">
+                @Html.HiddenFor(model => model.OrderBy);
+            </div>
+            @*<div class="form-group">
+                    @Html.ValidationSummary(false, "", new { @class = "list-group-item-info" })
+                </div>*@
+            Html.RenderPartial("_FormButtons");
+            <div class="form-group clearfix">
+            </div>
+
+        }
+    </div>
+}
+@section Scripts {
+
+    <script type="text/javascript">
+
+        /*conditional validator for subject*/
+        setConditionalValidators();
+        $('*[data-autocomplete-url]').each(function () {
+            $(this).autocomplete({
+                source: $(this).data("autocomplete-url"),
+                minLength: 3
+            });
+        });
+        $(document).ready(function () {
+
+            //SearchModel.FullTextType
+            $("input[name$='SearchModel.PhraseType']").click(function () {
+                var value = $(this).val();
+                if (value == '0') {
+                    $("[name$='SearchModel.FullTextType']").hide();
+                    $("[name$='SearchModel.FullTextType']").next().hide();
+                    $(".srch-full").show();
+                }
+                else if (value == '1') {
+                    $("[name$='SearchModel.FullTextType']").show();
+                    $("[name$='SearchModel.FullTextType']").next().show();
+                    $(".srch-full").hide();
+                }
+                else if (value == '2') {
+                    $("[name$='SearchModel.FullTextType']").show();
+                    $("[name$='SearchModel.FullTextType']").next().show();
+                    $(".srch-full").hide();
+                }
+            });
+            $("[name$='SearchModel.FullTextType']").hide();
+            $("[name$='SearchModel.FullTextType']").next().hide();
+            $(".srch-full").show();
+        });
+
+    </script>
+}

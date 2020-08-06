@@ -1,0 +1,40 @@
+﻿@using System.Data
+@using SnitzConfig
+
+@{
+    ViewBag.Title = "Forum Subscription";
+}
+
+
+<h5>@ViewBag.Title</h5>
+<hr class="title" />
+<div class="container-fluid">
+
+            <div class="panel panel-default col-xs-6 col-xs-offset-3">
+                <div class="panel-body">
+                    Paypal Test Page, Payments currently point to the paypal sandbox, you can make a test payment using the account below.<br/><br />
+                    user: huw@forum.snitz.com<br />
+                    pwd: Sn1tztest
+                </div>
+            </div>
+            <div class="panel col-xs-6 col-xs-offset-3">
+                <div class="panel-body">
+                    <div class="col-lg-6 col-lg-offset-3">
+                        @Html.Action("Subscribe", "PayPal", new { id = 2 })
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="panel panel-default col-xs-6 col-xs-offset-3">
+                <div class="panel-body">
+                    <p>More instructions here</p>
+                </div>
+            </div>
+            <div class="panel panel-default col-xs-6 col-xs-offset-3">
+                <div class="panel-body">
+                    @{ Html.RenderAction("Donations", "PayPal"); }
+                </div>
+            </div>
+
+    </div>

@@ -1,0 +1,127 @@
+﻿@using LangResources.Utility
+@using Snitz.Base
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzCore.Utility
+@using SnitzDataModel.Extensions
+@using WWW.Helpers
+@using WWW.Views.Helpers
+@model SnitzDataModel.Models.Topic
+
+@if (Request.IsAuthenticated && !Config.DisablePosting)
+{
+    string pageno = Request.QueryString["pagenum"];
+    ViewBag.Bookmarks = ClassicConfig.GetValue("STRBOOKMARKS") == "1";
+    bool isadmin = User.IsAdministrator();
+    bool ismoderator = User.IsForumModerator(Model.ForumId);
+    bool allowThanks = false;
+    List<int> selectedTopics = null;
+    List<string> buttons = ViewData["buttons"] as List<string> ?? new List<string>();
+
+    if (ViewData["allowThanks"] == null)
+    {
+        if (ClassicConfig.GetIntValue("STRTHANKS") == 1)
+        {
+            ViewData["allowThanks"] = CustomAssemblyResolver.ExecuteMethod("Snitz.PostThanks", "PostThanks.Helpers.Methods", "Allowed", new object[] { Model.ForumId });
+            allowThanks = (bool)ViewData["allowThanks"];
+        }
+        else
+        {
+            ViewData["allowThanks"] = false;
+        }
+    }
+
+    if (SessionData.Contains("TopicList"))
+    {
+        selectedTopics = SessionData.Get<List<int>>("TopicList");
+    }
+
+
+    if (Model.Archived != 1)
+    {
+    <div class="row-fluid flip text-right">
+        @{ Html.RenderPartial("_TopicButtonsUser", Model, this.ViewData); }
+
+        @if (isadmin || ismoderator)
+        {
+        <div class="btn-group">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-1_5x fa-cog"></i></a>
+            <ul class="dropdown-menu topic-admin">
+                @if (!buttons.Contains("admin"))
+                {
+                    <li>@Html.ActionLink(" ", "PostMessage", "Topic", new { id = Model.Id, forumid = Model.ForumId, catid = Model.CatId, pagenum = pageno, archived = Model.Archived }, new { @class = "fa fa-1_5x fa-edit", data_title = ResourceManager.GetLocalisedString("tipEditTopic", "Tooltip"), data_toggle = "tooltip" })</li>
+                    <li>@Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfDeleteTopic", "labels"), "DeleteTopic", "Forum", new { id = Model.Id, archive = Model.Archived }, "fa fa-trash-o fa-1_5x")</li>
+                    switch (Model.PostStatus)
+                    {
+                        case Enumerators.PostStatus.Open:
+                            <li class="clearfix">@Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfLockTopic", "labels"), "LockTopic", "Forum", new { id = Model.Id, forumid = Model.ForumId }, "fa fa-lock fa-1_5x")</li>
+                            if (ClassicConfig.GetValue("STRSTICKYTOPIC") == "1" && Model.IsSticky != 1 && !buttons.Contains("sticky"))
+                            {
+                                <li>@Html.ActionLink(" ", "MakeSticky", "Forum", new { id = Model.Id, sticky = 1 }, new { @class = "fa fa-1_5x fa-thumb-tack", data_title = ResourceManager.GetLocalisedString("tipMakeSticky", "Tooltip"), data_toggle = "tooltip" })</li>
+
+                            }
+                            else if (ClassicConfig.GetValue("STRSTICKYTOPIC") == "1" && Model.IsSticky == 1 && !buttons.Contains("sticky"))
+                            {
+
+                                <li class="clearfix">@Html.ActionLink(" ", "MakeSticky", "Forum", new { id = Model.Id, sticky = 0 }, new { @class = "fa fa-1_5x fa-thumb-tack fa-rotate-90 pull-left", data_title = ResourceManager.GetLocalisedString("tipUnStick", "Tooltip"), data_toggle = "tooltip" })</li>
+
+                            }
+                            if (!buttons.Contains("merge"))
+                            {
+                                <li>@Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("tipMergeTopic", "Tooltip"), "MergeTopic", "Topic", new { id = Model.Id }, "fa fa-1_5x fa-object-group")</li>
+                            }
+                            break;
+                        case Enumerators.PostStatus.Closed:
+                            <li>@Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfUnlockTopic", "labels"), "LockTopic", "Forum", new { id = Model.Id, forumid = Model.ForumId }, "fa fa-unlock-alt fa-1_5x")</li>
+                            if (ClassicConfig.GetValue("STRSTICKYTOPIC") == "1" && Model.IsSticky != 1 && !buttons.Contains("sticky"))
+                            {
+                                <li>@Html.ActionLink(" ", "MakeSticky", "Forum", new { id = Model.Id, sticky = 1 }, new { @class = "fa fa-1_5x fa-thumb-tack", data_title = ResourceManager.GetLocalisedString("tipMakeSticky", "Tooltip"), data_toggle = "tooltip" })</li>
+
+                            }
+                            else if (ClassicConfig.GetValue("STRSTICKYTOPIC") == "1" && Model.IsSticky == 1 && !buttons.Contains("sticky"))
+                            {
+
+                                <li>@Html.ActionLink(" ", "MakeSticky", "Forum", new { id = Model.Id, sticky = 0 }, new { @class = "fa fa-1_5x fa-thumb-tack fa-rotate-90", data_title = ResourceManager.GetLocalisedString("tipUnStick", "Tooltip"), data_toggle = "tooltip" })</li>
+
+                            }
+                            if (!buttons.Contains("merge"))
+                            {
+                                <li>@Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("tipMergeTopic", "Tooltip"), "MergeTopic", "Topic", new { id = Model.Id }, "fa fa-1_5x fa-object-group")</li>
+                            }
+
+                            break;
+                        case Enumerators.PostStatus.UnModerated:
+                        case Enumerators.PostStatus.OnHold:
+                            <li>@Html.ActionLink(" ", "Moderate", "Topic", new { id = Model.Id }, new { @class = "fa fa-1_5x fa-hand-paper-o modal-link", data_title = "Moderate", data_toggle = "tooltip" })</li>
+                            break;
+                    }
+
+
+
+
+                }
+
+            </ul>
+            @if (selectedTopics != null)
+            {
+            if (selectedTopics.Contains(Model.Id))
+            {
+            <input type="checkbox" value="@Model.Id" checked class="topic-select hidden-xs" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("chkTopicSelect","Admin")" />
+            }
+            else
+            {
+             <input type="checkbox" value="@Model.Id" class="topic-select hidden-xs" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("chkTopicSelect","Admin")" />
+            }
+            }
+            else
+            {
+             <input type="checkbox" value="@Model.Id" class="topic-select hidden-xs" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("chkTopicSelect","Admin")" />
+            }
+        </div>
+
+        }
+    </div>
+    }
+
+}
+            

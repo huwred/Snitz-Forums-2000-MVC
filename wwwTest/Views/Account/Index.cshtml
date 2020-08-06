@@ -1,0 +1,302 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@using SnitzCore.Extensions
+@using SnitzCore.Utility
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+
+@model WWW.ViewModels.ListUserViewModel
+
+@{
+    ViewBag.Title = ResourceManager.GetLocalisedString("pageMembers", "Title") + " | " + (Config.ForumTitle ?? ClassicConfig.ForumTitle);
+    string sortIcon = "<i class=\"fa fa-sort-asc\"></i>";
+    if (ViewBag.SortDir == "asc")
+    {
+        sortIcon = "<i class=\"fa fa-sort-desc\"></i>";
+    }
+    ViewBag.instanceNum = 1;
+}
+
+@section breadcrumb
+{
+    @Html.BuildBreadcrumbNavigation()
+}
+<!-- side Column Content -->
+@section sidebox
+{
+    @Html.Partial("_RightColumn", new ViewDataDictionary(this.ViewData) { { "show", new List<string>() { "posters" } } })
+
+}
+<div id="wrap-body">
+    <div class="chunk-main">
+        @*<div class="container-fluid clearfix">
+                <h5>@ResourceManager.GetLocalisedString("mnuForumMembers", "Menu")</h5>
+                <hr class="title" />
+            </div>*@
+        <div class="container-fluid clearfix form-post-message">
+            @{ Html.RenderPartial("_MemberSearch"); }
+        </div>
+        @if (ViewBag.PageCount > 1)
+        {
+            <div class="container-fluid clearfix">
+                <div class="col-xs-12 col-md-10">
+                    @{ Html.RenderPartial("_MemberPager"); }
+                </div>
+                <div class="hidden-xs hidden-sm col-md-2 pull-right flip padding-xs">
+                    @{ Html.RenderPartial("_PageSize"); }
+                </div>
+            </div>
+        }
+    </div>
+    @if (ClassicConfig.GetIntValue("INTNEWLAYOUT", 0) == 1)
+    {
+        var colwidth = "col-md-2";
+        var rankcol = "col-xs-3 col-md-2";
+        if (User.IsAdministrator())
+        {
+            colwidth = "col-xs-2 col-md-1";
+        }
+        <div class="chunk-main panel-body">
+            <div class="forumbg">
+                <div class="inner">
+                    <ul class="userlist topics">
+                        <li class="bgheader ">
+                            <dl class="icon ">
+                                <dt class="col-xs-2 col-md-1"><span class="avatar"></span><div class="list-inner">@Html.Avatar("", "", "img-circle small")</div></dt>
+                                <dd class="posts @colwidth">
+                                    @Html.ActionLink(ResourceManager.GetLocalisedString("UserName", "General"), "Index", new { pagenum = ViewBag.Page, sortOrder = ViewBag.SortDir, sortCol = "user", initial = Model.Initial })
+                                    @if (ViewBag.SortCol == "user")
+                                    {
+                                        @Html.Raw(sortIcon)
+                                    }
+                                </dd>
+                                @if (Config.ShowRankTitle)
+                                {
+                                    <dd class="text-center @rankcol posts">@ResourceManager.GetLocalisedString("ProfileTitle", "General")</dd>
+                                }
+                                <dd class="posts col-xs-2 col-md-1">
+                                    @Html.ActionLink(ResourceManager.GetLocalisedString("lblPosts", "labels"), "Index", new { pagenum = ViewBag.Page, sortOrder = ViewBag.SortDir, sortCol = "posts" })
+                                    @if (ViewBag.SortCol == "posts")
+                                    {
+                                        @Html.Raw(sortIcon)
+                                    }
+                                </dd>
+                                <dd class="text-center hidden-xs hidden-sm @colwidth posts">
+                                    @Html.ActionLink(ResourceManager.GetLocalisedString("lblLastPost", "labels").UppercaseFirst(), "Index", new { pagenum = ViewBag.Page, sortOrder = ViewBag.SortDir, sortCol = "lastpost" })
+                                    @if (ViewBag.SortCol == "lastpost")
+                                    {
+                                        @Html.Raw(sortIcon)
+                                    }
+                                </dd>
+                                <dd class="posts hidden-xs hidden-sm @colwidth">
+                                    @Html.ActionLink(ResourceManager.GetLocalisedString("ProfileDate", "General"), "Index", new { pagenum = ViewBag.Page, sortOrder = ViewBag.SortDir, sortCol = "sincedate" })
+                                    @if (ViewBag.SortCol == "sincedate")
+                                    {
+                                        @Html.Raw(sortIcon)
+                                    }
+                                </dd>
+                                <dd class="posts hidden-xs hidden-sm @colwidth">
+                                    @Html.ActionLink(ResourceManager.GetLocalisedString("ProfileCountry", "General"), "Index", new { pagenum = ViewBag.Page, sortOrder = ViewBag.SortDir, sortCol = "country" })
+                                    @if (ViewBag.SortCol == "country")
+                                    {
+                                        @Html.Raw(sortIcon)
+                                    }
+                                </dd>
+                                @if (User.IsAdministrator())
+                                {
+                                    <dd class="posts col-xs-2 col-md-1">
+                                        @Html.ActionLink(ResourceManager.GetLocalisedString("ProfileLastVisit", "Genral"), "Index", new { pagenum = ViewBag.Page, sortOrder = ViewBag.SortDir, sortCol = "lastvisit" })
+                                    </dd>
+                                    <dd class="option hidden-xs hidden-sm col-md-2">
+                                        @Html.ActionLink(ResourceManager.GetLocalisedString("Email", "General"), "Index", new { pagenum = ViewBag.Page, sortOrder = ViewBag.SortDir, sortCol = "email" })
+                                        @if (ViewBag.SortCol == "email")
+                                        {
+                                            @Html.Raw(sortIcon)
+                                        }
+                                    </dd>
+
+                                    <dd class="mark hidden-xs hidden-sm">
+                                        @if (User.IsUserInRole("SuperAdmin") || User.IsAdministrator())
+                                        {
+                                            <a href="" id="EmailAll" class="email-all" title="Email all members" data-toggle="tooltip"><i class="fa fa-1_5x fa-envelope"></i></a>
+                                        }
+                                    </dd>
+                                }
+                            </dl>
+                        </li>
+                    </ul>
+                    <ul class="userlist topics">
+                        @{ ViewBag.bg = "bg1"; }
+                        @for (int i = 0; i < Model.Users.Count; i++)
+                        {
+                            @Html.DisplayFor(x => x.Users[i], "MemberNew")
+                            ViewBag.bg = ViewBag.bg == "bg1" ? "bg2" : "bg1";
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    }
+    else
+    {
+        <div class="container-fluid clearfix">
+            <table class="table table-bordered table-condensed" id="member-table">
+                <thead>
+                    <tr>
+                        <th class="hidden-xs"></th>
+                        <th class="col-name">
+                            @Html.ActionLink(ResourceManager.GetLocalisedString("UserName", "General"), "Index", new { pagenum = ViewBag.Page, sortOrder = ViewBag.SortDir, sortCol = "user", initial = Model.Initial })
+                            @if (ViewBag.SortCol == "user")
+                            {
+                                @Html.Raw(sortIcon)
+                            }
+                        </th>
+                        @if (Config.ShowRankTitle)
+                        {
+                            <th class="col-title">
+                                @ResourceManager.GetLocalisedString("ProfileTitle", "General")
+                            </th>
+                        }
+                        <th class="col-posts">
+                            @Html.ActionLink(ResourceManager.GetLocalisedString("lblPosts", "labels"), "Index", new { pagenum = ViewBag.Page, sortOrder = ViewBag.SortDir, sortCol = "posts" })
+                            @if (ViewBag.SortCol == "posts")
+                            {
+                                @Html.Raw(sortIcon)
+                            }
+
+                        </th>
+                        <th class="col-last-post">
+                            @Html.ActionLink(ResourceManager.GetLocalisedString("lblLastPost", "labels").UppercaseFirst(), "Index", new { pagenum = ViewBag.Page, sortOrder = ViewBag.SortDir, sortCol = "lastpost" })
+                            @if (ViewBag.SortCol == "lastpost")
+                            {
+                                @Html.Raw(sortIcon)
+                            }
+                        </th>
+                        <th class="col-joined hidden-xs">
+                            @Html.ActionLink(ResourceManager.GetLocalisedString("ProfileDate", "General"), "Index", new { pagenum = ViewBag.Page, sortOrder = ViewBag.SortDir, sortCol = "sincedate" })
+                            @if (ViewBag.SortCol == "sincedate")
+                            {
+                                @Html.Raw(sortIcon)
+                            }
+                        </th>
+                        <th class="col-country hidden-xs">
+                            @Html.ActionLink(ResourceManager.GetLocalisedString("ProfileCountry", "General"), "Index", new { pagenum = ViewBag.Page, sortOrder = ViewBag.SortDir, sortCol = "country" })
+                            @if (ViewBag.SortCol == "country")
+                            {
+                                @Html.Raw(sortIcon)
+                            }
+                        </th>
+                        @if (User.IsAdministrator())
+                        {
+                            <th class="col-last-visit">
+                                @Html.ActionLink(ResourceManager.GetLocalisedString("ProfileLastVisit", "Genral"), "Index", new { pagenum = ViewBag.Page, sortOrder = ViewBag.SortDir, sortCol = "lastvisit" })
+                            </th>
+                            if (ClassicConfig.GetValue("STRIPLOGGING") == "1")
+                            {
+                                <th class="col-ip">
+                                    @ResourceManager.GetLocalisedString("ProfileLastIP", "General")
+                                </th>
+
+                            }
+                            <th class="col-email">
+                                @Html.ActionLink(ResourceManager.GetLocalisedString("Email", "General"), "Index", new { pagenum = ViewBag.Page, sortOrder = ViewBag.SortDir, sortCol = "email" })
+                                @if (ViewBag.SortCol == "email")
+                                {
+                                    @Html.Raw(sortIcon)
+                                }
+                            </th>
+                            <th>
+                                @if (User.IsUserInRole("SuperAdmin"))
+                                {
+                                    <a href="" id="EmailAll" class="email-all" title="Email all members" data-toggle="tooltip"><i class="fa fa-1_5x fa-envelope"></i></a>
+                                }
+                            </th>
+                        }
+                    </tr>
+                </thead>
+                @Html.DisplayFor(m => m.Users)
+
+
+            </table>
+        </div>
+    }
+
+    @if (ViewBag.PageCount > 1)
+    {
+        ViewBag.instanceNum = 2;
+        <div class="chunk-main">
+            <div class="col-xs-12 col-md-10">
+                @{ Html.RenderPartial("_MemberPager"); }
+            </div>
+            <div class="hidden-xs hidden-sm col-md-2 pull-right flip padding-xs">
+                @{ Html.RenderPartial("_PageSize"); }
+            </div>
+        </div>
+    }
+</div>
+
+@{ Html.RenderPartial("_ModalPopups"); }
+@section scripts{
+<script src="~/Scripts/Chart.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+        function jumpMemberPage(page) {
+            $("#new-page").val(page);
+            $("#new-page").closest("form").submit();
+            return false;
+        }
+        $.validator.setDefaults({
+            ignore: ""
+        });
+        $(function() {
+            $('td').click(function() {
+                $('tr').removeClass('bg-primary');
+                $(this).parent().addClass('bg-primary');
+            });
+
+        });
+        $("#EmailAll")
+            .on('click',
+                function(e) {
+                    e.preventDefault();
+                    BootstrapDialog.show({
+                        message: function(dialogItself) {
+                            var $form = $('<form></form>');
+                            var $subjectDrop =
+                                $('<input type="text" class="form-control" placeholder="Email Subject"/>');
+                            var $titleDrop =
+                                $('<textarea rows="8" cols="88" class="form-control" placeholder="Email Message"/>');
+                            dialogItself.setData('field-subject-drop', $subjectDrop);
+                            dialogItself.setData('field-title-drop', $titleDrop);
+                            $form.append($subjectDrop).append($titleDrop);
+
+                            return $form;
+                        },
+                        buttons: [
+                            {
+                                label: "@ResourceManager.GetLocalisedString("btnCancel", "labels")",
+                                action: function(dialogItself) {
+                                    dialogItself.close();
+                                }
+                            }, {
+                                label: "@ResourceManager.GetLocalisedString("btnSend", "labels")",
+                                action: function(dialogItself) {
+                                    var subj = dialogItself.getData('field-subject-drop').val();
+                                    var msg = dialogItself.getData('field-title-drop').val();
+                                    $("#mail-subject").val(subj);
+                                    $("#mail-message").val(msg);
+                                    var action =
+                                        $('#search-form').attr('action'); //SnitzVars.baseUrl + "Account/EmailUsers";
+                                    $("#search-form").attr("action", action.replace("Search", "EmailUsers"));
+                                    dialogItself.close();
+                                    $("#search-form").submit();
+
+                                }
+                            }
+                        ]
+                    });
+                });
+
+    </script>
+}
