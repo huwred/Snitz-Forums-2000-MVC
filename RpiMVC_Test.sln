@@ -14,7 +14,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BbCodeFormatter", "BbCodeFo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnitzMembership", "SnitzMembership\SnitzMembership.csproj", "{ABF9C840-6A07-4E5E-A4D2-29045E4AB063}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wwwTest", "wwwTest\wwwTest.csproj", "{7D57ED30-D065-4A29-9A59-CACDC3871B54}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WWW", "WWW\WWW.csproj", "{7D57ED30-D065-4A29-9A59-CACDC3871B54}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnitzApi", "SnitzApi\SnitzApi.csproj", "{1787A15F-CB6B-47F7-BF24-C51C9F9492E9}"
 EndProject
