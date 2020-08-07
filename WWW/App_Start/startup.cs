@@ -4,7 +4,7 @@ using System.Transactions;
 using System.Web;
 using Hangfire;
 using Hangfire.MySql;
-using Hangfire.MySql.src;
+
 using Hangfire.SqlServer;
 using log4net.Config;
 using Microsoft.Owin;
@@ -26,9 +26,19 @@ namespace WWW
                 {
                     try
                     {
-                        GlobalConfiguration.Configuration.UseMySqlStorage(
-                            "SnitzConnectionString",new MySqlStorageOptions { QueuePollInterval = TimeSpan.FromSeconds(120) }
-                        );
+                        GlobalConfiguration.Configuration.UseStorage(
+                            new MySqlStorage(
+                                "SnitzConnectionString",
+                                new MySqlStorageOptions
+                                {
+                                    TransactionIsolationLevel = IsolationLevel.ReadCommitted,
+                                    QueuePollInterval = TimeSpan.FromSeconds(15),
+                                    JobExpirationCheckInterval = TimeSpan.FromHours(1),
+                                    CountersAggregateInterval = TimeSpan.FromMinutes(5),
+                                    PrepareSchemaIfNecessary = true,
+                                    DashboardJobListLimit = 50000,
+                                    TransactionTimeout = TimeSpan.FromMinutes(1)
+                                }));
                     }
                     catch (Exception)
                     {

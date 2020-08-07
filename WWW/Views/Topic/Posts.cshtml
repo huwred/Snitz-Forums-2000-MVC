@@ -29,17 +29,19 @@
         ViewData["allowThanks"] = CustomAssemblyResolver.ExecuteMethod("Snitz.PostThanks", "PostThanks.Helpers.Methods", "Allowed", new object[] { Model.Topic.ForumId });
     }
     var newlayout = ClassicConfig.GetIntValue("INTNEWLAYOUT", 0) == 1;
-
+    string metaTitle = ViewBag.Title;
 }
 @section pageMeta
 {
 
-    <meta name="description" content="@BbCodeProcessor.StripTags(Model.Topic.Message).TruncateLongString(360)">
+    <meta name="title" content="@metaTitle.TruncateLongString(70)" />
+    <meta name="description" content="@BbCodeProcessor.StripTags(Model.Topic.Message).TruncateLongString(149)">
     <meta name="author" content="@Model.Topic.Author.Username">
+    <meta name="copyright" content="@Html.Raw(String.Format(ClassicConfig.Copyright, DateTime.UtcNow.Year)) - @Config.ForumTitle, @Model.Topic.Author.Username">
     <meta name="distribution" content="global">
-    <meta name="copyright" content="@Html.Raw(String.Format(ClassicConfig.Copyright, DateTime.UtcNow.Year)) - @Model.Topic.Author.Username">
-    <meta name="robots" content="index,nofollow">
     <meta name="rating" content="14 years">
+    
+    <meta name="keywords" content="@Html.TopicKeyWords(Model.Id)">
 
 }
 @section styles
@@ -315,13 +317,13 @@
             }
             hljs.registerLanguage('cshtml-razor', window.hljsDefineCshtmlRazor);
             hljs.initHighlightingOnLoad();
-            
+
             $('input[type="submit"]').on('click', function (event) {
                     event.preventDefault();
                     $(this).attr('disabled', 'disabled');
 
                     var serializedForm = $("#quickpostForm").serialize();
-                    
+
                     $("#loading").show();
                     $.ajax({
                         type: "POST",
@@ -411,7 +413,7 @@
 
 
                 //QuickReply POST
-                
+
                 if (window.location.hash) {
 
                     // smooth scroll to the anchor id

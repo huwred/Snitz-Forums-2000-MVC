@@ -1,20 +1,26 @@
 ﻿// /*
 // ####################################################################################################################
 // ##
-// ## Global.asax
+// ## Snitz Forums MVC v2.0.0
 // ##   
-// ## Author:		Huw Reddick
-// ## Copyright:	Huw Reddick, Snitz Forums
-// ## based on code from Snitz Forums 2000 (c) Huw Reddick, Michael Anderson, Pierre Gorissen and Richard Kinser
+// ## Author:		    Huw Reddick
+// ##
+// ## Copyright (c):	Huw Reddick, Snitz Forums
+// ## based on code from Snitz Forums 2000 copyright (c) Huw Reddick, Michael Anderson, Pierre Gorissen and Richard Kinser
 // ## Created:		19/06/2020
 // ## 
-// ## The use and distribution terms for this software are covered by the 
-// ## Eclipse License 1.0 (http://opensource.org/licenses/eclipse-1.0)
-// ## which can be found in the file Eclipse.txt at the root of this distribution.
-// ## By using this software in any fashion, you are agreeing to be bound by 
-// ## the terms of this license.
+// ## This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+// ## License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+// ## later version.
 // ##
-// ## You must not remove this notice, or any other, from this software.  
+// ## This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+// ## warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+// ## 
+// ## You should have received a copy of the GNU General Public License along with this program.
+// ## If not, see <https://www.gnu.org/licenses/>.
+// ## 	
+// ## Support can be obtained from our support forums at:
+// ## https://forum.snitz.com/forum 
 // ##
 // #################################################################################################################### 
 // */

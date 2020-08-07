@@ -174,7 +174,7 @@ namespace WWW.Controllers
             }
             CookieConsent.SetCookieConsent(Response, false);
             if (Request.IsAjaxRequest())
-                return new HttpStatusCodeResult(System.Net.HttpStatusCode.OK);
+                return new HttpStatusCodeResult(HttpStatusCode.OK);
             else
                 return Redirect(returnUrl);
         }

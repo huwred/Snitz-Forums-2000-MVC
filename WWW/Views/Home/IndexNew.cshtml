@@ -7,6 +7,7 @@
 
 @{
     ViewBag.Title = Config.ForumTitle;
+    string metaTitle = Config.ForumTitle;
     bool isRighToLeft = SessionData.Get<bool>("isRighToLeft");
     var colLayout = ClassicConfig.GetValue("STRLAYOUT");
 }
@@ -14,10 +15,11 @@
 <!-- Meta data for page -->
 @section pageMeta
 {
-    <meta name="description" content="@Config.ForumDescription.Replace("&amp;","&")">
+    <meta name="title" content="@metaTitle.TruncateLongString(70)"/>
+    <meta name="description" content="@Config.ForumDescription.Replace("&amp;","&").TruncateLongString(149)">
     <meta name="author" content="@(Config.ForumTitle ?? ClassicConfig.ForumTitle)">
-    <!-- default image for facebook links -->
-    <meta property="og:image" content="@{String.Format("{0}Content/Themes/snitz/images/logo.png", Config.ForumUrl);}" />
+
+    <meta name="keywords" content="@Html.ForumKeyWords(User,-1)">
 
 }
 @section styles{
@@ -64,7 +66,7 @@
     <div class="side-box">
         @{ Html.RenderPartial("_SearchForums", new ViewDataDictionary(this.ViewData) { { "Category", -1 }, { "ForumId", -1 }, { "langStr", "SearchAllPosts" } }); }
     </div>
-    @Html.Partial("_RightColumn", new ViewDataDictionary(this.ViewData) { { "show", new List<string>() { "online", "donate", "recent","widget|PVOutput" } } })
+    @Html.Partial("_RightColumn", new ViewDataDictionary(this.ViewData) { { "show", new List<string>() { "online", "donate", "recent", "widget|PVOutput" } } })
 
 }
 @if (colLayout == "left")
@@ -89,12 +91,12 @@
     <div class="chunk-main">
         <div id="forumlist">
             <div id="forumlist-inner">
-                
+
                 @for (int i = 0; i < Model.Count; i++)
                 {
                     @Html.DisplayFor(x => x[i], "CategoryNew")
                 }
-                
+
             </div>
         </div>
     </div>
@@ -130,7 +132,7 @@
 
         $(document)
             .ready(function () {
-                $('.admin-btns').each(function() {
+                $('.admin-btns').each(function () {
                     if ($(this).is(':empty') || !$(this).html().trim()) {
                         var parent = $(this).closest('dl');
                         $("dt", parent).attr("class", "col-xs-10 col-md-7");

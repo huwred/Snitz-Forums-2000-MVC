@@ -1,5 +1,5 @@
 ﻿
-@using Cyotek.Web.BbCodeFormatter
+@using BbCodeFormatter
 @using LangResources.Utility
 @using Snitz.Base
 @using SnitzConfig
@@ -8,10 +8,27 @@
 @using SnitzDataModel.Models
 @using WWW.Views.Helpers
 @model WWW.ViewModels.TopicViewModel
+@{
+    ViewBag.Title = ResourceManager.GetLocalisedString("ttlBlog", "BlogPages") + " - " + Html.FormatBbCode(Model.Topic.Subject, false) + " | " + (Config.ForumTitle ?? ClassicConfig.ForumTitle);
+    ViewBag.Topic = Model.Topic;
+    ViewBag.hasForumSubscription = User.ForumSubscriptions().Contains(Model.ForumId);
+    ViewBag.ForumSubscription = Enumerators.Subscription.None;
+    if (Model.Forum != null)
+    {
+        ViewBag.ForumSubscription = Model.Forum.Subscription;
+    }
+    string metaTitle = ViewBag.Title;
+}
 @section pageMeta
 {
-    <meta name="description" content="@BbCodeProcessor.StripTags(Model.Topic.Message).TruncateLongString(360)">
+    <meta name="title" content="@metaTitle.TruncateLongString(70)" />
+    <meta name="description" content="@BbCodeProcessor.StripTags(Model.Topic.Message).TruncateLongString(149)">
     <meta name="author" content="@Model.Topic.Author.Username">
+    <meta name="copyright" content="@Html.Raw(String.Format(ClassicConfig.Copyright, DateTime.UtcNow.Year)) - @Config.ForumTitle, @Model.Topic.Author.Username">
+    <meta name="distribution" content="global">
+    <meta name="rating" content="14 years">
+    
+    <meta name="keywords" content="@Html.TopicKeyWords(Model.Id)">
 }
 @section styles
 {
@@ -22,35 +39,21 @@
             .modal-backdrop.in {
                 opacity: 1.0;
             }
+        </style>
 
-        </style>    
     }
     @Html.Raw(Config.ThemeCss("highlight.min.css"))
 
 }
-
-
-@{
-    ViewBag.Title = ResourceManager.GetLocalisedString("ttlBlog", "BlogPages") + " - " + Html.FormatBbCode(Model.Topic.Subject,false) + " | " + (Config.ForumTitle ?? ClassicConfig.ForumTitle);
-    ViewBag.Topic = Model.Topic;
-    ViewBag.hasForumSubscription = User.ForumSubscriptions().Contains(Model.ForumId);
-    ViewBag.ForumSubscription = Enumerators.Subscription.None;
-    if (Model.Forum != null)
-    {
-        ViewBag.ForumSubscription = Model.Forum.Subscription;
-    }
-   
-}
 @section breadcrumb
 {
     @Html.BuildBreadcrumbNavigation()
-
 }
 @section topicsearchbox
 {
     @* search box for small screens, replaces sidebox search so search appears at top of page *@
     <h5>@ResourceManager.GetLocalisedString("srchBlog", "BlogPages")</h5>
-    @{ Html.RenderPartial("_Search", new SearchModel() {TopicId = Model.Id}); }
+    @{ Html.RenderPartial("_Search", new SearchModel() { TopicId = Model.Id }); }
 }
 @section sidebox
 {
@@ -61,7 +64,7 @@
         </div>
         <div class="side-box">
 
-            @Html.Action("BlogList", new {id = Model.Forum.Id})
+            @Html.Action("BlogList", new { id = Model.Forum.Id })
         </div>
         <div class="side-box">
             @{ Html.RenderPartial("_CategoryForumList"); }
@@ -79,52 +82,52 @@
                 <span class="hidden-xs hidden-sm">@LangResources.Utility.ResourceManager.GetLocalisedString("btnPrintBlog", "BlogPages")</span>
             </a>
         }
-    <div class="pull-right flip text-right">
-        @{ Html.RenderPartial("_SocialMedia"); }
+        <div class="pull-right flip text-right">
+            @{ Html.RenderPartial("_SocialMedia"); }
+        </div>
+
     </div>
-        
-    </div>
-    
+
     <hr class="title" />
     <div class="row-fluid clearfix">
         @{ Html.RenderPartial(ClassicConfig.GetIntValue("INTNEWLAYOUT", 0) == 1 ? "Blog/_TopicNew" : "Blog/_Topic", Model.Topic, this.ViewData); }
     </div>
     if (Model.PageCount > 0)
-            {
-                <div class="col-xs-9 col-xs-offset-2 clearfix">
-                    <h4>@ResourceManager.GetLocalisedString("lblComments", "BlogPages")</h4>
-                    <hr class="title" />
-                </div>
-         <div class="col-xs-9 col-xs-offset-3 clearfix">
-             <div class="nopadding pull-left flip">@{ Html.RenderPartial("_Pager", Model); }</div>
-         </div>
-
-         <div class="row-fluid accordion-group clearfix" id="comments">
-             @foreach (var item in Model.Replies)
-             {
-                 item.ForumStatus = Model.Forum.Status;
-                 if (item.topic == null)
-                 {
-                     item.topic = Model.Topic;
-                 }
-                 <a id="@item.Id"></a>
-                 if (ClassicConfig.GetIntValue("INTNEWLAYOUT", 0) == 1)
-                 {
-
-                     Html.RenderPartial("Blog/_ReplyNew", item, this.ViewData);
-
-                 }
-                 else
-                 {
-                     Html.RenderPartial("Blog/_Reply", item, this.ViewData);
-                 }
-
-             }
+    {
+        <div class="col-xs-9 col-xs-offset-2 clearfix">
+            <h4>@ResourceManager.GetLocalisedString("lblComments", "BlogPages")</h4>
+            <hr class="title" />
         </div>
-         <div class="col-xs-9 col-xs-offset-3 clearfix">
+        <div class="col-xs-9 col-xs-offset-3 clearfix">
+            <div class="nopadding pull-left flip">@{ Html.RenderPartial("_Pager", Model); }</div>
+        </div>
+
+        <div class="row-fluid accordion-group clearfix" id="comments">
+            @foreach (var item in Model.Replies)
+            {
+                item.ForumStatus = Model.Forum.Status;
+                if (item.topic == null)
+                {
+                    item.topic = Model.Topic;
+                }
+                <a id="@item.Id"></a>
+                if (ClassicConfig.GetIntValue("INTNEWLAYOUT", 0) == 1)
+                {
+
+                    Html.RenderPartial("Blog/_ReplyNew", item, this.ViewData);
+
+                }
+                else
+                {
+                    Html.RenderPartial("Blog/_Reply", item, this.ViewData);
+                }
+
+            }
+        </div>
+        <div class="col-xs-9 col-xs-offset-3 clearfix">
             <div class="pull-left flip">@{ Html.RenderPartial("_Pager", Model); }</div>
-         </div>
-     }
+        </div>
+    }
     else
     {
         if (Model.Forum.Status == Enumerators.PostStatus.Open && !Config.DisablePosting && Model.Topic.Archived != 1)
@@ -132,7 +135,7 @@
             if (User.Identity.IsAuthenticated && ClassicConfig.ShowQuickReply && Model.Topic.PostStatus == Enumerators.PostStatus.Open)
             {
                 <div class="col-xs-9 col-xs-offset-2" id="qr-container">
-                    @{Html.RenderPartial("Blog/_QuickReply", ViewData["quickreply"],new ViewDataDictionary(this.ViewData) { {"noToolbar", true }});}
+                    @{Html.RenderPartial("Blog/_QuickReply", ViewData["quickreply"], new ViewDataDictionary(this.ViewData) { { "noToolbar", true } });}
                 </div>
             }
         }
@@ -142,7 +145,7 @@
         if (User.Identity.IsAuthenticated && ClassicConfig.ShowQuickReply && Model.Topic.PostStatus == Enumerators.PostStatus.Open)
         {
             <div class="row-fluid" id="qr-dummy" style="display: none;">
-                @{Html.RenderPartial("Blog/_QuickReply", ViewData["quickreply"],new ViewDataDictionary(this.ViewData) { {"noToolbar", true }});}
+                @{Html.RenderPartial("Blog/_QuickReply", ViewData["quickreply"], new ViewDataDictionary(this.ViewData) { { "noToolbar", true } });}
             </div>
         }
     }
@@ -152,9 +155,9 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/dropzonejs")
-    @Scripts.Render("~/Scripts/highlight.pack.min.js") 
+    @Scripts.Render("~/Scripts/highlight.pack.min.js")
     @*@Scripts.Render("~/Scripts/highlightjs-line-numbers.min.js")*@
-    @Scripts.Render("~/Scripts/star-rating.min.js") 
+    @Scripts.Render("~/Scripts/star-rating.min.js")
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -162,7 +165,7 @@
                 Dropzone.autoDiscover = false;
             } catch (e) {
                 console.log('Dropzone not loaded');
-            } 
+            }
             $(".bbc-codecontent").each(function () {
                 var test = $(this).html().replace(/&nbsp;/g, ' ').replace(/<br.*?>/g, '&#13;&#10;');
                 $(this).html(test);
@@ -190,7 +193,7 @@
             if ('@ViewBag.RequireAuth' === 'True') {
                 window.passwordDialog('@Url.Action("Posts", "Topic", new { id = Model.Topic.Id, pagenum = 1 })', '@Model.Topic.ForumId', '@Model.Topic.Id');
                                     }
-                            
+
 
             $('#approve-btn').on('click', function () {
                 $('#modal-container').modal('hide');

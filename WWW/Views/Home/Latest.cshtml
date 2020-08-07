@@ -16,8 +16,11 @@
 
 @section pageMeta
 {
-    <meta name="description" content="Support forum for Snitz Forums Mvc">
-    <meta name="author" content="@ViewBag.Title">
+    <meta name="title" content="@ViewBag.Title.TruncateLongString(70)" />
+    <meta name="description" content="@Config.ForumDescription.Replace("&amp;","&").TruncateLongString(149)">
+    <meta name="author" content="@(Config.ForumTitle ?? ClassicConfig.ForumTitle)">
+
+    <meta name="keywords" content="@Html.ForumKeyWords(User,-1)">
 }
 @if (ClassicConfig.GetValue("STRSHOWANNOUNCE") == "1")
 {

@@ -7,6 +7,7 @@
 
 @{
     ViewBag.Title = Config.ForumTitle;
+    string metaTitle = Config.ForumTitle;
     bool isRighToLeft = SessionData.Get<bool>("isRighToLeft");
     var colLayout = ClassicConfig.GetValue("STRLAYOUT");
 }
@@ -14,10 +15,11 @@
 <!-- Meta data for page -->
 @section pageMeta
 {
-    <meta name="description" content="@Config.ForumDescription.Replace("&amp;","&")">
+    <meta name="title" content="@metaTitle.TruncateLongString(70)" />
+    <meta name="description" content="@Config.ForumDescription.Replace("&amp;","&").TruncateLongString(149)">
     <meta name="author" content="@(Config.ForumTitle ?? ClassicConfig.ForumTitle)">
-    <!-- default image for facebook links -->
-    <meta property="og:image" content="@{String.Format("{0}Content/Themes/snitz/images/logo.png", Config.ForumUrl);}" />
+
+    @*<meta name="keywords" content="@Html.ForumKeyWords(User,-1)">*@
 
 }
 <!-- page specific styles -->
@@ -26,7 +28,9 @@
     @Styles.Render("~/Content/bootstrapnews.css")
     <style>
 
-        .col-xs-8{ padding-left: 5px;}
+        .col-xs-8 {
+            padding-left: 5px;
+        }
     </style>
 }
 
@@ -69,7 +73,7 @@
     <div class="side-box">
         @{ Html.RenderPartial("_SearchForums", new ViewDataDictionary(this.ViewData) { { "Category", -1 }, { "ForumId", -1 }, { "langStr", "SearchAllPosts" } }); }
     </div>
-    @Html.Partial("_RightColumn", new ViewDataDictionary(this.ViewData) { { "show", new List<string>() {"recent","photo"} } })
+    @Html.Partial("_RightColumn", new ViewDataDictionary(this.ViewData) { { "show", new List<string>() { "recent", "photo" } } })
 
 }
 @if (colLayout == "left")

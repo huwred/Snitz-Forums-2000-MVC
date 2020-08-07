@@ -16,9 +16,17 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://ogp.me/ns/fb#" lang="@clang" dir="@(isRighToLeft ?  "rtl" : "ltr" )">
 <head>
     <meta charset="utf-8" />
-    @*<meta http-equiv="X-UA-Compatible" content="IE=edge">*@
-    @RenderSection("MetaRefresh", required: false)
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="language" content="English">
+    <!-- default image for facebook links -->
+    <meta property="og:image" content="@{String.Format("{0}Content/Themes/snitz/images/logo.png", Config.ForumUrl);}" />
+
+    <meta name="robots" content="index, nofollow">
+
+
+    @RenderSection("MetaRefresh", required: false)
+
     @RenderSection("pageMeta", required: false)
 
     <title>@ViewBag.Title</title>
@@ -36,12 +44,12 @@
     }
     @if (Config.TableExists("CAL_EVENTS") && ClassicConfig.GetIntValue("INTCALUPCOMINGEVENTS") == 1 && ClassicConfig.GetIntValue("INTCALPUBLIC") == 1)
     {
-    @Styles.Render("~/Content/fullcalendar.min.css")
-    @Html.Raw(Config.ThemeCss("fullcalendar.min.css"))
+        @Styles.Render("~/Content/fullcalendar.min.css")
+        @Html.Raw(Config.ThemeCss("fullcalendar.min.css"))
         if (isRighToLeft)
-    {
-    @Styles.Render("~/Content/fullcalendar-rtl.css")
-    }
+        {
+            @Styles.Render("~/Content/fullcalendar-rtl.css")
+        }
     }
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->

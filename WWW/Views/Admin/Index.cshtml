@@ -1,7 +1,14 @@
-﻿@{
-    ViewBag.Title = "Index";
-    //Layout = "~/Views/Admin/_Layout.cshtml";
+﻿@using LangResources.Utility
+@{
+    ViewBag.Title = "Access Restricted";
+
 }
+<p>&nbsp;</p>
+<div class="container">
+    <div class="login_panel">
+        <h2>Forum Administration</h2>
 
-<h2>Index</h2>
-
+        <p><strong>@ViewBag.ActivePage</strong> is restricted to the SuperAdmin and some specific User accounts</p>
+        <p><a href='javascript:history.go(-1);'>@ResourceManager.GetLocalisedString("lnkReturn", "labels")</a></p>
+    </div>
+</div>

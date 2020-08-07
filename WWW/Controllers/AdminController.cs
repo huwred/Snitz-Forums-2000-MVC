@@ -39,6 +39,8 @@ using NameFilter = SnitzDataModel.Models.NameFilter;
 using SpamFilter = SnitzDataModel.Models.SpamFilter;
 using Subscriptions = SnitzDataModel.Models.Subscriptions;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using WWW.Filters;
 
 namespace WWW.Controllers
 {
@@ -54,14 +56,15 @@ namespace WWW.Controllers
 
         #region GET: Methods
 
-        public ActionResult Index()
+        public ActionResult Index(string id)
         {
             AdminViewModel vm = new AdminViewModel();
-            ViewBag.ActivePage = "Forum Config";
+            ViewBag.ActivePage = id;
             return View();
             //return View("ForumConfig", vm);
         }
 
+        [SuperAdmin][DisplayName("Main Config")]
         public ActionResult ForumConfig()
         {
             AdminViewModel vm = new AdminViewModel();
@@ -76,10 +79,11 @@ namespace WWW.Controllers
            //     new List<Enumerators.CaptchaOperator>() { Enumerators.CaptchaOperator.Plus } : Config.CaptchaOperators;
 
             vm.AllowedForums = new Dictionary<int, string>();
-            var test = vm.ForumList;
+
             return View(vm);
         }
 
+        [SuperAdmin][DisplayName("Email Config")]
         public ActionResult EmailServer()
         {
             AdminEmailServer vm = new AdminEmailServer();
@@ -109,6 +113,7 @@ namespace WWW.Controllers
             return View(vm);
         }
 
+        [SuperAdmin][DisplayName("Member Config")]
         public ActionResult MemberConfig()
         {
 
@@ -157,6 +162,7 @@ namespace WWW.Controllers
             return View(pvm);
         }
 
+        [SuperAdmin][DisplayName("Managing Roles")]
         public ActionResult ManageRoles()
         {
             var arvm = new AdminRolesViewModel {RoleList = Roles.GetAllRoles()};
@@ -268,6 +274,7 @@ namespace WWW.Controllers
 
             return View("Subscriptions", svm);
         } 
+        [SuperAdmin][DisplayName("Tools")]
         public ActionResult Tools()
         {
             
@@ -282,6 +289,7 @@ namespace WWW.Controllers
         //    }
         //    return View();
         //}
+        [SuperAdmin][DisplayName("Managing Moderators")]
         public ActionResult ManageModerators()
         {
             AdminModeratorsViewModel vm = new AdminModeratorsViewModel(User);
@@ -315,6 +323,7 @@ namespace WWW.Controllers
         #endregion
 
         #region Save Methods
+        [SuperAdmin]
         public ActionResult SaveForumConfig(FormCollection form)
         {
             if (ModelState.IsValid)
@@ -798,6 +807,7 @@ namespace WWW.Controllers
 
         #region Manage Roles
 
+        [SuperAdmin][DisplayName("Delete Role")]
         public ActionResult DeleteRole(string rolename)
         {
             if (!String.IsNullOrWhiteSpace(rolename))
@@ -906,6 +916,7 @@ namespace WWW.Controllers
 
         #region tools
         [HttpPost]
+        [SuperAdmin][DisplayName("Email Config")]
         public ActionResult EmailServer(AdminEmailServer vm)
         {
             if (ModelState.IsValid)
@@ -1096,32 +1107,6 @@ namespace WWW.Controllers
             return View("ManageAvatars", vm);
         }
 
-        public ActionResult SaveSpamDomain(int id, string domain)
-        {
-            var spamdomain = SpamFilter.Fetch(id);
-            spamdomain.SpamServer = domain;
-            spamdomain.Save();
-            TempData["ActiveTab"] = "#email-spam";
-            return RedirectToAction("EmailServer");
-        }
-
-        public ActionResult DeleteSpamDomain(int id)
-        {
-            var spamdomain = SpamFilter.Fetch(id);
-            spamdomain.Delete();
-            TempData["ActiveTab"] = "#email-spam";
-            return RedirectToAction("EmailServer");
-        }
-
-        public ActionResult AddSpamDomain(string domain)
-        {
-            SpamFilter spamdomain = new SpamFilter();
-            if (!domain.StartsWith("@"))
-                domain = "@" + domain;
-            spamdomain.SpamServer = domain;
-            spamdomain.Save();
-            return RedirectToAction("EmailServer");
-        }
 
         public ActionResult ManageArchives()
         {
@@ -1155,18 +1140,6 @@ namespace WWW.Controllers
             return View("ManageArchives", avm);
         }
 
-        public ActionResult DbsFile()
-        {
-            string appDataPath = AppDomain.CurrentDomain.GetData("DataDirectory").ToString();
-            var files = Directory.GetFiles(appDataPath, "dbs*.xml");
-            List<DbsFile> dbsfiles = new List<DbsFile>();
-            foreach (string path in files)
-            {
-                dbsfiles.Add(new DbsFile(path));
-            }
-            return View(dbsfiles.OrderBy(f=>f.Description).ToList());
-        }
-
         public ActionResult UnSubscribe(int id, int forumid, int catid, int userid)
         {
             try
@@ -1198,6 +1171,44 @@ namespace WWW.Controllers
             return Json(new { redirectUrl }, JsonRequestBehavior.AllowGet);
 
         }
+        public ActionResult DeleteSubs(FormCollection form)
+        {
+            if (form.AllKeys.Contains("del-subs"))
+            {
+                var subs = form["del-subs"].StringToIntList();
+                foreach (var subid in subs)
+                {
+                    Subscriptions.Remove(subid);
+                }
+            }
+
+            var svm = new AdminSubscriptionsViewModel
+            {
+                Subscriptions = null,
+                SubscriptionLevel = ClassicConfig.SubscriptionLevel,
+                VisibleLevel = (Enumerators.SubscriptionLevel) Convert.ToInt32(form["level"])
+            };
+            switch (svm.VisibleLevel)
+            {
+                case Enumerators.SubscriptionLevel.Board:
+                    if (svm.SubscriptionLevel == Enumerators.SubscriptionLevel.Board)
+                        svm.Subscriptions = Subscriptions.BoardSubs().ToList();
+                    break;
+                case Enumerators.SubscriptionLevel.Category:
+                    svm.Subscriptions = Subscriptions.CatSubs().ToList();
+                    break;
+                case Enumerators.SubscriptionLevel.Forum:
+                    svm.Subscriptions = Subscriptions.ForumSubs().ToList();
+                    break;
+                case Enumerators.SubscriptionLevel.Topic:
+                    svm.Subscriptions = Subscriptions.TopicSubs(1).Items;
+                    break;
+            }
+
+            return View("Subscriptions", svm);
+
+        }
+
         public ActionResult StopForumSpamCheck(string id, string email, string userip)
         {
             Client client = new Client(); //(apiKeyTextBox.Text)
@@ -1231,16 +1242,55 @@ namespace WWW.Controllers
 
             return PartialView(response.ResponseParts);
         }
-
-        public ActionResult EnableDebug(FormCollection form)
+        public ActionResult SaveSpamDomain(int id, string domain)
         {
-            ClassicConfig.ShowDebug = form["enable-debug"] == "True";
-            return Redirect("~/Admin/Tools");
+            var spamdomain = SpamFilter.Fetch(id);
+            spamdomain.SpamServer = domain;
+            spamdomain.Save();
+            TempData["ActiveTab"] = "#email-spam";
+            return RedirectToAction("EmailServer");
+        }
+        public ActionResult DeleteSpamDomain(int id)
+        {
+            var spamdomain = SpamFilter.Fetch(id);
+            spamdomain.Delete();
+            TempData["ActiveTab"] = "#email-spam";
+            return RedirectToAction("EmailServer");
+        }
+        public ActionResult AddSpamDomain(string domain)
+        {
+            SpamFilter spamdomain = new SpamFilter();
+            if (!domain.StartsWith("@"))
+                domain = "@" + domain;
+            spamdomain.SpamServer = domain;
+            spamdomain.Save();
+            return RedirectToAction("EmailServer");
+        }
+        public ActionResult DeleteSpamFilters(FormCollection form)
+        {
+            var domains = form["del-spam-check"].StringToIntList();
+            foreach (var domain in domains)
+            {
+                var spamdomain = SpamFilter.Fetch(domain);
+                spamdomain.Delete();
+
+            }
+            TempData["ActiveTab"] = "#email-spam";
+            return RedirectToAction("EmailServer");
         }
 
-        delegate string ProcessTask(string id);
-        private static DbsFileProcessor _dbsProcessor;
-
+        [SuperAdmin][DisplayName("Running DBS scripts")]
+        public ActionResult DbsFile()
+        {
+            string appDataPath = AppDomain.CurrentDomain.GetData("DataDirectory").ToString();
+            var files = Directory.GetFiles(appDataPath, "dbs*.xml");
+            List<DbsFile> dbsfiles = new List<DbsFile>();
+            foreach (string path in files)
+            {
+                dbsfiles.Add(new DbsFile(path));
+            }
+            return View(dbsfiles.OrderBy(f=>f.Description).ToList());
+        }
         public void ProcessDbs(string id, string dbsfile)
         {
             var provider = ConfigurationManager.ConnectionStrings["SnitzConnectionString"].ProviderName;
@@ -1254,15 +1304,6 @@ namespace WWW.Controllers
             processTask.BeginInvoke(id, EndProcess, processTask);
 
         }
-
-        private void EndProcess(IAsyncResult result)
-        {
-            ProcessTask processTask = (ProcessTask)result.AsyncState;
-            string id = processTask.EndInvoke(result);
-            _dbsProcessor.Remove(id);
-
-        }
-
         public ContentResult GetProgress(string id)
         {
             this.ControllerContext.HttpContext.Response.AddHeader("cache-control", "no-cache");
@@ -1273,10 +1314,6 @@ namespace WWW.Controllers
         public ActionResult ModConfiguration()
         {
             return View("ModConfiguration");
-        }
-        public ActionResult ManageEvents()
-        {
-            return PartialView("ManageEvents");
         }
         public ActionResult ModConfig(FormCollection form)
         {
@@ -1296,6 +1333,15 @@ namespace WWW.Controllers
             //return PartialView("ModConfiguration");
         }
 
+        public ActionResult EnableDebug(FormCollection form)
+        {
+            ClassicConfig.ShowDebug = form["enable-debug"] == "True";
+            return Redirect("~/Admin/Tools");
+        }
+        public ActionResult ManageEvents()
+        {
+            return PartialView("ManageEvents");
+        }
         public ActionResult Reset()
         {
             HttpRuntime.UnloadAppDomain();
@@ -1387,43 +1433,6 @@ namespace WWW.Controllers
 
         }
 
-        public ActionResult DeleteSubs(FormCollection form)
-        {
-            if (form.AllKeys.Contains("del-subs"))
-            {
-                var subs = form["del-subs"].StringToIntList();
-                foreach (var subid in subs)
-                {
-                    Subscriptions.Remove(subid);
-                }
-            }
-
-            var svm = new AdminSubscriptionsViewModel
-            {
-                Subscriptions = null,
-                SubscriptionLevel = ClassicConfig.SubscriptionLevel,
-                VisibleLevel = (Enumerators.SubscriptionLevel) Convert.ToInt32(form["level"])
-            };
-            switch (svm.VisibleLevel)
-            {
-                case Enumerators.SubscriptionLevel.Board:
-                    if (svm.SubscriptionLevel == Enumerators.SubscriptionLevel.Board)
-                        svm.Subscriptions = Subscriptions.BoardSubs().ToList();
-                    break;
-                case Enumerators.SubscriptionLevel.Category:
-                    svm.Subscriptions = Subscriptions.CatSubs().ToList();
-                    break;
-                case Enumerators.SubscriptionLevel.Forum:
-                    svm.Subscriptions = Subscriptions.ForumSubs().ToList();
-                    break;
-                case Enumerators.SubscriptionLevel.Topic:
-                    svm.Subscriptions = Subscriptions.TopicSubs(1).Items;
-                    break;
-            }
-
-            return View("Subscriptions", svm);
-
-        }
 
         public ActionResult Import()
         {
@@ -1473,10 +1482,6 @@ namespace WWW.Controllers
             }
             return Json("error|Problem uploading data");
         }
-        private void ImportSpamData(string csvPath)
-        {
-            SnitzDataContext.ImportSpamDomainsCSV(csvPath);
-        }
 
         public ActionResult Online()
         {
@@ -1516,19 +1521,6 @@ namespace WWW.Controllers
         {
             AudiencesStore.AddAudience(id);
             return Json(Url.Action("FeatureConfig") + "#api");
-        }
-
-        public ActionResult DeleteSpamFilters(FormCollection form)
-        {
-            var domains = form["del-spam-check"].StringToIntList();
-            foreach (var domain in domains)
-            {
-                var spamdomain = SpamFilter.Fetch(domain);
-                spamdomain.Delete();
-
-            }
-            TempData["ActiveTab"] = "#email-spam";
-            return RedirectToAction("EmailServer");
         }
 
         public ActionResult MergeMembers()
@@ -1663,6 +1655,15 @@ namespace WWW.Controllers
 
         }
 
+        delegate string ProcessTask(string id);
+        private static DbsFileProcessor _dbsProcessor;
+        private void EndProcess(IAsyncResult result)
+        {
+            ProcessTask processTask = (ProcessTask)result.AsyncState;
+            string id = processTask.EndInvoke(result);
+            _dbsProcessor.Remove(id);
+
+        }
         private void DeleteMember(int id)
         {
             string username;
@@ -1701,6 +1702,11 @@ namespace WWW.Controllers
                 throw new Exception("Problem deleting user:" + username, e.InnerException);
             }
         }
+        private void ImportSpamData(string csvPath)
+        {
+            SnitzDataContext.ImportSpamDomainsCSV(csvPath);
+        }
+
     }
 
 }

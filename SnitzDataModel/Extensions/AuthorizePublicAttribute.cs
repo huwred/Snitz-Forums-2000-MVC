@@ -20,9 +20,13 @@
 // */
 
 using System;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
 using SnitzConfig;
+using WebMatrix.WebData;
 
 namespace SnitzDataModel.Extensions
 {
@@ -49,6 +53,47 @@ namespace SnitzDataModel.Extensions
                 this.Roles = ClassicConfig.GetValue("STRRESTRICTROLES");
 
             return base.AuthorizeCore(httpContext);
+        }
+    }
+    public class SuperAdminAttribute : AuthorizeAttribute
+    {
+        public string AllowedUser { get; set; }
+        protected override bool AuthorizeCore(HttpContextBase httpContext)
+        {
+            if (ClassicConfig.GetValue("STRADMINUSER","") == "")
+            {
+                return true;
+            }
+            else
+            {
+                if(WebSecurity.CurrentUserName == ClassicConfig.GetValue("STRADMINUSER","") || WebSecurity.CurrentUserName == AllowedUser)
+                    return true;
+            }
+            return false;
+        }
+        protected override  void HandleUnauthorizedRequest(AuthorizationContext filterContext) {
+            string action = filterContext.ActionDescriptor.ActionName;
+            object[] test = filterContext.ActionDescriptor.GetCustomAttributes(true);
+            if (test.Length > 1)
+            {
+                for (int i = 0; i < test.Length; i++)
+                {
+                    if(test[i] is DisplayNameAttribute )
+                    {
+                        action = ((DisplayNameAttribute) test[i]).DisplayName;
+                    }
+                }
+            }
+            filterContext.Result = new RedirectToRouteResult(
+                new RouteValueDictionary
+                {
+                    { "action", "Index" },
+                    { "controller", "Admin" },
+                    {"id", action }
+                });
+        }
+        public void properties()
+        {
         }
     }
 }

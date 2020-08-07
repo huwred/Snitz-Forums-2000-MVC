@@ -26,6 +26,8 @@ using Category = SnitzDataModel.Models.Category;
 using Forum = SnitzDataModel.Models.Forum;
 using Topic = SnitzDataModel.Models.Topic;
 using System.Text.RegularExpressions;
+using Sparc.TagCloud;
+using WWW.Controllers;
 
 namespace WWW.Views.Helpers
 {
@@ -1172,6 +1174,59 @@ namespace WWW.Views.Helpers
 
 
             return MvcHtmlString.Create(controlGroup.InnerHtml);
+        }
+
+        public static MvcHtmlString TopicKeyWords(this HtmlHelper htmlhelper, int id)
+        {
+            TagCloudSetting setting = new TagCloudSetting();
+            setting.NumCategories = 20;
+            setting.MaxCloudSize = 50;
+
+            setting.StopWords = TagCloudController.LoadStopWords();
+            List<string> phrases;
+            phrases = Topic.GetTagStrings(id);
+            var tagfree = new List<string>();
+            foreach (var phrase in phrases)
+            {
+                string newphrase = BbCodeFormatter.BbCodeProcessor.CleanCode(phrase);
+                newphrase = BbCodeFormatter.BbCodeProcessor.StripCodeContents(newphrase);
+                newphrase = BbCodeFormatter.BbCodeProcessor.StripTags(newphrase);
+                newphrase = BbCodeFormatter.BbCodeProcessor.RemoveHtmlTags(newphrase);
+                tagfree.Add(newphrase);
+
+            }
+            var model = new TagCloudAnalyzer(setting)
+                .ComputeTagCloud(tagfree)
+                .Shuffle();
+            var tagString = string.Join(",",model.Select(t => t.Text));
+
+            return new MvcHtmlString(tagString);
+        }
+        public static MvcHtmlString ForumKeyWords(this HtmlHelper htmlhelper, IPrincipal user, int id=-1)
+        {
+            TagCloudSetting setting = new TagCloudSetting
+            {
+                NumCategories = 20, MaxCloudSize = 50, StopWords = TagCloudController.LoadStopWords()
+            };
+
+            List<string> phrases;
+            phrases = id == -1 ? Forum.GetTagStrings(user.AllowedForumIDs()) : Forum.GetTagStrings(id);
+            var tagfree = new List<string>();
+            foreach (var phrase in phrases)
+            {
+                string newphrase = BbCodeFormatter.BbCodeProcessor.CleanCode(phrase);
+                newphrase = BbCodeFormatter.BbCodeProcessor.StripCodeContents(newphrase);
+                newphrase = BbCodeFormatter.BbCodeProcessor.StripTags(newphrase);
+                newphrase = BbCodeFormatter.BbCodeProcessor.RemoveHtmlTags(newphrase);
+                tagfree.Add(newphrase);
+
+            }
+            var model = new TagCloudAnalyzer(setting)
+                .ComputeTagCloud(tagfree)
+                .Shuffle();
+            var tagString = string.Join(",",model.Select(t => t.Text));
+
+            return new MvcHtmlString(tagString);
         }
 
     }

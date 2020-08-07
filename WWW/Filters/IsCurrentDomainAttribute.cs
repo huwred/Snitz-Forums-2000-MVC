@@ -1,10 +1,14 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Security;
 using System.Web;
 using System.Web.Mvc;
+using SnitzConfig;
+using SnitzMembership;
 
 namespace WWW.Filters
 {
+ 
     public class IsCurrentDomainAttribute : AuthorizeAttribute
     {
         public bool ThrowNotFoundException { get; set; }

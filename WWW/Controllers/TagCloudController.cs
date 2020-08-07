@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Web;
+using System.Web.Hosting;
 using System.Web.Mvc;
 using SnitzDataModel.Extensions;
 using SnitzDataModel.Models;
@@ -37,14 +39,16 @@ namespace WWW.Controllers
             return PartialView("_TagCloud",model);
         }
 
-        private  HashSet<string> LoadStopWords()
+
+
+        public static  HashSet<string> LoadStopWords()
         {
             var culture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
             if (culture == "nn" || culture == "nb")
             {
                 culture = "no";
             }
-            var path = Server.MapPath("~/App_Data/stopwords-" + culture + ".txt");
+            var path = HostingEnvironment.MapPath("~/App_Data/stopwords-" + culture + ".txt");
             string logFile = "";
             if (System.IO.File.Exists(path))
             {

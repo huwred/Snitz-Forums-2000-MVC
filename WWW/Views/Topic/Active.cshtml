@@ -2,20 +2,26 @@
 @using SnitzConfig
 @using SnitzCore.Extensions
 @using SnitzCore.Utility
-@using SnitzDataModel.Extensions
 @using WWW.Views.Helpers
+@using SnitzDataModel.Extensions
+
 
 @model WWW.ViewModels.ActiveTopicsViewModel
 
 @{
     ViewBag.Title = ResourceManager.GetLocalisedString("mnuForumActive", "Menu") + " | " + Config.ForumTitle;
+    string metaTitle = ResourceManager.GetLocalisedString("mnuForumActive", "Menu") + " | " + Config.ForumTitle;
     bool isRighToLeft = SessionData.Get<bool>("isRighToLeft");
     var newlayout = ClassicConfig.GetIntValue("INTNEWLAYOUT", 0) == 1;
 }
 @section pageMeta
 {
-    <meta name="description" content="@ResourceManager.GetLocalisedString("mnuForumActive", "Menu")">
+    <meta name="title" content="@metaTitle.TruncateLongString(70)">
+    <meta name="description" content="@ResourceManager.GetLocalisedString("mnuForumActive", "Menu").TruncateLongString(149)">
     <meta name="author" content="@Config.ForumTitle">
+    <meta name="copyright" content="@Html.Raw(String.Format(ClassicConfig.Copyright, DateTime.UtcNow.Year)) - @Config.ForumTitle">
+
+    @*<meta name="keywords" content="@Html.ForumKeyWords(User,-1)">*@
 }
 @section styles{
 
@@ -190,7 +196,7 @@
 @section scripts
 {
     @Scripts.Render("~/Scripts/star-rating.min.js")
-<script>
+    <script>
 
         $(document)
             .ready(function () {
@@ -218,7 +224,7 @@
 
                     $.each(lis, function(i, el){
                         var c = $(el).data("val");
-                        
+
                         if(as[c] == null) {
                             as[c] = new Array();
                         }
@@ -266,5 +272,5 @@
 
         if (refresh > 0)
             setInterval("window.location.reload();", refresh);
-</script>
+    </script>
 }
