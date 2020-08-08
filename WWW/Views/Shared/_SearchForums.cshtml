@@ -6,7 +6,7 @@
     TempData["SideBox"] = true;
 }
 
-<form action="@Url.Action("Search", "Forum", new {})" method="post" id="search-side">
+<form action="@Url.Action("Search", "Forum", new {})" method="post" class="search-side">
     @Html.AntiForgeryToken()
     <div class="input-group">
         <input type="hidden" name="SearchModel.ForumId" value="@ViewData["ForumId"]" />

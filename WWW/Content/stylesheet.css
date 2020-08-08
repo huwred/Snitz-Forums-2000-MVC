@@ -1913,7 +1913,7 @@ ul.pager {
 #SlideshowImages img {
     max-height: 65vh !important;
 }
-#search-side .input-group {
+.search-side .input-group {
     width: 100%;
 }
 

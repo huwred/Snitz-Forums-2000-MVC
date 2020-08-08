@@ -928,20 +928,31 @@ $(window).on("load", function(){
 
 $(document).ajaxComplete(function () {
    // ready_or_not();
-   lazyload();
+   window.lazyload();
 });
 
 function setStyleFromCookie() {
-    
+    console.log('set style');
     var cssTitle = getCookie(styleCookieName);
-
-    if (cssTitle.length > 0) {
+    console.log('cookie style' + cssTitle);
+    if (typeof cssTitle !== "undefined" && cssTitle !== null && cssTitle.length > 0) {
+        console.log('switch 1');
         switchStyle(cssTitle.toLowerCase());
-        $("div.theme-changer select").val(cssTitle);
+        if ($("div.theme-changer").is(":visible"))
+        {
+            console.log('switch 1 visible');
+            $("div.theme-changer select").val(cssTitle);
+        }
+        
     } else {
-        console.log('set default theme');
+        console.log('switch 2');
         switchStyle(window.SnitzVars.defaultTheme.toLowerCase());
-        $("div.theme-changer select").val(window.SnitzVars.defaultTheme.toLowerCase());
+        if ($("div.theme-changer").is(":visible"))
+        {
+            console.log('switch 2 visible');
+            $("div.theme-changer select").val(window.SnitzVars.defaultTheme.toLowerCase());
+        }
+        
     }
     
     function getCookie(cookieName) {
