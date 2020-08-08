@@ -18,13 +18,13 @@ html, body {
 }
 #main {
     /*overflow: auto;*/
-    padding-bottom: 200px; /* this needs to be bigger than footer height*/
+    padding-bottom: 180px; /* this needs to be bigger than footer height*/
 }
 
 #wrap-footer {
     position: relative;
-    margin-top: -200px; /* negative value of footer height */
-    height: 200px;
+    margin-top: -180px; /* negative value of footer height */
+    height: 180px;
     clear: both;
     /*padding-top: 20px;*/
 }
@@ -1542,36 +1542,33 @@ select[multiple="multiple"] option {
 #site-footer {
     margin-top: 7px;
     padding: 19px 0 15px;
+    margin-bottom: 0;
 }
 #foot-left {
     float: left;
-    margin-bottom: 38px;
+    margin-bottom: 18px;
     width: 45%;
 }
 #foot-center {
-    float: left;
-    font-size: 2.4em;
-    height: 66px;
-    line-height: 55px;
-    margin-bottom: 38px;
+    margin: auto;
+    margin-bottom: 18px;
     text-align: center;
-    width: 10%;
+    width: 45%;
 }
 #foot-right {
-    float: left;
-    margin-bottom: 38px;
-    width: 45%;
+    float: right;
+    margin-bottom: 18px;
+    width: auto;
 }
 
 #foot-social {
     clear: both;
-    /*font-size: 1.8em;*/
-    line-height: 1;
+
     list-style: outside none none;
 }
 
 #foot-social li {
-    float: left;
+/*    float: left;*/
     margin-right: 40px;
 }
 #foot-copyright {

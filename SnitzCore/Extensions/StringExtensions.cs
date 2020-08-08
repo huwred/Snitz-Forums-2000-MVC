@@ -19,6 +19,12 @@ namespace SnitzCore.Extensions
             }
             return false;
         }
+        //public static string TruncateLongString(this string str, int maxLength)
+        //{
+        //    if (String.IsNullOrWhiteSpace(str))
+        //        return str;
+        //    return str.Substring(0, Math.Min(str.Length, maxLength));
+        //}
         public static string ToLangNum(this long i)
         {
             CultureInfo ci = SessionData.Get<CultureInfo>("Culture");

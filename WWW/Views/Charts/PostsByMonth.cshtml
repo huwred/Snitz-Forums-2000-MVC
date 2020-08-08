@@ -1,5 +1,5 @@
 ﻿
-<img src="@Url.Action("PostsByMonth","Chart",new {id=2018})" alt="Chart" />
+@*<img src="@Url.Action("PostsByMonth","Chart",new {id=2018})" alt="Chart" />*@
 @using WWW.Views.Helpers
 
 @{
@@ -17,7 +17,11 @@ var GetPostsByMonth = function() {
                 url: "/Charts/PostsByMonth/2020",  
                 contentType: "application/json; charset=utf-8",  
                 dataType: "json",  
-                success: function (chData) { 
+                error: function (data){
+                    console.log(data);
+                },
+                success: function (chData) {
+                    console.log(chData);
                     var aData = chData;  
                     var aLabels = aData[0];  
                     var aDatasets1 = aData[1];  

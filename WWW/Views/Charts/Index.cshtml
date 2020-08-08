@@ -8,8 +8,7 @@
 
         </div>
         <div class="panel-body">
-            @Html.Action("PostsByYear","Charts",new{page="test"})
-            @*<img id="posts-year" src="@Url.Action("PostsByYear","Charts",new{page="test"})" alt="Chart" style="max-width:100%"/>*@
+            @Html.Partial("PostsByYear", new { page = "test" });
         </div>
     </div>
 
@@ -26,8 +25,7 @@
             </div>
         </div>
         <div class="panel-body">
-            @Html.Action("PostsByMonth","Charts",new {id=Convert.ToInt32(Model.MaxYear) })
-            
+            @Html.Partial("PostsByMonth",new{ id = Convert.ToInt32(Model.MaxYear) });
         </div>
     </div>
 </div>

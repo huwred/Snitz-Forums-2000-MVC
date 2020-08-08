@@ -55,9 +55,19 @@ namespace SnitzDataModel.Extensions
             return base.AuthorizeCore(httpContext);
         }
     }
+
     public class SuperAdminAttribute : AuthorizeAttribute
     {
         public string AllowedUser { get; set; }
+        //public override void OnAuthorization(AuthorizationContext filterContext)
+        //{
+        //    var result = new ViewResult();
+        //    result.ViewName = "Login.cshtml";        //this can be a property you don't have to hard code it
+        //    result.MasterName = "_Layout.cshtml";    //this can also be a property
+        //    result.ViewBag.Message = this.Message;
+        //    filterContext.Result = result;
+        //}
+
         protected override bool AuthorizeCore(HttpContextBase httpContext)
         {
             if (ClassicConfig.GetValue("STRADMINUSER","") == "")
@@ -69,11 +79,16 @@ namespace SnitzDataModel.Extensions
                 if(WebSecurity.CurrentUserName == ClassicConfig.GetValue("STRADMINUSER","") || WebSecurity.CurrentUserName == AllowedUser)
                     return true;
             }
+
             return false;
         }
+
         protected override  void HandleUnauthorizedRequest(AuthorizationContext filterContext) {
+            // Returns HTTP 401 - see comment in HttpUnauthorizedResult.cs.
+            //filterContext.Result = new HttpUnauthorizedResult();
             string action = filterContext.ActionDescriptor.ActionName;
             object[] test = filterContext.ActionDescriptor.GetCustomAttributes(true);
+
             if (test.Length > 1)
             {
                 for (int i = 0; i < test.Length; i++)
@@ -84,6 +99,7 @@ namespace SnitzDataModel.Extensions
                     }
                 }
             }
+
             filterContext.Result = new RedirectToRouteResult(
                 new RouteValueDictionary
                 {
@@ -92,8 +108,10 @@ namespace SnitzDataModel.Extensions
                     {"id", action }
                 });
         }
+
         public void properties()
         {
+
         }
     }
 }

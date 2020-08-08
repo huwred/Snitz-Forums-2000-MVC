@@ -318,7 +318,10 @@ namespace SnitzDataModel.Controllers
         }
         protected override void HandleUnknownAction(string actionName)
         {
-            this.View(actionName).ExecuteResult(this.ControllerContext);
+            // Avoid IIS7 getting in the middle
+            Response.TrySkipIisCustomErrors = true; 
+            throw new HttpException(404, actionName + " not recognised");
+            //this.View(actionName).ExecuteResult(this.ControllerContext);
         }
         protected override void Dispose(bool disposing)
         {

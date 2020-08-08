@@ -14,6 +14,7 @@ namespace WWW.Controllers
         //
         // GET: /Error/
 
+        [ValidateInput(false)]
         public ActionResult Index(HandleErrorInfo exception)
         {
             //Exception ex = Server.GetLastError();
@@ -21,6 +22,7 @@ namespace WWW.Controllers
             {
                 if (Request.Url != null) return Redirect(Request.Url.AbsoluteUri );
             }
+            Response.StatusCode = 500;
             return View("Error",exception);
         }
         public ActionResult NotFound(HandleErrorInfo exception = null)

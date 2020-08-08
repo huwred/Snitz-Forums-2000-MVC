@@ -3,13 +3,24 @@
 @using SnitzConfig
 @model System.Web.Mvc.HandleErrorInfo
 @{
-    //Layout = "";
-    ViewBag.Title = "Page Not Found";
+    Layout = "~/Views/Shared/_LayoutNoMenu.cshtml";
+    ViewBag.Title = "404 Page Not Found";
 }
 
-<div class="alert alert-warning col-xs-4 col-xs-offset-4 text-center">
-    @ResourceManager.GetLocalisedString("lbl404", "labels")<br /><br />
-    <p>@Html.ActionLink(ResourceManager.GetLocalisedString("lnkReturn", "labels"), "Index", "Home")</p>
+<div class="alert alert-warning col-xs-4 col-xs-offset-4" style="padding-left: 40px;">
+    <h2 >Oops!</h2>
+    <h4 >@ResourceManager.GetLocalisedString("lbl404", "labels")</h4>
+    <br/>
+    <label>Error code: 404</label>
+    <p>
+        Here are some useful links to help you out.
+        <ul class="list-unstyled">
+            <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuForumSearch", "Menu"), "Search", "Forum")</li>
+            <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuForumFAQ", "Menu"), "Index", "Help")</li>
+            <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuForumHome", "Menu"), "Index", "Home")</li>
+            <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuForumActive", "Menu"), "Active", "Topic")</li>
+        </ul>
+    </p>
 </div>
 <div class="row"></div>
 <div class="row"></div>

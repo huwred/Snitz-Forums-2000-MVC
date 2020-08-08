@@ -190,6 +190,7 @@ using Westwind.Web.Mvc;
                 TemplateManager = new ResolvePathTemplateManager(new[] {"EmailTemplates"}),
                 DisableTempFileLocking = true
             };
+
             var templateService = RazorEngineService.Create(config);
             //var templateService = new TemplateService();
             var message = templateService.RunCompile(templateFilePath,  null, ViewName);
