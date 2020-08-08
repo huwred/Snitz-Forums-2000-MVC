@@ -4,6 +4,25 @@
         <name>Hangfire.SqlServer</name>
     </assembly>
     <members>
+        <member name="M:Hangfire.SqlServer.SqlServerBootstrapperConfigurationExtensions.UseSqlServerStorage(Hangfire.IBootstrapperConfiguration,System.String)">
+            <summary>
+            Tells the bootstrapper to use SQL Server as a job storage,
+            that can be accessed using the given connection string or 
+            its name.
+            </summary>
+            <param name="configuration">Configuration</param>
+            <param name="nameOrConnectionString">Connection string or its name</param>
+        </member>
+        <member name="M:Hangfire.SqlServer.SqlServerBootstrapperConfigurationExtensions.UseSqlServerStorage(Hangfire.IBootstrapperConfiguration,System.String,Hangfire.SqlServer.SqlServerStorageOptions)">
+            <summary>
+            Tells the bootstrapper to use SQL Server as a job storage
+            with the given options, that can be accessed using the specified
+            connection string or its name.
+            </summary>
+            <param name="configuration">Configuration</param>
+            <param name="nameOrConnectionString">Connection string or its name</param>
+            <param name="options">Advanced options</param>
+        </member>
         <member name="T:Hangfire.SqlServer.SqlServerMonitoringApi.SafeDictionary`2">
             <summary>
             Overloaded dictionary that doesn't throw if given an invalid key
@@ -38,24 +57,19 @@
             to query the data, with the given options.
             </summary>
         </member>
-        <member name="M:Hangfire.SqlServer.SqlServerBootstrapperConfigurationExtensions.UseSqlServerStorage(Hangfire.IBootstrapperConfiguration,System.String)">
+        <member name="M:Hangfire.SqlServer.SqlServerStorage.#ctor(System.Func{System.Data.Common.DbConnection})">
             <summary>
-            Tells the bootstrapper to use SQL Server as a job storage,
-            that can be accessed using the given connection string or 
-            its name.
+            Initializes a new instance of the <see cref="T:Hangfire.SqlServer.SqlServerStorage"/> class with
+            a connection factory <see cref="T:System.Func`1"/> class that will be invoked
+            to create new database connections for querying the data.
             </summary>
-            <param name="configuration">Configuration</param>
-            <param name="nameOrConnectionString">Connection string or its name</param>
         </member>
-        <member name="M:Hangfire.SqlServer.SqlServerBootstrapperConfigurationExtensions.UseSqlServerStorage(Hangfire.IBootstrapperConfiguration,System.String,Hangfire.SqlServer.SqlServerStorageOptions)">
+        <member name="M:Hangfire.SqlServer.SqlServerStorage.#ctor(System.Func{System.Data.Common.DbConnection},Hangfire.SqlServer.SqlServerStorageOptions)">
             <summary>
-            Tells the bootstrapper to use SQL Server as a job storage
-            with the given options, that can be accessed using the specified
-            connection string or its name.
+            Initializes a new instance of the <see cref="T:Hangfire.SqlServer.SqlServerStorage"/> class with
+            a connection factory <see cref="T:System.Func`1"/> class that will be invoked
+            to create new database connections for querying the data.
             </summary>
-            <param name="configuration">Configuration</param>
-            <param name="nameOrConnectionString">Connection string or its name</param>
-            <param name="options">Advanced options</param>
         </member>
     </members>
 </doc>
