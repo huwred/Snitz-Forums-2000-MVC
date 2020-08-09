@@ -109,10 +109,10 @@
             if (plugin == "posters")
             {
                 <div class="side-box">
-                    @Html.Action("PostsByUser","Charts")
+                    @Html.Partial("~/Views/Charts/PostsByUser.cshtml")
                 </div>
                 <div class="side-box">
-                    @Html.Action("RepliesByUser","Charts")
+                    @Html.Partial("~/Views/Charts/RepliesByUser.cshtml")
                 </div>
             }
             if (Config.TableExists("FORUM_DONATION") && ClassicConfig.GetIntValue("INTSHOWDONATE", 0) == 1)

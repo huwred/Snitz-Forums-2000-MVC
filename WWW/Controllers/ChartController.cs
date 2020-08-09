@@ -83,7 +83,7 @@ namespace WWW.Controllers
             
         }
 
-        [HttpPost]
+        //[HttpPost]
         public JsonResult PostsByUser()
         {
             var sqlTop = "";
@@ -119,7 +119,7 @@ namespace WWW.Controllers
 
             return Json(iData,JsonRequestBehavior.AllowGet);
         }
-        [HttpPost]
+        //[HttpPost]
         public JsonResult RepliesByUser()
         {
             var sqlTop = "";

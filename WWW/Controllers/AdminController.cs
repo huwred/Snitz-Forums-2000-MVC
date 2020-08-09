@@ -152,6 +152,7 @@ namespace WWW.Controllers
         {
             return View(CustomBBcode.All());
         }
+        [SuperAdmin]
         public ActionResult PendingMembers()
         {
             PendingMemberViewModel pvm = new PendingMemberViewModel

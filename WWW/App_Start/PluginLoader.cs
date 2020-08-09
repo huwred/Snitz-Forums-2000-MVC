@@ -190,7 +190,7 @@ namespace WWW
                         catch (Exception ex)
                         {
                             _logger.Error(ex);
-                            throw;
+                            //throw;
                         }
                     }
 

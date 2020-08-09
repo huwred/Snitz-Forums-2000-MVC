@@ -199,7 +199,7 @@
                 @Html.Action("ForumEventSettings", "Calendar", new {id = Model.Id})
             }
             @* Event Calendar code *@
-            @if (Config.TableExists("FORUM_THANKS") && ClassicConfig.GetIntValue("STRTHANKS") == 1)
+            @if (Config.TableExists("FORUM_THANKS") && ClassicConfig.GetIntValue("STRTHANKS",0) == 1)
             {
                 @Html.Action("ForumThanks", "PostThanks", new {id = Model.Id})
             }
