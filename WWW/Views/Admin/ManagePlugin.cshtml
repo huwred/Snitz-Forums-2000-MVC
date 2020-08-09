@@ -1,14 +1,14 @@
 ﻿@using LangResources.Utility
 @using SnitzConfig
 @using SnitzDataModel.Extensions
-
+@model string
 @using WWW.Views.Helpers
 
 
 @{
                 /**/
 
-                ViewBag.PageTitle = "Calendar/Events Configuration";
+                ViewBag.PageTitle = Model + "/Mod Configuration";
                 ViewBag.SubmitButton = "";
                 Layout = "~/Views/Admin/_Layout.cshtml";
 }
@@ -16,7 +16,7 @@
 @if (Config.TableExists("CAL_EVENTS"))
 {
     <div class="panel panel-primary panel-body clearfix">
-        @Html.Action("Admin", "Calendar")
+        @Html.Action("Admin", Model)
     </div>
 
 }
