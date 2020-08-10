@@ -43,7 +43,7 @@
         <add assembly="System.ServiceProcess, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
       </assemblies>
     </compilation>
-    <customErrors mode="Off" defaultRedirect="~/Error" redirectMode="ResponseRewrite">
+    <customErrors mode="On" defaultRedirect="~/Error" redirectMode="ResponseRewrite">
       <error statusCode="403" redirect="~/Error/Forbidden" />
       <error statusCode="404" redirect="~/Error/NotFound" />
       <error statusCode="400" redirect="~/400.aspx" />
@@ -121,7 +121,7 @@
       </dependentAssembly>
       <dependentAssembly>
         <assemblyIdentity name="System.Web.Http" publicKeyToken="31bf3856ad364e35" />
-        <bindingRedirect oldVersion="1.0.0.0-5.2.3.0" newVersion="4.0.0.0" />
+        <bindingRedirect oldVersion="1.0.0.0-5.2.3.0" newVersion="5.2.7.0" />
       </dependentAssembly>
       <dependentAssembly>
         <assemblyIdentity name="System.Runtime.CompilerServices.Unsafe" publicKeyToken="b03f5f7f11d50a3a" culture="neutral" />

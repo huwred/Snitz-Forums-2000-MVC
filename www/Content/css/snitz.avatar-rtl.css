@@ -1,0 +1,31 @@
+﻿/* -------------------------------------
+    JCrop customization
+---------------------------------------- */
+.modal-content {
+    min-width: 390px !important;
+}
+
+#preview-pane {
+    position: absolute;
+    right: auto;
+    left: -120px;
+    z-index: 1;
+    display: block;
+    border: 1px #000 solid;
+}
+
+.upload-percent-value {
+    padding-right: 10px;
+}
+
+@media (max-width : 580px) {
+    #preview-pane {
+        position: absolute;
+        left: auto;
+        right: -10px;
+        top:-20px;
+    }
+    .modal-footer {
+        text-align: right;
+    }
+}
