@@ -398,10 +398,6 @@
     <Content Include="Scripts\snitz.pm.min.js">
       <DependentUpon>snitz.pm.js</DependentUpon>
     </Content>
-    <Content Include="Scripts\snitz.sitemanage.js" />
-    <Content Include="Scripts\snitz.sitemanage.min.js">
-      <DependentUpon>snitz.sitemanage.js</DependentUpon>
-    </Content>
     <Content Include="Scripts\timeago\timeago.fa.js" />
     <Content Include="Scripts\timeago\timeago.no.js" />
     <Content Include="Scripts\timeago\timeago.olden.js" />
