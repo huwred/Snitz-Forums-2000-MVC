@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -8,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>WWW</RootNamespace>
     <AssemblyName>WWW</AssemblyName>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -22,6 +23,7 @@
     <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
     <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
     <UseGlobalApplicationHostFile />
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -66,6 +68,7 @@
       <HintPath>..\packages\MySql.Web.6.10.9\lib\net452\MySql.Web.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.7\lib\net45\System.Net.Http.Formatting.dll</HintPath>
@@ -75,6 +78,8 @@
     <Reference Include="System.Web.Cors, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Cors.5.2.7\lib\net45\System.Web.Cors.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Http, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.7\lib\net45\System.Web.Http.dll</HintPath>
     </Reference>
@@ -82,14 +87,11 @@
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Cors.5.2.7\lib\net45\System.Web.Http.Cors.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
-    <Reference Include="System.Core" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Web.Routing" />
-    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Abstractions" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Web.Razor">
       <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.7\lib\net45\System.Web.Razor.dll</HintPath>
@@ -109,6 +111,7 @@
     <Reference Include="System.Web.Mvc">
       <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.7\lib\net45\System.Web.Mvc.dll</HintPath>
     </Reference>
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="WebMatrix.Data">
       <HintPath>..\packages\Microsoft.AspNet.WebPages.Data.3.2.6\lib\net45\WebMatrix.Data.dll</HintPath>
     </Reference>
@@ -125,7 +128,6 @@
     <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Management" />
     <Reference Include="System.Transactions" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="EntityFramework">
@@ -237,7 +239,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Content\Avatar\" />
+    <Folder Include="Content\Themes\snitz\plugincss\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
@@ -330,7 +332,16 @@
     <Content Include="404.aspx" />
     <Content Include="404.html" />
     <Content Include="500.aspx" />
+    <Content Include="App_Data\dbsUpdate.xml" />
+    <Content Include="Content\Avatar\default.gif" />
+    <None Include="Content\css\bootstrapnews.css" />
+    <None Include="Content\css\bootstrap-rtl.css" />
+    <Content Include="Content\css\bootstrap-rtl.min.css" />
+    <Content Include="Content\css\bootstrapnews.min.css">
+      <DependentUpon>bootstrapnews.css</DependentUpon>
+    </Content>
     <Content Include="Content\css\dataTables.bootstrap.min.css" />
+    <Content Include="Content\css\Jcrop.gif" />
     <Content Include="Content\css\jquery-ui-timepicker-addon.css" />
     <Content Include="Content\css\jquery-ui-timepicker-addon.min.css">
       <DependentUpon>jquery-ui-timepicker-addon.css</DependentUpon>
@@ -359,21 +370,62 @@
     <Content Include="Content\css\snitz.avatar-rtl.css" />
     <Content Include="Content\css\snitz.avatar.css" />
     <Content Include="Content\css\stylesheetrtl.css" />
-    <Content Include="Content\Themes\snitz\dbmanager.css" />
-    <Content Include="Content\Themes\snitz\dbmanager.min.css" />
+    <None Include="Content\Themes\Enbiolog\colours.css" />
+    <Content Include="Content\Themes\Enbiolog\colours.min.css">
+      <DependentUpon>colours.css</DependentUpon>
+    </Content>
+    <None Include="Content\Themes\Enbiolog\highlight.css" />
+    <Content Include="Content\Themes\Enbiolog\highlight.min.css" />
+    <Content Include="Content\Themes\Enbiolog\images\archived.png" />
+    <Content Include="Content\Themes\Enbiolog\images\biobanner_02.jpg" />
+    <Content Include="Content\Themes\Enbiolog\images\biologo3.gif" />
+    <Content Include="Content\Themes\Enbiolog\images\blank.png" />
+    <Content Include="Content\Themes\Enbiolog\images\flags\en.png" />
+    <Content Include="Content\Themes\Enbiolog\images\flags\no.png" />
+    <Content Include="Content\Themes\Enbiolog\images\flags\ro.png" />
+    <Content Include="Content\Themes\Enbiolog\images\Forum\bug.png" />
+    <Content Include="Content\Themes\Enbiolog\images\Forum\default.png" />
+    <Content Include="Content\Themes\Enbiolog\images\hot.gif" />
+    <Content Include="Content\Themes\Enbiolog\images\link_loader.gif" />
+    <Content Include="Content\Themes\Enbiolog\images\lock.png" />
+    <Content Include="Content\Themes\Enbiolog\images\logo.png" />
+    <Content Include="Content\Themes\Enbiolog\images\logo_web.png" />
+    <Content Include="Content\Themes\Enbiolog\images\new.png" />
+    <Content Include="Content\Themes\Enbiolog\images\onhold.png" />
+    <Content Include="Content\Themes\Enbiolog\images\stick.png" />
+    <Content Include="Content\Themes\Enbiolog\images\warning.png" />
+    <Content Include="Content\Themes\Enbiolog\snitz-rtl.css" />
+    <Content Include="Content\Themes\Enbiolog\snitz-rtl.min.css" />
+    <None Include="Content\Themes\Enbiolog\snitz.css" />
+    <Content Include="Content\Themes\Enbiolog\snitz.min.css">
+      <DependentUpon>snitz.css</DependentUpon>
+    </Content>
+    <None Include="Content\Themes\Enbiolog\star-rating.css" />
+    <Content Include="Content\Themes\Enbiolog\star-rating.min.css" />
+    <Content Include="Content\Themes\Enbiolog\tag_cloud.css" />
     <Content Include="favicon.ico" />
     <None Include="bundleconfig.json" />
     <None Include="LinqToDB.Templates\CopyMe.MySql.tt.txt" />
     <Content Include="gpl-3.0.htm" />
+    <None Include="Scripts\bootstrapnews.js" />
+    <Content Include="Scripts\bootstrapnews.min.js">
+      <DependentUpon>bootstrapnews.js</DependentUpon>
+    </Content>
     <Content Include="Scripts\Chart.min.js">
       <DependentUpon>Chart.js</DependentUpon>
     </Content>
     <Content Include="Scripts\dataTables.bootstrap.min.js" />
+    <Content Include="Scripts\dropzone.min.js">
+      <DependentUpon>dropzone.js</DependentUpon>
+    </Content>
     <Content Include="Scripts\forum.details.min.js">
       <DependentUpon>forum.details.js</DependentUpon>
     </Content>
     <Content Include="Scripts\jquery.twosidedmultiselect.min.js">
       <DependentUpon>jquery.twosidedmultiselect.js</DependentUpon>
+    </Content>
+    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js">
+      <DependentUpon>jquery.unobtrusive-ajax.js</DependentUpon>
     </Content>
     <Content Include="Scripts\langresource.min.js" />
     <Content Include="Scripts\lang\en-gb.js" />
@@ -435,7 +487,7 @@
     <Content Include="Scripts\jquery.grid-picker.js" />
     <Content Include="Scripts\jquery.highlight-5.js" />
     <Content Include="Scripts\jquery.timeago.js" />
-    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
+    <None Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
@@ -476,14 +528,16 @@
     <Content Include="Content\Themes\vellum\snitz-rtl.min.css" />
     <Content Include="Content\Themes\vellum\highlight.css" />
     <Content Include="Content\Themes\vellum\snitz-rtl.css" />
-    <Content Include="Content\Themes\vellum\colours.min.css" />
-    <Content Include="Content\Themes\vellum\dbmanager.min.css" />
-    <Content Include="Content\Themes\vellum\dbmanager.css" />
+    <Content Include="Content\Themes\vellum\colours.min.css">
+      <DependentUpon>colours.css</DependentUpon>
+    </Content>
     <Content Include="Content\Themes\vellum\snitz.css" />
-    <Content Include="Content\Themes\vellum\snitz.min.css" />
+    <Content Include="Content\Themes\vellum\snitz.min.css">
+      <DependentUpon>snitz.css</DependentUpon>
+    </Content>
     <Content Include="Content\Themes\vellum\tag_cloud.css" />
     <Content Include="Content\Themes\vellum\star-rating.min.css" />
-    <Content Include="Content\Themes\vellum\colours.css" />
+    <None Include="Content\Themes\vellum\colours.css" />
     <Content Include="Content\Themes\vellum\star-rating.css" />
     <Content Include="Content\Themes\vellum\highlight.min.css" />
     <Content Include="Content\Themes\vellum\images\archived.png" />
@@ -920,7 +974,7 @@
     <None Include="App_Data\dbsTemplate.xml" />
     <None Include="App_Data\dbsTemplate.xsd" />
     <None Include="App_Data\language_en.csv" />
-    <None Include="Content\css\fonts\fontawesome-webfont.woff2" />
+    <Content Include="Content\css\fonts\fontawesome-webfont.woff2" />
     <None Include="LinqToDB.Templates\LinqToDB.MySql.Tools.ttinclude" />
     <Content Include="Views\RssWidget\RSSView.cshtml" />
     <Content Include="Views\Static\Template.cshtml" />
@@ -956,6 +1010,10 @@
     <None Include="LinqToDB.Templates\DataAnnotations.ttinclude" />
     <Content Include="Views\Shared\_AntiForgeryToken.cshtml" />
   </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>
@@ -980,7 +1038,8 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v16.0\WebApplications\Microsoft.WebApplication.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
   <PropertyGroup>
     <PostBuildEvent>copy /Y "$(TargetDir)snitz*.dll" "$(SolutionDir)dependency\"
 copy /Y "$(TargetDir)bbcode*.dll" "$(SolutionDir)dependency\"
