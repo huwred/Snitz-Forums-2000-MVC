@@ -80,7 +80,7 @@
 <div class="panel panel-primary panel-body clearfix ">
     <div class="row-fluid">
         <div class="col-xs-6" @if(Model.Banners.Length == 0){@Html.Raw("style={display:none;}")}>
-            @using (Html.BeginForm("ModConfig", "Admin", FormMethod.Post, new { @class = "form-horizontal" }))
+            @using (Html.BeginForm("SaveModConfig", "Admin", FormMethod.Post, new { @class = "form-horizontal" }))
             {
                 ViewBag.SubmitButton = ResourceManager.GetLocalisedString("btnSave", "labels");
                 <div class="form-group">

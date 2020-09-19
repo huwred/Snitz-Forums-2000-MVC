@@ -81,8 +81,8 @@
                                                                 </span>, style: "Archive"),
                                                                      webGrid.Column(
                                                                          format:@<span class="link">
-                                                                            <a class="Edit" href="javascript:;"><i class="fa fa-pencil"></i></a>
-                                                                            <a class="Delete" href="javascript:;"><i class="fa fa-trash-o"></i></a>
+                                                                            <a class="Edit" href="javascript:;" data-title="Edit Link" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+                                                                            <a class="Delete" href="javascript:;" data-title="Delete Link" data-toggle="tooltip"><i class="fa fa-trash-o"></i></a>
                                                                             <a class="Update" href="javascript:;" style="display:none"><i class="fa fa-check"></i></a>
                                                                             <a class="Cancel" href="javascript:;" style="display:none"><i class="fa fa-times"></i></a>
                                                                         </span>)
@@ -102,7 +102,7 @@ else
 @section Scripts
 {
     @Scripts.Render("~/bundles/dropzonejs")
-    @Scripts.Render("~/scripts/snitz.upload.min.js")
+    @Scripts.Render("~/bundles/post")
     <script type="text/javascript">
         try {
             Dropzone.autoDiscover = false;

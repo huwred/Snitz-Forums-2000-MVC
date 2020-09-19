@@ -43,12 +43,17 @@ namespace WWW.Controllers
         }
 
         [HttpPost]
-        public ActionResult Search(SearchModel model)
+        public ActionResult Search(FormCollection form, string command)
         {
             ViewBag.IsAdministrator = User.IsAdministrator();
             ViewBag.IsForumModerator = false;
+            int pagenum = 1;
+            if (command != null)
+            {
+                pagenum = Convert.ToInt32(command);
+            }
 
-            var terms = model.Term.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
+            var terms = (form["SearchModel.Term"] ?? form["FullParams.Term"]).Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
             if (ClassicConfig.GetValue("STRBADWORDFILTER") == "1")
             {
                 foreach (var term in terms)
@@ -61,36 +66,45 @@ namespace WWW.Controllers
                 }
             }
 
-            if (model.Category.HasValue)
+            SearchModel model = new SearchModel
             {
+                Term = form["SearchModel.Term"] ?? form["FullParams.Term"]
+            };
+
+
+            if (form.AllKeys.Contains("SearchModel.Category") && !string.IsNullOrWhiteSpace(form["SearchModel.Category"]))
+            {
+                model.Category = Convert.ToInt32(form["SearchModel.Category"] ?? form["FullParams.Category"]);
                 SearchResult sr = new SearchResult
                 {
                     Forum = null,
                     Params = model,
                     Replies = null,
-                    Category = Category.Fetch(model.Category.Value)
+                    Category = Category.Fetch(Convert.ToInt32(form["SearchModel.Category"] ?? form["FullParams.Category"]))
                 };
                 
                 sr.Topics = sr.Category.SearchTopics(model,User);
                 return View("SearchResult", sr);
             }
 
-            if (model.ForumId.HasValue)
+            if (form.AllKeys.Contains("SearchModel.ForumId") && !string.IsNullOrWhiteSpace(form["SearchModel.ForumId"]))
             {
+                model.ForumId = Convert.ToInt32(form["SearchModel.ForumId"] ?? form["FullParams.ForumId"]);
                 SearchResult sr = new SearchResult
                 {
-                    Forum = Forum.FetchForum(model.ForumId.Value),
+                    Forum = Forum.FetchForum(Convert.ToInt32(form["SearchModel.ForumId"] ?? form["FullParams.ForumId"])),
                     Params = model,
                     Replies = null,
                     Category = null
                 };
                 sr.Topics = sr.Forum.SearchTopics(model);
-                ViewBag.IsForumModerator = User.IsForumModerator(model.ForumId.Value);
+                ViewBag.IsForumModerator = User.IsForumModerator(Convert.ToInt32(form["SearchModel.ForumId"] ?? form["FullParams.ForumId"]));
                 return View("SearchResult", sr);
 
             }
-            if (model.TopicId.HasValue)
+            if (form.AllKeys.Contains("SearchModel.TopicId") && !string.IsNullOrWhiteSpace(form["SearchModel.TopicId"]))
             {
+                model.TopicId = Convert.ToInt32(form["SearchModel.TopicId"] ?? form["FullParams.TopicId"]);
                 Topic topic = Topic.WithAuthor(model.TopicId.Value);
                 SearchResult sr = new SearchResult
                 {
@@ -1365,102 +1379,112 @@ namespace WWW.Controllers
         }
 
         [Authorize(Roles = "Administrator,Moderator")]
-        public JsonResult MergeTopic(int id)
+        public JsonResult MergeTopic(int id, string action)
         {
             List<Topic> topics = new List<Topic>();
-            if (SessionData.Contains("TopicList"))
+            try
             {
-                List<int> selectedtopics = SessionData.Get<List<int>>("TopicList");
-                if (!selectedtopics.Contains(id))
+                if (SessionData.Contains("TopicList"))
                 {
-                    selectedtopics.Add(id);
-                }
-                if (selectedtopics.Count < 2)
-                {
-                    Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    return Json("You must select at least two topics before merging");
-                }
-                foreach (int topicid in selectedtopics)
-                {
-                    topics.Add(Topic.FetchTopic(topicid));
-                }
-                Topic mainTopic = topics.OrderBy(t => t.Date).First();
-                Forum forum = Forum.FetchForum(mainTopic.ForumId);
-                Forum oldforum = null;
-                foreach (Topic topic in topics)
-                {
-                    if (topic != mainTopic)
+                    List<int> selectedtopics = SessionData.Get<List<int>>("TopicList");
+                    if (!selectedtopics.Contains(id))
                     {
-                        //creat a reply from the topic
-                        if (topic.ForumId != mainTopic.ForumId)
+                        selectedtopics.Add(id);
+                    }
+                    if (selectedtopics.Count < 2)
+                    {
+                        Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        return Json("You must select at least two topics before merging", JsonRequestBehavior.AllowGet);
+                    }
+                    foreach (int topicid in selectedtopics)
+                    {
+                        topics.Add(Topic.FetchTopic(topicid));
+                    }
+                    Topic mainTopic = topics.OrderBy(t => t.Date).First();
+                    Forum forum = Forum.FetchForum(mainTopic.ForumId);
+                    Forum oldforum = null;
+                    foreach (Topic topic in topics)
+                    {
+                        if (topic != mainTopic)
                         {
-                            oldforum = Forum.FetchForum(topic.ForumId);
-                            if (oldforum == null)
+                            //creat a reply from the topic
+                            if (topic.ForumId != mainTopic.ForumId)
                             {
-                                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                                return Json("Source FORUM_ID is invalid");
+                                oldforum = Forum.FetchForum(topic.ForumId);
+                                if (oldforum == null)
+                                {
+                                    Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                    return Json("Source FORUM_ID is invalid");
 
+                                }
                             }
-                        }
-                        var reply = new Reply
-                        {
-                            CatId = mainTopic.CatId,
-                            ForumId = mainTopic.ForumId,
-                            TopicId = mainTopic.Id,
-                            Date = topic.Date,
-                            AuthorId = topic.AuthorId,
-                            ShowSig = topic.ShowSig,
-                            Message = topic.Message,
-                            LastEditDate = topic.LastEditDate,
-                            PostStatus = topic.PostStatus
-                        };
-                        if (ClassicConfig.GetValue("STRIPLOGGING") == "1")
-                        {
-                            reply.PosterIp = topic.PosterIp;
-                        }
-                        reply.Save();
-                        if (topic.ForumId != mainTopic.ForumId)
-                        {
-                            topic.ForumId = mainTopic.ForumId;
-                            topic.CatId = mainTopic.CatId;
-                        }
-                        //move all the replies and subscriptions;
-                        topic.MoveSubscriptions(mainTopic.Id,mainTopic.ForumId,mainTopic.CatId);
-                        topic.MoveReplies(mainTopic);
-                        //send move notify
-                        if (ClassicConfig.GetValue("STRMOVENOTIFY") == "1")
-                            EmailController.TopicMergeEmail(ControllerContext, topic, mainTopic);
-                        topic.Delete();
+                            var reply = new Reply
+                            {
+                                CatId = mainTopic.CatId,
+                                ForumId = mainTopic.ForumId,
+                                TopicId = mainTopic.Id,
+                                Date = topic.Date,
+                                AuthorId = topic.AuthorId,
+                                ShowSig = topic.ShowSig,
+                                Message = topic.Message,
+                                LastEditDate = topic.LastEditDate,
+                                PostStatus = topic.PostStatus
+                            };
+                            if (ClassicConfig.GetValue("STRIPLOGGING") == "1")
+                            {
+                                reply.PosterIp = topic.PosterIp;
+                            }
+                            reply.Save();
+                            if (topic.ForumId != mainTopic.ForumId)
+                            {
+                                topic.ForumId = mainTopic.ForumId;
+                                topic.CatId = mainTopic.CatId;
+                            }
+                            //move all the replies and subscriptions;
+                            topic.MoveSubscriptions(mainTopic.Id,mainTopic.ForumId,mainTopic.CatId);
+                            topic.MoveReplies(mainTopic);
+                            //send move notify
+                            if (ClassicConfig.GetValue("STRMOVENOTIFY") == "1")
+                                EmailController.TopicMergeEmail(ControllerContext, topic, mainTopic);
+                            topic.Delete();
 
+                        }
                     }
-                }
-                //update counts
-                mainTopic.UpdateLastPost();
-                if (oldforum != null)
-                {
-                    oldforum.UpdateLastPost();
-                }
-                forum.UpdateLastPost();
-
-                //clear the session
-                SessionData.Clear("TopicList");
-                if (ClassicConfig.SubscriptionLevel.In(Enumerators.SubscriptionLevel.Topic, Enumerators.SubscriptionLevel.Forum, Enumerators.SubscriptionLevel.Category))
-                {
-                    switch (forum.Subscription)
+                    //update counts
+                    mainTopic.UpdateLastPost();
+                    if (oldforum != null)
                     {
-                        case Enumerators.Subscription.ForumSubscription:
-                        case Enumerators.Subscription.TopicSubscription:
-                            BackgroundJob.Enqueue(() => ProcessSubscriptions.Topic( mainTopic.Id));
-                            break;
+                        oldforum.UpdateLastPost();
                     }
-                }
-                string redirectUrl = Url.Action("Posts", new { id = mainTopic.Id, pagenum = 1 });
+                    forum.UpdateLastPost();
 
-                return Json(new { redirectUrl }, JsonRequestBehavior.AllowGet);
-                //return RedirectToAction("Posts",new {id=mainTopic.Id,pagenum=1});
+                    //clear the session
+                    SessionData.Clear("TopicList");
+                    if (ClassicConfig.SubscriptionLevel.In(Enumerators.SubscriptionLevel.Topic, Enumerators.SubscriptionLevel.Forum, Enumerators.SubscriptionLevel.Category))
+                    {
+                        switch (forum.Subscription)
+                        {
+                            case Enumerators.Subscription.ForumSubscription:
+                            case Enumerators.Subscription.TopicSubscription:
+                                BackgroundJob.Enqueue(() => ProcessSubscriptions.Topic( mainTopic.Id));
+                                break;
+                        }
+                    }
+                    string redirectUrl = Url.Action("Posts", new { id = mainTopic.Id, pagenum = 1 });
+
+                    return Json(new { redirectUrl }, JsonRequestBehavior.AllowGet);
+                    //return RedirectToAction("Posts",new {id=mainTopic.Id,pagenum=1});
+                }
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json("You must select at least two topics before merging", JsonRequestBehavior.AllowGet);
+
             }
-            Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            return Json("You must select at least two topics before merging");
+            catch (Exception e)
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(e.Message, JsonRequestBehavior.AllowGet);
+                throw;
+            }
 
             
         }
@@ -1549,6 +1573,7 @@ namespace WWW.Controllers
         /// <param name="topicid">Id of checked <see cref="Topic"/></param>
         /// <returns></returns>
         [Authorize(Roles = "Administrator,Moderator")]
+        [HttpPost]
         public EmptyResult UpdateTopicList(int topicid)
         {
             if (SessionData.Contains("TopicList"))

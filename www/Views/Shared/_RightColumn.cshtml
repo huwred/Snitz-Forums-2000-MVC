@@ -68,7 +68,7 @@
                     </div>
                 }
             }
-            if (plugin.StartsWith("widget"))
+            if (plugin.StartsWith("widget") && ClassicConfig.GetIntValue("INTWIDGETS",0) == 1)
             {
                 var widget = plugin.Split('|');
                 if (Config.TableExists("FORUM_WIDGETS"))

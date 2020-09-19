@@ -46,6 +46,7 @@ namespace WWW.Helpers
     {
         public SeoFriendlyRoute(string url, RouteValueDictionary defaults, IRouteHandler routeHandler) : base(url, defaults, routeHandler)
         {
+
         }
 
         public override RouteData GetRouteData(HttpContextBase httpContext)
@@ -54,8 +55,10 @@ namespace WWW.Helpers
 
             if (routeData != null)
             {
+
                 if (routeData.Values.ContainsKey("id"))
                     routeData.Values["id"] = GetIdValue(routeData.Values["id"]);
+
             }
 
             return routeData;

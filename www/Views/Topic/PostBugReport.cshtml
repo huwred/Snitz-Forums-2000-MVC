@@ -14,7 +14,7 @@
 }
 @section styles{
 
-    @Styles.Render("~/Content/jquery-ui-timepicker-addon.min.css")
+    @Styles.Render("~/Content/css/jquery-ui-timepicker-addon.min.css")
     <style>
         .ui-wrapper {padding-right: 1px !important;padding-bottom:1px !important;}
         .ui-wrapper textarea{width:100% !important;height:100% !important;}
@@ -195,9 +195,9 @@
 
     @if (ClassicConfig.GetIntValue("STRPHOTOALBUM") == 1)
     {
-        @Scripts.Render("~/Scripts/jquery.contextMenu.min.js")
-        @Scripts.Render("~/Scripts/snitz.photoalbum.min.js")
-        @Scripts.Render("~/Scripts/snitz.gallery.upload.min.js")
+        @Scripts.Render("~/Scripts/pluginjs/jquery.contextMenu.min.js")
+        @Scripts.Render("~/Scripts/pluginjs/snitz.photoalbum.min.js")
+        @Scripts.Render("~/Scripts/pluginjs/snitz.gallery.upload.min.js")
     }
     <script type="text/javascript">
             try {

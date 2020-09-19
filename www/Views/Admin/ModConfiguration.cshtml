@@ -16,7 +16,7 @@
 
 <div class="panel panel-primary panel-body clearfix">
     <div class="col-sm-11 flip text-left">
-        @using (Html.BeginForm("ModConfig", "Admin", FormMethod.Post, new { @class = "form-horizontal" }))
+        @using (Html.BeginForm("SaveModConfig", "Admin", FormMethod.Post, new { @class = "form-horizontal" }))
         {
             ViewBag.SubmitButton = ResourceManager.GetLocalisedString("btnSave", "labels");
             if (Config.TableExists("FORUM_BOOKMARKS"))
@@ -25,31 +25,36 @@
                     @Html.ConfigToggle("Bookmarks", "STRBOOKMARKS", "", "control-label col-xs-3")
                 </div>
             }
-            <div class="form-group"></div>
+
             if (Config.TableExists("FORUM_THANKS"))
             {
                 <div class="form-group">
                     @Html.ConfigToggle(ResourceManager.GetLocalisedString("AdminLabel", "Thanks"), "STRTHANKS", "", "control-label col-xs-3")
                 </div>
             }
-            if (Config.TableExists(ConfigurationManager.AppSettings["memberTablePrefix"] + "USERFIELDS"))
+            if (Config.TableExists("FORUM_WIDGETS"))
             {
                 <div class="form-group">
-                    @Html.ConfigToggle(ResourceManager.GetLocalisedString("usrAdmin", "ExtProfile"), "STREXTENDPROFILE", "", "control-label col-xs-3")
+                    @Html.ConfigToggle("Widgets", "INTWIDGETS", "", "control-label col-xs-3")
                 </div>
+            }
+            <hr class="title"/>
+            if (Config.TableExists("FORUM_IMAGES"))
+            {
+                Html.RenderAction("Enable", "PhotoAlbum");
+            }
+            if (Config.TableExists("CAL_EVENTS"))
+            {
+                Html.RenderAction("Enable", "Calendar");
+            }
+            if (Config.TableExists(ConfigurationManager.AppSettings["memberTablePrefix"] + "USERFIELDS"))
+            {
+                Html.RenderAction("Enable", "MemberFields");
             }
             @Html.Hidden("ControllerView", "ModConfiguration");
             Html.RenderPartial("_FormButtons");
         }
-        @if (Config.TableExists(ConfigurationManager.AppSettings["memberTablePrefix"] + "USERFIELDS") && ClassicConfig.GetIntValue("STREXTENDPROFILE") == 1)
-        {
-            <div class="form-group">
-                <hr class="title" />
-                @{
-                    Html.RenderAction("MemberFieldsAdmin", "MemberFields");
-                }
-            </div>
-        }
+
 
     </div>
 </div>

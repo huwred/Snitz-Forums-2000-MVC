@@ -651,6 +651,7 @@ namespace SnitzDataModel.Models
         // Slug generation taken from http://stackoverflow.com/questions/2920744/url-slugify-algorithm-in-c
         public string GenerateSlug()
         {
+            return Id.ToString();
             string phrase = HttpUtility.UrlDecode(HttpUtility.HtmlDecode(Regex.Replace(Subject,@"\[[^\]]*\]","")));
 
             if (phrase != null)
@@ -663,7 +664,7 @@ namespace SnitzDataModel.Models
                 // cut and trim 
                 str = str.Substring(0, str.Length <= 45 ? str.Length : 45).Trim();
                 str = Regex.Replace(str, @"\s", "-"); // hyphens   
-                return $"{str}-{Id}";
+                return $"{str}_{Id}";
             }
 
             return Subject;

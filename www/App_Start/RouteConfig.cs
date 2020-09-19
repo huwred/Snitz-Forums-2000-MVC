@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using SnitzConfig;
@@ -34,6 +36,16 @@ namespace WWW
                     { @"/pop_profile.asp", new { controller = "Account", action = "UserProfile" }  },
                     { @"/pop_slideshow.asp", new { controller = "PhotoAlbum", action = "Album" }  }
                 })
+            );
+            routes.MapRoute(
+                name: "Search",
+                url: "Search/{id}",
+                defaults: new
+                {
+                    controller = "Search",
+                    action = "Index",
+                    id = UrlParameter.Optional
+                }
             );
             routes.MapRoute(
                 name: "Public",
@@ -82,7 +94,7 @@ namespace WWW
                 }
             );
             routes.MapRoute(
-                name: "Search",
+                name: "ForumSearch",
                 url: "Forum/Search",
                 defaults: new
                 {
@@ -90,6 +102,7 @@ namespace WWW
                     action = "Search"
                 }
             );
+
             routes.MapRoute(
                 name: "Active",
                 url: "Topic/Active",
@@ -134,15 +147,23 @@ namespace WWW
                     action = "License"
                 }
             );
-            routes.Add("CategoryDetails", new SeoFriendlyRoute("Category/{id}",
-                new RouteValueDictionary(new { controller = "Category", action = "Index" }),
-                new MvcRouteHandler()));
-            routes.Add("ForumDetails", new SeoFriendlyRoute("Forum/{id}",
-                new RouteValueDictionary(new { controller = "Forum", action = "Posts" }),
-                new MvcRouteHandler()));
-            routes.Add("TopicDetails", new SeoFriendlyRoute("Topic/{id}",
-                new RouteValueDictionary(new { controller = "Topic", action = "Posts" }),
-                new MvcRouteHandler()));
+
+            //routes.MapRoute(
+            //    name: "TopicActions",
+            //    url: "Topic/{action}/{id}",
+            //    defaults: new {controller = "Topic", action = "Index", id = UrlParameter.Optional },
+            //    constraints: new {action = new NotEqual(new[] {"Posts","Index"})}
+            //); 
+
+            //routes.Add("CategoryDetails", new SeoFriendlyRoute("Category/{action}/{slug}_{id}",
+            //    new RouteValueDictionary(new { controller = "Category", action = "Index" }),
+            //    new MvcRouteHandler()));
+            //routes.Add("ForumDetails", new SeoFriendlyRoute("Forum/{action}/{slug}_{id}",
+            //    new RouteValueDictionary(new { controller = "Forum", action = "Posts" }),
+            //    new MvcRouteHandler()));
+            //routes.Add("TopicDetails", new SeoFriendlyRoute("Topic/{action}/{slug}_{id}",
+            //    new RouteValueDictionary(new { controller = "Topic", action = "Posts" }),
+            //    new MvcRouteHandler()));
 
             routes.MapRoute(
                 name: "Default",
@@ -151,7 +172,26 @@ namespace WWW
                 Config.RunSetup
                     ? new { controller = "Setup", action = "Index", id = UrlParameter.Optional }
                     : new { controller = "Home", action = "Index", id = UrlParameter.Optional }
-            );
+            );  
+        }
+    }
+    public class NotEqual : IRouteConstraint
+    {
+        private string[] _match;
+
+        public NotEqual(string[] match)
+        {
+            _match = match;
+        }
+
+        public bool Match(HttpContextBase httpContext, Route route, string parameterName, RouteValueDictionary values, RouteDirection routeDirection)
+        {
+            var match = false;
+            foreach (var m in _match)
+            {
+                match = match || String.Compare(values[parameterName].ToString(), m, StringComparison.OrdinalIgnoreCase) != 0;
+            }
+            return match;
         }
     }
 }

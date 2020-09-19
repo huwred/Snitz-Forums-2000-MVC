@@ -52,7 +52,7 @@
 
 
 @section scripts{
-    <script src="@Url.Content("~/Scripts/snitz.editor.min.js")" type="text/javascript"></script>
+    @Scripts.Render("~/bundles/post")
     <script>
         $(document).ready(function () {
             $('.fa-save').hide();

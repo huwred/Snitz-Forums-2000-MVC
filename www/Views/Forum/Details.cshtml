@@ -180,14 +180,18 @@
             @Html.HiddenFor(model => model.LastDeletionDate)
             @Html.HiddenFor(model => model.ArchiveSchedule)
             @Html.HiddenFor(model => model.DeleteSchedule)
-            <div class="panel">
-                <div class="panel-info panel-body">
-                    <div class="form-group">
-                        @Html.LabelFor(model => model.PollsAuth, new { @class = "control-label" })
-                        @Html.EnumDropDownListFor(model => model.PollsAuth, new { @class = "form-control" }, "")
+            @if (ClassicConfig.GetIntValue("INTPOLLS", 0) == 1)
+            {
+                <div class="panel">
+                    <div class="panel-info panel-body">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.PollsAuth, new { @class = "control-label" })
+                            @Html.EnumDropDownListFor(model => model.PollsAuth, new { @class = "form-control" }, "")
+                        </div>
                     </div>
                 </div>
-            </div>
+            }
+
         </div>
     }
     <div class="col-sm-6">
@@ -198,7 +202,7 @@
             {
                 @Html.Action("ForumEventSettings", "Calendar", new {id = Model.Id})
             }
-            @* Event Calendar code *@
+            @* PostThanks code *@
             @if (Config.TableExists("FORUM_THANKS") && ClassicConfig.GetIntValue("STRTHANKS",0) == 1)
             {
                 @Html.Action("ForumThanks", "PostThanks", new {id = Model.Id})
@@ -214,10 +218,10 @@
 @section Scripts {
 
     <script type="text/javascript" src="~/Scripts/jquery.twosidedmultiselect.min.js"></script>
-    <script type="text/javascript" src="~/Scripts/forum.details.js"></script>
+    <script type="text/javascript" src="~/Scripts/forum.details.min.js"></script>
     @if (ClassicConfig.GetIntValue("INTCALEVENTS") == 1)
     {
-        @Scripts.Render("~/Scripts/snitz.cal.min.js")
+        @Scripts.Render("~/Scripts/pluginjs/snitz.cal.min.js")
     }
 
     <script>

@@ -57,13 +57,13 @@
 }
 @section topicsearchbox
 {
-    <div class="side-box">
+    <div class="side-box visible-phone">
     @{ Html.RenderPartial("_Search", new SearchModel() { ForumId = @Model.Forum.Id }); }
         </div>
 }
 @section sidebox
 {
-    <div class="panel-group">
+    <div class="panel-group hidden-phone">
         <div class="side-box hidden-xs hidden-sm">
             @{ Html.RenderPartial("_Search", new SearchModel() { ForumId = @Model.Forum.Id }); }
         </div>

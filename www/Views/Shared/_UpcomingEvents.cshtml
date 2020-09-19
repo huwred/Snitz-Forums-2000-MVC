@@ -15,12 +15,12 @@
         @Scripts.Render("~/Scripts/moment-jalaali.min.js")
     }
 
-    @Scripts.Render("~/Scripts/fullcalendar-year.min.js")
+    @Scripts.Render("~/Scripts/pluginjs/fullcalendar-year.min.js")
     if (Session["Culture"] != null)
     {
         @Scripts.Render("~/Scripts/lang/" + Session["Culture"] + ".js")
     }
-    @Scripts.Render("~/Scripts/snitz.cal.min.js")
+    @Scripts.Render("~/Scripts/pluginjs/snitz.cal.min.js")
 
     <script type="text/javascript">
         $(document)

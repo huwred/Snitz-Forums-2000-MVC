@@ -23,6 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web;
+using Microsoft.Net.Http.Headers;
 using SnitzConfig;
 
 namespace SnitzDataModel.Models
@@ -73,6 +74,9 @@ namespace SnitzDataModel.Models
             string name = "LastVisit";
             HttpCookie cookie = GetHttpRequest().Cookies.Get(name) ?? new HttpCookie(name);
             cookie.Value = value;
+            cookie.Secure = true;
+
+            cookie.HttpOnly = false;
             cookie.Path = Config.CookiePath ?? ClassicConfig.CookiePath;
             cookie.Expires = DateTime.UtcNow.AddMonths(2);
             cookie.Domain = GetHttpRequest().Url.Host;
@@ -207,6 +211,13 @@ namespace SnitzDataModel.Models
                 _cookieCollection.Add(name);
             }
             HttpCookie cookie = GetHttpRequest().Cookies.Get(name) ?? new HttpCookie(name);
+            // Set the secure flag, which Chrome's changes will require for Same
+            cookie.Secure = true;
+            cookie.HttpOnly = true;
+
+// Add the SameSite attribute, this will emit the attribute with a value of none.
+// To not emit the attribute at all set the SameSite property to -1.
+            //cookie.SameSite = SameSiteMode.None;
             cookie.Value = value;
             cookie.Path = Config.CookiePath ?? ClassicConfig.CookiePath;
             cookie.Domain = GetHttpRequest().Url.Host;
@@ -268,7 +279,9 @@ namespace SnitzDataModel.Models
                 {
                     cookie[val.Key] = val.Value;
                 }
+                cookie.Secure = true;
 
+                cookie.HttpOnly = true;
                 cookie.Path = Config.CookiePath ?? ClassicConfig.CookiePath;
                 cookie.Domain = GetHttpRequest().Url.Host;
                 if (persist)
@@ -283,7 +296,9 @@ namespace SnitzDataModel.Models
                 {
                     cookie[val.Key] = val.Value;
                 }
+                cookie.Secure = true;
 
+                cookie.HttpOnly = false;
                 cookie.Path = Config.CookiePath ?? ClassicConfig.CookiePath;
                 cookie.Domain = GetHttpRequest().Url.Host;
                 cookie.Expires = DateTime.UtcNow.AddDays(30);

@@ -8,11 +8,17 @@
     <div class="hidden-xs hidden-sm col-md-12">
         @using (Html.BeginForm("Search", "Account", new { pagenum = ViewBag.Page, sortOrder = ViewBag.SortDir, sortCol = ViewBag.SortCol }, FormMethod.Post, new { id = "search-form" }))
         {
-            <div class="form-inline">
+            <div class="form-inline" style="margin-bottom: 4px;">
                 <label class="radio-inline">
-                    @ResourceManager.GetLocalisedString("Search_Term", "labels")&nbsp;&nbsp;<input type="text" class="form-control" placeholder="@ResourceManager.GetLocalisedString("UserName","General")" name="Username" value="@Model.SearchForm.Username" /> <input type="text" class="form-control" name="Firstname" placeholder="@ResourceManager.GetLocalisedString("ProfileFirstname","General")" value="@Model.SearchForm.Firstname" /> <input type="text" class="form-control" name="Lastname" placeholder="@ResourceManager.GetLocalisedString("ProfileLastname","General")" value="@Model.SearchForm.Lastname" />
+                    @ResourceManager.GetLocalisedString("Search_Term", "labels")&nbsp;&nbsp;
+                    <input type="text" class="form-control" placeholder="@ResourceManager.GetLocalisedString("UserName","General")" name="Username" value="@Model.SearchForm.Username" /> 
+                    <input type="text" class="form-control" name="Firstname" placeholder="@ResourceManager.GetLocalisedString("ProfileFirstname","General")" value="@Model.SearchForm.Firstname" /> 
+                    <input type="text" class="form-control" name="Lastname" placeholder="@ResourceManager.GetLocalisedString("ProfileLastname","General")" value="@Model.SearchForm.Lastname" />
                     @if (User.IsAdministrator())
-                    {<input type="text" class="form-control ltr" name="Email" placeholder="@ResourceManager.GetLocalisedString("Email","General")" value="@Model.SearchForm.Email" /><input type="text" class="form-control" name="Title" placeholder="@ResourceManager.GetLocalisedString("ProfileTitle","General")" value="@Model.SearchForm.Title" />}
+                    {
+                        <input type="text" class="form-control ltr" name="Email" placeholder="@ResourceManager.GetLocalisedString("Email","General")" value="@Model.SearchForm.Email" /> 
+                        <input type="text" class="form-control" name="Title" placeholder="@ResourceManager.GetLocalisedString("ProfileTitle","General")" value="@Model.SearchForm.Title" />
+                    }
                     <button class="btn btn-primary" title="@ResourceManager.GetLocalisedString("Search_Members","labels")" data-toggle="tooltip"><i class="fa fa-search"></i></button>
                 </label>
             </div>
@@ -22,7 +28,6 @@
                     <label class="radio-inline">
                         @ResourceManager.GetLocalisedString("DateFilter", "labels")&nbsp;&nbsp;
                         <select type="text" class="form-control" name="LastPost">
-
                             <option value="">- @ResourceManager.GetLocalisedString("ProfileLastPost", "General")</option>
                             <option value="0" @if (Model.LastPost == 0) { @Html.Raw("selected") }>@ResourceManager.GetLocalisedString("Never", "General")</option>
                             <option value="1" @if (Model.LastPost == 1) { @Html.Raw("selected") }>@ResourceManager.GetLocalisedString("OlderThanOneYear", "labels")</option>
@@ -59,7 +64,7 @@
         }
     </div>
 
-<div class="col-xs-12">
+<div class="col-xs-12 text-center">
     <ul class="list-inline list-unstyled h4">
         <li>@Html.ActionLink(ResourceManager.GetLocalisedString("Search_All", "labels"), "Index", new { pagenum=1, sortOrder = ViewBag.SortDir, sortCol="posts" })</li>
         @foreach (var ch in alpha)

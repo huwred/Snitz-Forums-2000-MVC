@@ -64,8 +64,8 @@
                         @Html.DisplayFor(modelItem => item.Currency)
                     </td>
                     <td class="flip text-right">
-                        <a href="@Url.Action("EditProduct", "PayPal", new {id = item.Id})" class="product"><i class="fa fa-edit fa-1_5x"></i></a>
-                        <a href="@Url.Action("DeleteProduct", "PayPal", new {id = item.Id})"><i class="fa fa-trash-o fa-1_5x"></i></a>
+                        <a href="@Url.Action("EditProduct", "PayPal", new {id = item.Id})" class="product" data-title="Edit Item" data-toggle="tooltip"><i class="fa fa-edit fa-1_5x"></i></a>
+                        <a href="@Url.Action("DeleteProduct", "PayPal", new {id = item.Id})" data-title="Delete Item" data-toggle="tooltip"><i class="fa fa-trash-o fa-1_5x"></i></a>
                     </td>
                 </tr>
             }

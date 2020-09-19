@@ -42,7 +42,6 @@
         {
             <a rel="bookmark" href="#@Model.Id" title="#permalink"><i class="fa fa-clock-o"></i></a>
         }
-
         @if (Model.PostStatus == Enumerators.PostStatus.UnModerated)
         {
             <span class="text-danger">@ResourceManager.GetLocalisedString("lblUnmoderated", "Admin")</span>
@@ -89,13 +88,30 @@
                                     <i class="fa fa-1_5x fa-commenting-o"></i>
                                 </a>
                             </li>
-
                         }
                     }
-
-                    if (((Enumerators.Subscription)ViewBag.Subscription).In(Enumerators.Subscription.TopicSubscription, Enumerators.Subscription.ForumSubscription) && ClassicConfig.SubscriptionLevel != Enumerators.SubscriptionLevel.None)
+                    if (((Enumerators.Subscription)ViewBag.Subscription).In(Enumerators.Subscription.ForumSubscription) && ClassicConfig.SubscriptionLevel != Enumerators.SubscriptionLevel.None)
                     {
-                        bool isSubscribed = User.TopicSubscriptions().Contains(Model.TopicId) || User.ForumSubscriptions().Contains(Model.ForumId);
+                        bool isSubscribed = User.ForumSubscriptions().Contains(Model.ForumId);
+                        if (isSubscribed)
+                        {
+                            if ((Enumerators.Subscription)ViewBag.Subscription == Enumerators.Subscription.ForumSubscription)
+                            {
+                                <li @( !buttons.Contains("unsubscribe") ? Html.Raw("") : Html.Raw("class='hidden'"))>
+                                    @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfUnsubscribeForum", "labels"), "UnSubscribe", "Forum", new { id = Model.ForumId, catid = Model.CatId }, "fa fa-1_5x fa-share-square")
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li @( !buttons.Contains("subscribe") ? Html.Raw("") : Html.Raw("class='hidden'"))>
+                                @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfSubscribeForum", "labels"), "Subscribe", "Forum", new { id = Model.ForumId, catid = Model.CatId }, "fa fa-1_5x fa-share-square-o")
+                            </li>
+                        }
+                    }
+                    if (((Enumerators.Subscription)ViewBag.Subscription).In(Enumerators.Subscription.TopicSubscription) && ClassicConfig.SubscriptionLevel != Enumerators.SubscriptionLevel.None)
+                    {
+                        bool isSubscribed = User.TopicSubscriptions().Contains(Model.TopicId);
                         if (isSubscribed)
                         {
                             if ((Enumerators.Subscription)ViewBag.Subscription == Enumerators.Subscription.TopicSubscription)
@@ -114,7 +130,6 @@
                     }
                     if (ViewBag.IsAdministrator || isAuthor || ViewBag.IsForumModerator)
                     {
-
                         if (ViewBag.IsAdministrator || ViewBag.IsForumModerator)
                         {
                             <li @( !buttons.Contains("edit") ? Html.Raw("class=''") : Html.Raw("class='hidden'"))>
@@ -132,7 +147,6 @@
                                 </li>
 
                             }
-
                             <li @( !buttons.Contains("split") ? Html.Raw("class='hidden-xs'") : Html.Raw("class='hidden'"))>
                                 <a href="@Url.Action("SplitTopic", "Topic", new { id = Model.TopicId, replyid = Model.Id })" data-title="@ResourceManager.GetLocalisedString("tipSplitTopic", "Tooltip")" data-toggle="tooltip">
                                     <i class="fa fa-1_5x fa-object-ungroup"></i>
@@ -142,7 +156,6 @@
                             {
                                 <li>@{ Html.RenderAction("Index", "PostThanks", new { id = Model.TopicId, replyid = Model.Id, showcount = true }); }</li>
                             }
-
                             if (selectedReplies != null)
                             {
                                 <li @( !buttons.Contains("select") ? Html.Raw("class='hidden-xs'") : Html.Raw("class='hidden-xs hidden'"))>
@@ -169,7 +182,6 @@
                                 <a href="@Url.Action("PostMessage", "Reply", new { id = Model.Id, forumid = Model.ForumId, catid = Model.CatId,pagenum=pageno })" data-title="@ResourceManager.GetLocalisedString("tipEditReply", "Tooltip")" data-toggle="tooltip">
                                     <i class="fa fa-1_5x fa-edit"></i>
                                 </a>
-
                             </li>
                             <li @( !buttons.Contains("del") ? Html.Raw("") : Html.Raw("class='hidden'"))>
                                 @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("tipDelReply", "Tooltip"), "Delete", "Reply", new { id = Model.Id, archive = Model.Archived }, "fa fa-trash-o fa-1_5x")
@@ -185,9 +197,7 @@
                             {
                                 <li>@{ Html.RenderAction("Index", "PostThanks", new { id = Model.TopicId, replyid = Model.Id, showcount = true }); }</li>
                             }
-
                         }
-
                     }
                     else if (allowThanks)
                     {
@@ -196,12 +206,10 @@
                     if (ViewBag.bg == "bg2")
                     {
                         <li id="btn-top"><a href="#page-top" data-toggle="tooltip" data-title="@ResourceManager.GetLocalisedString("tipPageTop","Tooltip")"><i class="fa fa-1_5x fa-angle-double-up"></i></a></li>
-
                     }
                 }
                 else //Topic
                 {
-
                     if (Model.PostStatus == Enumerators.PostStatus.Open)
                     {
                         <!-- Who can post -->
@@ -218,7 +226,6 @@
                                     <i class="fa fa-1_5x fa-commenting-o"></i>
                                 </a>
                             </li>
-
                         }
                         if (ClassicConfig.GetValue("STRBOOKMARKS") == "1")
                         {
@@ -230,11 +237,30 @@
                                     }
                                 </li>
                             }
-
                         }
-                        if (((Enumerators.Subscription)ViewBag.Subscription).In(Enumerators.Subscription.TopicSubscription, Enumerators.Subscription.ForumSubscription) && ClassicConfig.SubscriptionLevel != Enumerators.SubscriptionLevel.None)
+                        if (((Enumerators.Subscription)ViewBag.Subscription).In(Enumerators.Subscription.ForumSubscription) && ClassicConfig.SubscriptionLevel != Enumerators.SubscriptionLevel.None)
                         {
-                            bool isSubscribed = User.TopicSubscriptions().Contains(Model.Id) || User.ForumSubscriptions().Contains(Model.ForumId);
+                            bool isSubscribed = User.ForumSubscriptions().Contains(Model.ForumId);
+                            if (isSubscribed)
+                            {
+                                if ((Enumerators.Subscription)ViewBag.Subscription == Enumerators.Subscription.ForumSubscription)
+                                {
+                                    <li @(!buttons.Contains("unsubscribe") ? Html.Raw("") : Html.Raw("class='hidden'"))>
+                                        @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfUnsubscribeForum", "labels"), "UnSubscribe", "Forum", new { id = Model.ForumId, catid = Model.CatId }, "fa fa-1_5x fa-share-square")
+                                    </li>
+
+                                }
+                            }
+                            else
+                            {
+                                <li @(!buttons.Contains("subscribe") ? Html.Raw("") : Html.Raw("class='hidden'"))>
+                                    @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfSubscribeForum", "labels"), "Subscribe", "Forum", new { id = Model.ForumId, catid = Model.CatId }, "fa fa-1_5x fa-share-square-o")
+                                </li>
+                            }
+                        }
+                        if (((Enumerators.Subscription)ViewBag.Subscription).In(Enumerators.Subscription.TopicSubscription) && ClassicConfig.SubscriptionLevel != Enumerators.SubscriptionLevel.None)
+                        {
+                            bool isSubscribed = User.TopicSubscriptions().Contains(Model.Id);
                             if (isSubscribed)
                             {
                                 if ((Enumerators.Subscription)ViewBag.Subscription == Enumerators.Subscription.TopicSubscription)
@@ -252,14 +278,6 @@
                                 </li>
                             }
                         }
-                        @*if (isAuthor && !(ViewBag.IsAdministrator || ViewBag.IsForumModerator))
-                {
-                    <li @( !buttons.Contains("edit") ? Html.Raw("") : Html.Raw("class='hidden'"))>
-                        <a href="@Url.Action("PostMessage", "Topic", new { id = Model.Id, forumid = Model.ForumId, catid = Model.CatId,pagenum=pageno })" title="@ResourceManager.GetLocalisedString("tipEditTopic", "Tooltip")" data-toggle="tooltip">
-                            <i class="fa fa-1_5x fa-edit"></i>
-                        </a>
-                    </li>
-                }*@
                     }
                     else
                     {
@@ -273,7 +291,6 @@
                                     }
                                 </li>
                             }
-
                         }
                     }
                     if (ViewBag.IsAdministrator || ViewBag.IsForumModerator)
@@ -312,9 +329,7 @@
                         <li @( !buttons.Contains("del") ? Html.Raw("") : Html.Raw("class='hidden'"))>
                             @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("tipTopicDel", "Tooltip"), "Delete", "Topic", new { id = Model.Id, archive = Model.Archived }, "fa fa-trash-o fa-1_5x")
                         </li>
-
                     }
-
                     if (allowThanks && Model.PostStatus != Enumerators.PostStatus.UnModerated)
                     {
                         <li>&nbsp; @{ Html.RenderAction("Index", "PostThanks", new { id = Model.Id, replyid = 0, showcount = true }); }</li>
@@ -344,7 +359,6 @@ else if (Request.IsAuthenticated && archived == "1" && ViewBag.IsAdministrator)
                         <i class="fa fa-1_5x fa-edit"></i>
                     </a>
                 </li>
-
             }
         </ul>
     </div>
@@ -359,5 +373,4 @@ else
             }
         </ul>
     </div>
-
 }

@@ -1009,7 +1009,7 @@ span[class^="text-inline"] {
 
 .pmcount{ padding-top: .4em;padding-left:.4em;}
 
-@media (max-width: 1091px) {
+@media (max-width: 901px) {
     .navbar-header {
         float: none;
     }

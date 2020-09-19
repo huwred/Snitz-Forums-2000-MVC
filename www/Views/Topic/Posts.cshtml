@@ -68,12 +68,14 @@
 @section topicsearchbox
 {
     <!-- search box for small screens, replaces sidebox search so search appears at top of page -->
-    <h5>@LangResources.Utility.ResourceManager.GetLocalisedString("sbSearchTopic", "labels")</h5>
-    @{ Html.RenderPartial("_Search", new SearchModel() { TopicId = Model.Id }); }
+    <div class="visible-phone">
+        <h5>@LangResources.Utility.ResourceManager.GetLocalisedString("sbSearchTopic", "labels")</h5>
+        @{ Html.RenderPartial("_Search", new SearchModel() { TopicId = Model.Id }); }
+    </div>
 }
 @section sidebox
 {
-    <div class="panel-group">
+    <div class="panel-group hidden-phone">
         <div class="side-box">
             <h5>@LangResources.Utility.ResourceManager.GetLocalisedString("sbSearchTopic", "labels")</h5>
             @{ Html.RenderPartial("_Search", new SearchModel() { TopicId = Model.Id }); }

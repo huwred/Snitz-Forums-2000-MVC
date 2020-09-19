@@ -1,4 +1,5 @@
-﻿@using LangResources.Utility
+﻿@using System.Configuration
+@using LangResources.Utility
 @using SnitzCore.Utility
 @using SnitzConfig
 
@@ -61,12 +62,9 @@
          <li class="dropdown-submenu">
             <a tabindex="-1" href="#">Site Manager</a>
             <ul class="dropdown-menu">
-                @if(@Common.AssemblyLoaded("SiteManage")){
-                    if (Config.DbType == "mssql")
-                    {
-                        <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminDbManager", "Menu"), "Index", "DbManager", new { path = "", view = 0 }, new { rel = "nofollow" })</li>
-                    }                
- 
+                @if(Common.AssemblyLoaded("DbManage")){
+                    <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminDbManager", "Menu"), "Index", "DbManager", new { path = "", view = 0 }, new { rel = "nofollow" })</li>
+
                }
                 <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminExplorer", "Menu"), "Index", "WebFileManager", new { path = "", view = 0 }, new { rel = "nofollow" })</li>
                 <li>@Html.ActionLink("Paypal Setup", "Configuration", "PayPal", null, new { rel = "nofollow" })</li>
@@ -88,9 +86,13 @@
         }
         @if (Config.TableExists("CAL_EVENTS"))
         {
-            <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuCalendar", "Menu"), "ManageEvents", "Admin", null, new { rel = "nofollow" })</li>
+            <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuCalendar", "Menu"), "ManagePlugin", "Admin", new{ controllername="Calendar"}, new { rel = "nofollow" })</li>
         }
-        <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminOtherMods", "Menu"), "ModConfiguration", "Admin", null, new { rel = "nofollow" })</li>
+        @if (Config.TableExists(ConfigurationManager.AppSettings["memberTablePrefix"] + "USERFIELDS"))
+        {
+            <li>@Html.ActionLink(ResourceManager.GetLocalisedString("usrAdmin", "ExtProfile"), "Admin", "MemberFields", null, new { rel = "nofollow" })</li>
+        }
+        <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminToggleMods", "Menu"), "ModConfiguration", "Admin", null, new { rel = "nofollow" })</li>
 
     </ul>
 </li>

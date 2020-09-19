@@ -246,6 +246,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\RssFeedController.cs" />
     <Compile Include="Controllers\RssWidgetController.cs" />
+    <Compile Include="Controllers\SearchController.cs" />
     <Compile Include="Controllers\SiteMapController.cs" />
     <Compile Include="Controllers\TagCloudController.cs" />
     <Compile Include="Global.asax.cs">
@@ -342,7 +343,7 @@
     </Content>
     <Content Include="Content\css\dataTables.bootstrap.min.css" />
     <Content Include="Content\css\Jcrop.gif" />
-    <Content Include="Content\css\jquery-ui-timepicker-addon.css" />
+    <None Include="Content\css\jquery-ui-timepicker-addon.css" />
     <Content Include="Content\css\jquery-ui-timepicker-addon.min.css">
       <DependentUpon>jquery-ui-timepicker-addon.css</DependentUpon>
     </Content>
@@ -420,6 +421,9 @@
     </Content>
     <Content Include="Scripts\forum.details.min.js">
       <DependentUpon>forum.details.js</DependentUpon>
+    </Content>
+    <Content Include="Scripts\jquery-ui-timepicker-addon.min.js">
+      <DependentUpon>jquery-ui-timepicker-addon.js</DependentUpon>
     </Content>
     <Content Include="Scripts\jquery.twosidedmultiselect.min.js">
       <DependentUpon>jquery.twosidedmultiselect.js</DependentUpon>
@@ -501,9 +505,13 @@
     <Content Include="Content\Themes\snitz\snitz-rtl.min.css" />
     <Content Include="Content\Themes\snitz\highlight.css" />
     <Content Include="Content\Themes\snitz\snitz-rtl.css" />
-    <Content Include="Content\Themes\snitz\colours.min.css" />
+    <Content Include="Content\Themes\snitz\colours.min.css">
+      <DependentUpon>colours.css</DependentUpon>
+    </Content>
     <Content Include="Content\Themes\snitz\snitz.css" />
-    <Content Include="Content\Themes\snitz\snitz.min.css" />
+    <Content Include="Content\Themes\snitz\snitz.min.css">
+      <DependentUpon>snitz.css</DependentUpon>
+    </Content>
     <Content Include="Content\Themes\snitz\tag_cloud.css" />
     <Content Include="Content\Themes\snitz\star-rating.min.css" />
     <Content Include="Content\Themes\snitz\colours.css" />

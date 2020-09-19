@@ -168,10 +168,10 @@ ul.topiclist.two-long-columns dt {
   margin-left: -250px;
 }
 ul.topiclist.two-columns dt {
-  margin-left: -80px;
+  margin-left: -60px;
 }
 ul.topiclist dt .list-inner {
-  padding-right: 80px;
+  padding-right: 60px;
   padding-left: 20px;
 }
 ul.topiclist.missing-column dt .list-inner {
@@ -181,7 +181,7 @@ ul.topiclist.two-long-columns dt .list-inner {
   margin-left: 250px;
 }
 ul.topiclist.two-columns dt .list-inner {
-  margin-left: 80px;
+  margin-left: 60px;
 }
 ul.topiclist dfn {
 
@@ -205,7 +205,7 @@ li.header dl.icon dt .list-inner {
   padding-left: 50px;
 }
 dl.icon dt .list-inner {
-  padding-right: 77px
+  padding-right: 60px
   /* Space for folder icon */
 }
 ul.userlist dl.icon dt .list-inner {

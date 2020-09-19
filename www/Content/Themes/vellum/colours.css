@@ -562,7 +562,7 @@ a.arrow-left:hover {
 #wrap-footer {
     font-size: 10px;
 }
-ul.userlist li.row.bg1 {
+ul.userlist li.row.bg1, ul.userlist li.row.bg2 {
     border-bottom: 1px dotted lightgrey;
 }
 .dropdown-menu.topic-admin {

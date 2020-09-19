@@ -17,7 +17,7 @@
     }
 }
 <div id="content">
-    <h5>@ResourceManager.GetLocalisedString("lblCategories", "labels") @Html.ActionLink(" ", "CreateEdit", "Category", new { id = 0}, new { @class = "fa fa-folder-open-o", title=ResourceManager.GetLocalisedString("tipNewCategory", "Tooltip"),data_toggle="tooltip" }).If(User.IsAdministrator())</h5>
+    <h5>@ResourceManager.GetLocalisedString("lblCategories", "labels") @Html.ActionLink(" ", "CreateEdit", "Category", new { id = 0}, new { @class = "fa fa-folder-open-o modal-link", title=ResourceManager.GetLocalisedString("tipNewCategory", "Tooltip"),data_toggle="tooltip" }).If(User.IsAdministrator())</h5>
     <hr class="title" style="margin:0px;padding:1px;" />
     <div class="accordion" id="accordianParent">
         @foreach (Category cat in catList)

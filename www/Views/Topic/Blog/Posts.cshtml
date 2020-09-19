@@ -27,7 +27,7 @@
     <meta name="copyright" content="@Html.Raw(String.Format(ClassicConfig.Copyright, DateTime.UtcNow.Year)) - @Config.ForumTitle, @Model.Topic.Author.Username">
     <meta name="distribution" content="global">
     <meta name="rating" content="14 years">
-    
+
     <meta name="keywords" content="@Html.TopicKeyWords(Model.Id)">
 }
 @section styles
@@ -51,9 +51,11 @@
 }
 @section topicsearchbox
 {
-    @* search box for small screens, replaces sidebox search so search appears at top of page *@
-    <h5>@ResourceManager.GetLocalisedString("srchBlog", "BlogPages")</h5>
-    @{ Html.RenderPartial("_Search", new SearchModel() { TopicId = Model.Id }); }
+    <!-- search box for small screens, replaces sidebox search so search appears at top of page -->
+    <div class="visible-phone">
+        <h5>@LangResources.Utility.ResourceManager.GetLocalisedString("sbSearchTopic", "labels")</h5>
+        @{ Html.RenderPartial("_Search", new SearchModel() { TopicId = Model.Id }); }
+    </div>
 }
 @section sidebox
 {

@@ -38,24 +38,31 @@
     {
         if (Model.Params.SubjectOnly)
         {
-            @*@Html.DisplayFor(m => topics)*@
-            <ul class="topiclist topics">
-                @foreach (var topic in Model.Topics)
-                {
+            <div class="forabg">
+                <div class="inner">
+                    <ul class="topiclist topics">
+                        @foreach (var topic in Model.Topics)
+                        {
 
-                    @Html.DisplayFor(m => topic, "TopicNew", new {Terms = terms})
-                }
-            </ul>
+                            @Html.DisplayFor(m => topic, "TopicNew", new { Terms = terms })
+                        }
+                    </ul>
+                </div>
+            </div>
         }
         else
         {
-            <ul class="topiclist topics">
-                @foreach (var topic in Model.Topics)
-                {
+            <div class="forabg">
+                <div class="inner">
+                    <ul class="topiclist topics">
+                        @foreach (var topic in Model.Topics)
+                        {
 
-                    @Html.DisplayFor(m => topic, "TopicNew", new {Terms = terms})
-                }
-            </ul>
+                            @Html.DisplayFor(m => topic, "TopicNew", new { Terms = terms })
+                        }
+                    </ul>
+                </div>
+            </div>
             //Html.DisplayFor(m => topics, new { Terms = String.Join("+", Model.FullParams.Terms.Select(i => i)) }))
         }
     }
@@ -72,9 +79,9 @@
 </div>
 
 
-@using (Html.BeginScripts())
-{
-    <script type="text/javascript">
+            @using (Html.BeginScripts())
+            {
+                <script type="text/javascript">
         $(document)
             .ready(function() {
                 var termsArray = [@Html.Raw(terms)];
@@ -90,5 +97,5 @@
                 });
             });
 
-    </script>
-}
+                </script>
+            }

@@ -66,14 +66,13 @@
     @Scripts.Render("~/bundles/dropzonejs")
     <script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
-    <script type="text/javascript" src="~/Scripts/fullcalendar-year.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/pluginjs/fullcalendar-year.min.js"></script>
     @if (Session["Culture"] != null && Session["Culture"].ToString() != "en")
     {
         @Scripts.Render("~/Scripts/lang/" + Session["Culture"] + ".js")
     }
     <script type="text/javascript" src="~/Scripts/datatable-moment.min.js"></script>
-    <script type="text/javascript" src="~/Scripts/snitz.editor.min.js"></script>
-    <script type="text/javascript" src="~/Scripts/snitz.upload.min.js"></script>
+    @Scripts.Render("~/bundles/post")
     <script type="text/javascript" src="~/Scripts/snitz.pm.min.js"></script>
     <script>
         $("#pm-notify").html('');

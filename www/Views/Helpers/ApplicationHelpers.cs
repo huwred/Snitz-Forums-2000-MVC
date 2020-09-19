@@ -175,12 +175,12 @@ namespace WWW.Views.Helpers
             if (user.CategorySubscriptions().Count > 0)
             {
                 if (user.CategorySubscriptions().Contains(catId))
-                    return new MvcHtmlString("");
+                    return CategorySubscriptionLink(helper,catId,user);
             }
             if (user.ForumSubscriptions().Count > 0)
             {
                 if (user.ForumSubscriptions().Contains(forumId))
-                    return new MvcHtmlString("");
+                    return ForumSubscriptionLink(helper,catId,forumId,user);
             }
             var forum = Forum.FetchForum(forumId);
             if (
@@ -517,10 +517,11 @@ namespace WWW.Views.Helpers
             }
             if (forum != null) // && topic != null)
             {
-                breadcrumb.Append("<li>");
-                breadcrumb.Append(helper.ActionLink(WebUtility.HtmlDecode(forum.Subject),
+                var tmpUrl = helper.ActionLink(WebUtility.HtmlDecode(forum.Subject),
                     "Posts", "Forum",
-                    new {id = forum.GenerateSlug(), pagenum = 1}, null));
+                    new {id = forum.Id, pagenum = 1}, null);
+                breadcrumb.Append("<li>");
+                breadcrumb.Append(tmpUrl);
                 breadcrumb.Append("</li>");
             }
 

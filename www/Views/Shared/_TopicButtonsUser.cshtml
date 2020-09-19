@@ -41,14 +41,6 @@
             @Html.ActionLink(" ", "PostMessage", "Topic", new { id = Model.Id, forumid = Model.ForumId, catid = Model.CatId, pagenum = pageno }, new { @class = "fa fa-1_5x fa-edit", title = ResourceManager.GetLocalisedString("tipEditTopic", "Tooltip"), data_toggle = "tooltip" })
             @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfDeleteTopic", "labels"), "DeleteTopic", "Forum", new { id = Model.Id, archive = Model.Archived }, "fa fa-trash-o fa-1_5x")
         }
-        if (ViewBag.Bookmarks && !buttons.Contains("bookmark"))
-        {
-            Html.RenderPartial("_BookmarkLink", Model.Id);
-        }
-        if (!buttons.Contains("subs"))
-        {
-            @Html.SubscriptionLink(Model.CatId, Model.ForumId, Model.Id, User)
-        }
 
 
         <!-- Who can post -->
@@ -56,6 +48,18 @@
         {
             @Html.ActionLink(" ", "PostMessage", "Reply", new { id = -1, topicid = Model.Id, forumid = Model.ForumId, catid = Model.CatId }, new { @class = "fa fa-1_5x fa-comments-o", title = ResourceManager.GetLocalisedString("tipTopicReply", "Tooltip"), data_toggle = "tooltip" })
         }
+        if (ViewBag.Bookmarks && !buttons.Contains("bookmark"))
+        {
+            Html.RenderPartial("_BookmarkLink", Model.Id);
+        }
+        if (((Enumerators.Subscription)ViewBag.Subscription).In(Enumerators.Subscription.TopicSubscription) && ClassicConfig.SubscriptionLevel != Enumerators.SubscriptionLevel.None)
+        {
+            if (!buttons.Contains("subs"))
+            {
+                @Html.SubscriptionLink(Model.CatId, Model.ForumId, Model.Id, User)
+            }
+        }
+
         if (allowThanks && User.Identity.IsAuthenticated && !buttons.Contains("thanks"))
         {
             Html.RenderAction("Index", "PostThanks", new { id = Model.Id, replyid = 0, showcount = true });
@@ -71,9 +75,12 @@
         {
             Html.RenderPartial("_BookmarkLink", Model.Id);
         }
-        if (!buttons.Contains("subs"))
+        if (((Enumerators.Subscription)ViewBag.Subscription).In(Enumerators.Subscription.TopicSubscription) && ClassicConfig.SubscriptionLevel != Enumerators.SubscriptionLevel.None)
         {
-            @Html.SubscriptionLink(Model.CatId, Model.ForumId, Model.Id, User)
+            if (!buttons.Contains("subs"))
+            {
+                @Html.SubscriptionLink(Model.CatId, Model.ForumId, Model.Id, User)
+            }
         }
         break;
     case Enumerators.PostStatus.UnModerated:

@@ -36,26 +36,32 @@ $(window).on("load", function(){
         }
 
         //Create an XMLHttpRequest and post it
+        //console.log('XMLHttpRequest');
         var xhr = new XMLHttpRequest();
+        xhr.responseType = 'json';
         xhr.open('POST', window.SnitzVars.baseUrl + 'Home/Upload');
-        xhr.send(formdata);
-        xhr.onerror = function (ev) {
+        
+        xhr.onerror = function(data) {
             //
+            //console.log('error');
             BootstrapDialog.alert(
-            {
-                title: "Error ",
-                message: ev.error
-            });
-        }
-        xhr.onreadystatechange = function() {
+                {
+                    title: "Error ",
+                    message: data
+                });
+        };
+        xhr.onload = function() {
+            //console.log("readystate: " + xhr.readyState);
+            //console.log("status: " + xhr.status);
+            //console.log("resonse: " + xhr.xhr.responseText);
             if (xhr.readyState === 4 && xhr.status === 200) {
                 var arr = xhr.responseText.split('|');
                 if (arr[0] === "error") {
                     BootstrapDialog.alert(
-                    {
-                        title: "Error ",
-                        message: 'Error uploading'
-                    });
+                        {
+                            title: "Error ",
+                            message: 'Error uploading'
+                        });
                 } else {
                     var filesize = "";
                     if (arr[1].indexOf("image") >= 0) {
@@ -74,13 +80,15 @@ $(window).on("load", function(){
                     textId = parentDiv.find(".bbc-code-editor")[0].id;
                     alert(arr[0]);
                     $("#" + textId).insertAtCaret(val1 + arr[0].replace('"', '') + val2);
-                    $('#modal-container').modal('hide');              
-                    
+                    $('#modal-container').modal('hide');
+
                 }
 
             }
-        }
-        return false;
+        };
+        console.log('posting file');
+        xhr.send(formdata);
+        //return false;
     });
     $(document).on('change', ':file', function () {
         var input = $(this),

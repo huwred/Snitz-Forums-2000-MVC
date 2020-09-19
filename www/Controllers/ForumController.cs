@@ -258,11 +258,23 @@ namespace WWW.Controllers
 
         }        
 
-        public ActionResult Search(int pagenum=1)
+        public ActionResult Search(int id=0, string phrase="")
         {
             TempData["SideBox"] = false;
-            SearchViewModel vm = new SearchViewModel(User) {OrderBy = "t", SortDir = "DESC" };
-            vm.SearchModel.CategoryList = Category.FetchAll();
+            SearchViewModel vm = new SearchViewModel(User)
+            {
+                OrderBy = "t", 
+                SortDir = "DESC", 
+                SearchModel = {CategoryList = Category.FetchAll()}
+            };
+
+            ViewBag.ForumId = id;
+            vm.SearchModel.ForumId = id;
+            if (!String.IsNullOrWhiteSpace(phrase))
+            {
+                vm.SearchModel.Term = phrase;
+            }
+           
             if (ClassicConfig.GetIntValue("INTNEWLAYOUT",0) == 1)
             {
                 return View("SearchNew", vm);

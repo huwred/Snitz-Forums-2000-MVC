@@ -193,9 +193,17 @@ img.online {
 
 .tab-content {
     padding: 5px;
-    background-color: white;
+    /*background-color: white;*/
+    background-color: rgb(129, 153, 218);
 }
-
+    .tab-pane .panel {
+        background-color: rgb(129, 153, 218) !important;
+        border: 2px solid black;
+    }
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+    background-color: rgb(129, 153, 218);
+    color: #fff;
+}
 .footer {
     background-color: #d3d3d3;
 }
@@ -836,7 +844,8 @@ div.message-sig {
 
 .quick-reply {
     border: 1px solid #bbb !important;
-    background-color: #dcdcdc;
+    background-color: rgb(129, 153, 218);
+
 }
 
 
@@ -1340,7 +1349,31 @@ button.close {
 .modal-header {
     background-color: #337ab7
 }
+.panel-paypal > .panel-heading {
+    color: white;
+    font-weight: bold;
+    background-color: #232371;
+    border-color: #232371;
+}
+    .panel-paypal > .panel-heading + .panel-collapse > .panel-body {
+        border-top-color: #232371;
+    }
 
+    .panel-paypal > .panel-heading .badge {
+        color: #fff;
+        background-color: #232371;
+    }
+
+.panel-paypal > .panel-footer + .panel-collapse > .panel-body {
+    border-bottom-color: #232371;
+}
+#SearchForm .panel {
+    background-color: #8199da;
+}
+.panel.formbg {
+    padding-top: 12px;
+    background-color: #8199da;
+}
 .spinner-icon {
     display: inline-block;
     font-size: 40px;

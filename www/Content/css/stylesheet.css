@@ -502,10 +502,10 @@ ul.topiclist.two-long-columns dt {
   margin-right: -250px;
 }
 ul.topiclist.two-columns dt {
-  margin-right: -80px;
+  margin-right: -60px;
 }
 ul.topiclist dt .list-inner {
-  padding-left: 80px;
+  padding-left: 60px;
   padding-right: 20px;
 }
 ul.topiclist.missing-column dt .list-inner {
@@ -515,7 +515,7 @@ ul.topiclist.two-long-columns dt .list-inner {
   margin-right: 250px;
 }
 ul.topiclist.two-columns dt .list-inner {
-  margin-right: 80px;
+  margin-right: 60px;
 }
 ul.topiclist dd {
   box-sizing: border-box;
@@ -581,7 +581,7 @@ dl.icon dt {
   /* Position of topic icon */
 }
 dl.icon dt .list-inner {
-  padding-left: 77px
+    padding-left: 60px;
   /* Space for folder icon */
 }
 ul.userlist dl.icon dt .list-inner {
@@ -715,7 +715,7 @@ dd.option {
 .postbody .content {
   font-size: 1.3em;
   line-height: 1.5em;
-  text-align: justify;
+  /*text-align: justify;*/
   /*overflow-x: auto;*/
 }
 .postbody img.postimage {
@@ -827,7 +827,7 @@ dl.faq dt {
   text-align: center;
 
 }
-.reply .postprofile {
+.reply .postprofile, .topic .postprofile {
     margin-top: -40px;
 }
 .postprofile dd,
@@ -1710,7 +1710,7 @@ dt.col-md-7, dt.col-xs-6, dt.col-xs-10, dt.col-xs-12, dt.col-xs-8,dt.col-md-6 {
   line-height: 1.2em;
     min-height: 3em;
   max-height: 12em;
-  text-align: justify;
+  /*text-align: justify;*/
   margin-right: -1em;
   padding-right: 2em;
 }
@@ -1945,20 +1945,7 @@ ul.pager {
     margin-left: 5%;
 }
 
-@media all and (max-width:769px) {
-    .container-fluid { padding: 0; }
 
-    .chunk, .chunk-main { padding: 0 2px; }
-    #foot-left {
-        width: 100%;
-    }
-
-    #foot-right, #foot-copyright {
-        padding-left: 12px;
-        width: 100%;
-    }
-
-}
 
 #recent-ticker {
     height: 300px;
@@ -2015,3 +2002,57 @@ ul.glossary dd {
     bottom: 5px;
 }
 
+@media all and (max-width:769px) {
+    h4 {
+        font-size: 16px;
+    }
+
+    .social-media {
+        font-size: larger;
+    }
+
+    .container-fluid {
+        padding: 0;
+    }
+
+    .chunk, .chunk-main {
+        padding: 0 2px;
+    }
+
+    #foot-left {
+        width: 100%;
+    }
+
+    #foot-right, #foot-copyright {
+        padding-left: 12px;
+        width: 100%;
+    }
+
+    .well {
+        padding: 5px;
+    }
+
+    #topic-panel .well {
+        margin-left: auto;
+        margin-right: auto;
+        padding-bottom: 2px;
+    }
+
+    #foot-center {
+        width: 90%;
+    }
+
+    #foot-right {
+        margin-bottom: auto;
+        padding-left: 3px;
+    }
+
+    ul.topiclist.forums:not(.glossary) dt > span, ul.topiclist.topics:not(.glossary) dt > span {
+        display: none !important;
+    }
+
+    ul.topiclist.forums:not(.glossary) dt .list-inner, ul.topiclist.topics:not(.glossary) dt .list-inner {
+        padding-left: 5px;
+        padding-right: 0px;
+    }
+}

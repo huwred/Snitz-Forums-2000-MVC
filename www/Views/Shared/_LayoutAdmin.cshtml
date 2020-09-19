@@ -27,24 +27,24 @@
     <link rel="alternate" type="application/rss+xml" title="@ResourceManager.GetLocalisedString("tipForumRss", "Tooltip") @Html.Raw(Config.ForumTitle)" href="@Url.Action("Active","RssFeed")" />
 
     @Styles.Render("~/bundles/sitecss?v=" + versionstring)
-    @Styles.Render("~/Content/stylesheet.min.css?v=" + versionstring)
+    @Styles.Render("~/Content/css/stylesheet.min.css?v=" + versionstring)
     @Html.Raw(Config.ThemeCss("snitz.min.css?v=" + versionstring))
     @Html.Raw(Config.ThemeCss("colours.min.css?v=" + versionstring))
 
     @if (isRighToLeft)
     {
         <!-- Load the default rtl css file -->
-        @Styles.Render("~/Content/bootstrap-rtl.min.css?v=" + versionstring)
-        @Styles.Render("~/Content/stylesheetrtl.min.css?v=" + versionstring)
+        @Styles.Render("~/Content/css/bootstrap-rtl.min.css?v=" + versionstring)
+        @Styles.Render("~/Content/css/stylesheetrtl.min.css?v=" + versionstring)
         @Html.Raw(Config.ThemeCss("snitz-rtl.min.css?v=" + versionstring))
     }
     @if (Config.TableExists("CAL_EVENTS") && ClassicConfig.GetIntValue("INTCALUPCOMINGEVENTS") == 1 && ClassicConfig.GetIntValue("INTCALPUBLIC") == 1)
     {
-    @Styles.Render("~/Content/fullcalendar.min.css")
-    @Html.Raw(Config.ThemeCss("fullcalendar.min.css"))
+    @Styles.Render("~/Content/plugincss/fullcalendar.min.css")
+    @Html.Raw(Config.ThemeCss("plugincss/fullcalendar.min.css"))
     if (SessionData.Get<bool>("isRighToLeft"))
     {
-    @Styles.Render("~/Content/fullcalendar-rtl.css")
+    @Styles.Render("~/Content/plugincss/fullcalendar-rtl.min.css")
     }
     }
 
@@ -62,16 +62,16 @@
         var colLayout = ClassicConfig.GetValue("STRLAYOUT");
 
         //classes for maincontent window
-        var contentClass = "col-xs-12 col-md-8 col-lg-9 padding-xs";
+        var contentClass = "col-xs-12 col-md-9 padding-xs";
         //class for second column: default right side
-        var colClass = "hidden-xs hidden-sm col-md-4 col-lg-3 padding-xs";
+        var colClass = "hidden-xs hidden-sm col-md-3 padding-xs";
         //class for third column: default hidden
         var thirdcolClass = "hidden";
 
         if (colLayout == "left") // move second column to left side
         {
-            contentClass += " col-md-push-4 col-lg-push-3";
-            colClass += " col-md-pull-8 col-lg-pull-9";
+            contentClass += " col-md-push-3";
+            colClass += " col-md-pull-9";
         }
         if (colLayout == "threecol")
         {

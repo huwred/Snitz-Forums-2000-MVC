@@ -171,9 +171,34 @@ namespace SnitzDataModel.Extensions
             }
             //return ToFormattedString(date, showtime);
             CultureInfo ci = SessionData.Get<CultureInfo>("Culture");
-            var dateformat = Config.DateStr + (showtime ? " " + Config.TimeStr : "");
-            return date.ToString(dateformat, ci);
+            var dateformat = ResourceManager.GetLocalisedString("dateLong", "dateFormat");
+            var result = "";
+            if (ci.TwoLetterISOLanguageName.ToLower() == "fa")
+            {
+                if (showtime)
+                {
+                    dateformat = dateformat + " " + Config.TimeStr;
+                }
+                PersianCalendar persianCal = new PersianCalendar();
+                CalendarUtility persianUtil = new CalendarUtility(persianCal, dateformat);
+                CultureInfo ic = CultureInfo.CreateSpecificCulture("fa-IR");
+
+                result = persianUtil.DisplayDate(date, ic);
+
+            }
+            else
+            {
+                if (showtime)
+                {
+                    dateformat = dateformat + " " + Config.TimeStr;
+                }
+                result = date.ToString(dateformat, ci);
+            }
+            //var dateformat = Config.DateStr + (showtime ? " " + Config.TimeStr : "");
+            return result;
         }
+
+
     }
 
     public enum DisplayOptions

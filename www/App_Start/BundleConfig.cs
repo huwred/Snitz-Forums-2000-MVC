@@ -44,7 +44,8 @@ namespace WWW
 
             bundles.Add(new ScriptBundle("~/bundles/Persian")
                 .Include("~/Scripts/persianNum.jquery-2.js")
-                        .Include("~/Scripts/persian-rex.js"));
+                        .Include("~/Scripts/persian-rex.js")
+                );
 
             bundles.Add(new ScriptBundle("~/bundles/oldIEBrowsersSupport").Include(
                     "~/Scripts/respond.js",
@@ -56,17 +57,17 @@ namespace WWW
             //css files
 
             bundles.Add(new StyleBundle("~/bundles/sitecss").Include(
-                            "~/Content/bootstrap-dialog.css",
-                            "~/Content/bootstrap-switch.css",
-                            "~/Content/bootstrap-spinedit.css",
-                            "~/Content/bootstrap-responsive.css"
+                            "~/Content/css/bootstrap-dialog.css",
+                            "~/Content/css/bootstrap-switch.css",
+                            "~/Content/css/bootstrap-spinedit.css",
+                            "~/Content/css/bootstrap-responsive.css"
                             
-                            ).Include("~/Content/font-awesome.css", new CssRewriteUrlTransformWrapper())
-                            .Include("~/Content/animate.css")
-                            .Include("~/Content/jquery.grid-picker.css")
-                            .Include("~/Content/bootstrap.css")
-                            .Include("~/Content/snitzlayout.css")
-                            .Include("~/Content/dropzone.css"));
+                            ).Include("~/Content/css/font-awesome.css", new CssRewriteUrlTransformWrapper())
+                            .Include("~/Content/css/animate.css")
+                            .Include("~/Content/css/jquery.grid-picker.css")
+                            .Include("~/Content/css/bootstrap.css")
+                            .Include("~/Content/css/snitzlayout.css")
+                            .Include("~/Content/css/dropzone.css"));
 
         }
     }

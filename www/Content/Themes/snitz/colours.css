@@ -13,7 +13,7 @@
 }
 .forabg .header,
 .forumbg .header {
-    background-color: #232371;
+    background-color: #191970;
     color: #fff;
 }
 
@@ -96,7 +96,7 @@ form.panel {
 }
 /*-- changed --*/
 div.col-xs-12.bg2, div.col-xs-12.bg1 {
-    background-color: #8199da !important;
+    background-color: rgb(106, 90, 205) !important;
     color: #000;
 }
 
@@ -493,13 +493,14 @@ dd label {
 .side-block-head, .side-block-head > a {
     color: #767b85;
 }
-ul.topiclist li.forum-group{
-	background-color:#999;
-	color:#fff;
-	line-height:1.4em;
+ul.topiclist li.forum-group, ul.topiclist li.forum-group > h5 a {
+    background-color: #191970;
+    color: #fff;
+    line-height: 1.4em;
 }
 ul.topiclist li.forum-group > h5{
 	padding:6px;
+    padding-top: 12px;
 }
 ul.social-media > li{
 	padding-right:1px;
@@ -521,8 +522,7 @@ a.arrow-left:hover {
 /*-- changed --*/
 #site-footer-nav,
 #site-footer {
-    background-color: #232371;
-
+    background-color: #191970;
 }
 /*-- changed --*/
 #site-footer-area {

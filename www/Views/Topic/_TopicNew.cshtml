@@ -228,8 +228,27 @@
 }
 else
 {
+    string headcss = ViewBag.bg == "bg1" ? "bg2" : "bg1";
     <div class="post has-profile bg2 topic" id="@String.Format("p{0}",Model.Id)">
-        <div class="inner equal">
+        <div class="inner equal forabg">
+        <div class="col-xs-12 header">
+            <div class="col-xs-12 col-md-10 col-md-offset-2 author">
+                <h3 class="first hidden-xs">
+                    @Html.Partial("_MessageButtons", Model, new ViewDataDictionary(this.ViewData) { { "buttonsOnly", true } })
+                </h3>
+                <a rel="bookmark" href="#@Model.Id" title="#permalink"><i class="fa fa-hashtag"></i></a>
+                <span class=""><a href="@String.Format("#p{0}", Model.Id)">@Html.FormatBbCode(Model.Subject)</a></span>
+                <span class=""><a class="@cssusername" href="@Url.Action("UserProfile", "Account", new {id = Model.Author.Username})">@Model.Author.Username</a></span>
+                @Html.Timeago(Model.Date)
+                
+                <span class="col-xs-3 pull-right">
+                    @if (allowrating)
+                    {
+                        <input id="star-rating-demo" value="@ViewBag.RatingSum" type="number" class="rating" min=0 max=5 step=0.1 data-size="xs"/>
+                    }
+                </span>
+            </div>
+        </div>
             <dl class="postprofile @unmoderatedClass hidden-xs hidden-sm col-md-2 " id="profile_@Model.AuthorId">
                 <dt class="profile-rank has-avatar">
                     @{
@@ -243,13 +262,15 @@ else
                             <a href="@Url.Action("UserProfile", "Account", new {id = Model.Author.Username})" data-toggle="tooltip" title="">
                                 @Html.Avatar(Model.Author.Username, Model.Author.PhotoUrl, "avatar img-circle").If(Config.ShowAvatar)
                             </a>
-                            @Html.ActionLink(Model.Author.Username, "UserProfile", "Account", new { id = Model.Author.Username }, new { data_toggle = "tooltip" }).If(!Config.ShowAvatar)
+                            @Html.ActionLink(Model.Author.Username, "UserProfile", "Account", new {id = Model.Author.Username}, new {data_toggle = "tooltip"}).If(!Config.ShowAvatar)
                         }
                         else
                         {
                             @Html.Avatar(Model.Author.Username, Model.Author.PhotoUrl, "avatar img-circle").If(Config.ShowAvatar)
                             if (!Config.ShowAvatar)
-                            { @Html.Raw(Model.Author.Username)}
+                            {
+                                @Html.Raw(Model.Author.Username)
+                            }
                         }
                     </div>
                     <a class="@cssusername" href="@Url.Action("UserProfile", "Account", new {id = Model.Author.Username})">@Model.Author.Username</a>
@@ -309,13 +330,13 @@ else
                             if (disabled)
                             {
                                 <li class="padding-xs">
-                                    @Html.ActionLink(" ", "UnLockUser", "Account", new { user = Model.Author.Id }, new { @class = "fa fa-2x fa-unlock-alt", title = ResourceManager.GetLocalisedString("tipAuthorUnlock", "Tooltip"), data_toggle = "tooltip" })
+                                    @Html.ActionLink(" ", "UnLockUser", "Account", new {user = Model.Author.Id}, new {@class = "fa fa-2x fa-unlock-alt", title = ResourceManager.GetLocalisedString("tipAuthorUnlock", "Tooltip"), data_toggle = "tooltip"})
                                 </li>
                             }
                             else
                             {
                                 <li class="padding-xs">
-                                    @Html.ActionLink(" ", "LockUser", "Account", new { user = Model.Author.Id }, new { @class = "fa fa-2x fa-lock", title = ResourceManager.GetLocalisedString("tipAuthorLock", "Tooltip"), data_toggle = "tooltip" })
+                                    @Html.ActionLink(" ", "LockUser", "Account", new {user = Model.Author.Id}, new {@class = "fa fa-2x fa-lock", title = ResourceManager.GetLocalisedString("tipAuthorLock", "Tooltip"), data_toggle = "tooltip"})
                                 </li>
                             }
                         }
@@ -323,54 +344,29 @@ else
 
                 </dd>
             </dl>
-            <div class="col-xs-12 hidden-sm hidden-md hidden-lg padding-xs bg1">
+            <div class="col-xs-12 hidden-sm hidden-md hidden-lg padding-xs bg1 ">
                 @* Event Calendar code*@
                 @if (ClassicConfig.GetIntValue("INTCALEVENTS") == 1)
                 {
-                    Html.RenderAction("EventIcon", "Calendar", new { id = Model.Id });
+                    Html.RenderAction("EventIcon", "Calendar", new {id = Model.Id});
                 }
                 @* Featured Poll code*@
                 @if (Model.IsPoll == 1)
                 {
                     <i class="fa fa-bar-chart" title="@ResourceManager.GetLocalisedString("lblContainsPoll", "Poll")"></i>
                 }
-            <h5>
-                @Html.FormatBbCode(Model.Subject) @ResourceManager.GetLocalisedString("lblPostedBy", "labels")
-                <span><a class="@cssusername" href="@Url.Action("UserProfile", "Account", new {id = Model.Author.Username})">@Model.Author.Username</a> <a href="@Url.Action("Posts", "Topic", new {id = Model.Id, pagenum = 1, archived = Model.Archived})" class="topic-title">@Html.Timeago(Model.Date)</a></span>
-            </h5>
+                <h5>
+                    @Html.FormatBbCode(Model.Subject) @ResourceManager.GetLocalisedString("lblPostedBy", "labels")
+                    <span><a class="@cssusername" href="@Url.Action("UserProfile", "Account", new {id = Model.Author.Username})">@Model.Author.Username</a> <a href="@Url.Action("Posts", "Topic", new {id = Model.Id, pagenum = 1, archived = Model.Archived})" class="topic-title">@Html.Timeago(Model.Date)</a></span>
+                </h5>
             </div>
             <div class="postbody col-xs-12 col-md-10">
                 <div id="post_content_@Model.Id">
 
-                    <h3 class="first hidden-xs clearfix">
-                        @* Event Calendar code*@
-                        @if (ClassicConfig.GetIntValue("INTCALEVENTS") == 1)
-                        {
-                            Html.RenderAction("EventIcon", "Calendar", new { id = Model.Id });
-                        }
-                        @* Featured Poll code*@
-                        @if (Model.IsPoll == 1)
-                        {
-                            <i class="fa fa-bar-chart" title="@ResourceManager.GetLocalisedString("lblContainsPoll", "Poll")"></i>
-                        }
-                        <span class="pull-left flip"><a href="@String.Format("#p{0}", Model.Id)">@Html.FormatBbCode(Model.Subject)</a></span>
-                        
-                        <span class="hidden-xs">@Html.Partial("_MessageButtons", Model, new ViewDataDictionary(this.ViewData) { { "buttonsOnly", true } })</span>
-                        <span class="col-xs-3 pull-right">
-                            @if (allowrating)
-                            {
-                                <input id="star-rating-demo" value="@ViewBag.RatingSum" type="number" class="rating" min=0 max=5 step=0.1 data-size="xs" />
-                            }
-                        </span>
-                    </h3>
-
-                    <p class="author hidden-xs">
-                        <a href="@Url.Action("Posts", "Topic", new {id = Model.Id, pagenum = 1, archived = Model.Archived})" class="topic-title">@Html.Timeago(Model.Date)</a>
-                    </p>
                     <div class="content message">
                         @if (ClassicConfig.GetIntValue("INTCALEVENTS") == 1)
                         {
-                            Html.RenderAction("EventInfoTag", "Calendar", new { id = Model.Id });
+                            Html.RenderAction("EventInfoTag", "Calendar", new {id = Model.Id});
                         }
                         @*@Html.FormatBbCode(HttpUtility.HtmlDecode(Model.Message))*@
                         @Html.FormatBbCode(Model.Message)
@@ -384,16 +380,16 @@ else
                                 }
                                 else if (hasVoted || Model.TopicPoll.Active == 0)
                                 {
-                                    @Html.DisplayFor(m => m.TopicPoll, new { panel = "panel-info", featured = false })
+                                    @Html.DisplayFor(m => m.TopicPoll, new {panel = "panel-info", featured = false})
                                 }
                                 else
                                 {
-                                    @Html.EditorFor(m => m.TopicPoll, new { panel = "panel-default", featured = false })
+                                    @Html.EditorFor(m => m.TopicPoll, new {panel = "panel-default", featured = false})
                                 }
                             </div>
                         }
-                        <br />
-                        <br />
+                        <br/>
+                        <br/>
                     </div>
 
                 </div>

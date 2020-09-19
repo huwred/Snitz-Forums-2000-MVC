@@ -1316,8 +1316,9 @@ namespace WWW.Controllers
         {
             return View("ModConfiguration");
         }
-        public ActionResult ModConfig(FormCollection form)
+        public ActionResult SaveModConfig(FormCollection form)
         {
+            var updates = new List<string>();
             foreach (var key in form.AllKeys)
             {
                 if (key.StartsWith("str") || key.StartsWith("int"))
@@ -1326,8 +1327,10 @@ namespace WWW.Controllers
                     if (amounts != null)
                         ClassicConfig.ConfigDictionary.CreateNewOrUpdateExisting(key.ToUpper(), amounts[0]);
                 }
-                ClassicConfig.Update(new string[]{ key.ToUpper()});
+                updates.Add(key.ToUpper());
+                
             }
+            ClassicConfig.Update(updates.ToArray());
             //ClassicConfig.Update(form.AllKeys.Where(k => k.StartsWith("str")).Select(k => k.ToUpper()).ToArray());
             //ClassicConfig.Update(form.AllKeys.Where(k => k.StartsWith("int")).Select(k => k.ToUpper()).ToArray());
             return RedirectToAction(form["ControllerView"]);
@@ -1339,9 +1342,9 @@ namespace WWW.Controllers
             ClassicConfig.ShowDebug = form["enable-debug"] == "True";
             return Redirect("~/Admin/Tools");
         }
-        public ActionResult ManageEvents()
+        public ActionResult ManagePlugin(string controllername)
         {
-            return PartialView("ManageEvents");
+            return PartialView("ManagePlugin",controllername);
         }
         public ActionResult Reset()
         {
@@ -1708,6 +1711,29 @@ namespace WWW.Controllers
             SnitzDataContext.ImportSpamDomainsCSV(csvPath);
         }
 
+        public ActionResult SavePendingConfig(FormCollection form)
+        {
+            var updates = new List<string>();
+            foreach (var key in form.AllKeys)
+            {
+                if (key.StartsWith("str") || key.StartsWith("int"))
+                {
+                    string[] amounts = Request.Form.GetValues(key);
+                    if (amounts != null)
+                        ClassicConfig.ConfigDictionary.CreateNewOrUpdateExisting(key.ToUpper(), amounts[0]);
+                }
+                updates.Add(key.ToUpper());
+                
+            }
+            ClassicConfig.Update(updates.ToArray());
+
+            PendingMemberViewModel pvm = new PendingMemberViewModel
+            {
+                Pending = MemberManager.PendingMembers().ToList(),
+                EnabledProfileFields = UserProfileExtensions.EnabledProfileFields()
+            };
+            return View("PendingMembers",pvm);
+        }
     }
 
 }

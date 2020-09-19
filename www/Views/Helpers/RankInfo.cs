@@ -44,6 +44,8 @@ namespace WWW.Views.Helpers
             _ranking = rankings;
             _User = user.Username;
             _Posts = posts;
+            _IsAdmin = user.UserLevel == 3;
+            _IsModerator = user.UserLevel == 2;            
             SetLevel();
             if (String.IsNullOrWhiteSpace(title))
             {
@@ -53,14 +55,15 @@ namespace WWW.Views.Helpers
             {
                 Title = title.Trim();
             }
-            _IsAdmin = user.UserLevel == 3;
-            _IsModerator = user.UserLevel == 2;
+
         }
         public RankInfoHelper(UserProfile user, ref string title, int? posts, Dictionary<int, Ranking> rankings)
         {
             _ranking = rankings;
             _User = user.UserName;
             _Posts = posts;
+            _IsAdmin = user.UserLevel == 3;
+            _IsModerator = user.UserLevel == 2;
             SetLevel();
             if (String.IsNullOrWhiteSpace(title))
             {
@@ -70,8 +73,6 @@ namespace WWW.Views.Helpers
             {
                 Title = title.Trim();
             }
-            _IsAdmin = user.UserLevel == 3;
-            _IsModerator = user.UserLevel == 2;
         }
         public string GetStars()
         {

@@ -261,7 +261,7 @@ namespace SnitzCore.Utility
         {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             var assembly = (from a in assemblies
-                            where a.FullName == name
+                where a.FullName.StartsWith(name)
                             select a).SingleOrDefault();
             if (assembly != null)
             {

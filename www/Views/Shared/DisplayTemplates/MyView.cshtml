@@ -48,7 +48,7 @@
 <div class="well @postsclass">
     <div class="media ">
         <div class="pull-left">
-            <span class="align-center">
+            <span class="align-center hidden-xs">
                 @if (Config.ShowAvatar)
                 {
                     <a href="@Url.Action("UserProfile", "Account", new {id = Model.PostAuthorName})">
@@ -84,7 +84,7 @@
                 {
                     <li><input id="star-rating-demo" value="@ViewBag.RatingSum" type="number" class="rating" min=0 max=5 step=0.1 data-size="xs"/></li><li>|</li>
                 }
-                <li>
+                <li class="hidden-xs">
                     @{ Html.RenderPartial("_SocialMedia"); }
                 </li>
             </ul>

@@ -55,6 +55,8 @@
 {
     <h5>Search this Forum</h5>
     @Html.Partial("_Search", new SearchModel() { ForumId = @Model.Forum.Id })
+
+    @*@{ Html.RenderPartial("_SearchForums", new ViewDataDictionary(this.ViewData) { { "Category", Model.Id }, { "ForumId", -1 }, { "langStr", "SearchCategoryPosts" } }); }*@
 }
 @section sidebox
 {
@@ -67,8 +69,8 @@
             @Html.Action("Index", "TagCloud", new { id = Model.Forum.Id })
         </div>
         @*<div class="side-box">
-            @Html.Action("BlogList","Topic", new { id = Model.Forum.Id })
-        </div>*@
+                @Html.Action("BlogList","Topic", new { id = Model.Forum.Id })
+            </div>*@
     </div>
 
 }

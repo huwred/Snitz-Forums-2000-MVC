@@ -5,7 +5,7 @@ Content-Type: text/html; charset=utf-8
 <body>
     <p>Hello @Html.Raw(Model.UserName),</p>
     <p>
-        @Html.Raw(Model.FromUsername)  has commented on your image.
+        @Html.Raw(Model.FromUser)  has commented on your image.
     </p>
     <hr />
     <p>You can view the comments <a href='@Model.Imagelink' title='link to image comments'>here</a></p>

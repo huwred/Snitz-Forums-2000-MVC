@@ -29,10 +29,6 @@
 }
 <div id="wrap-body">
     <div class="chunk-main">
-        @*<div class="container-fluid clearfix">
-                <h5>@ResourceManager.GetLocalisedString("mnuForumMembers", "Menu")</h5>
-                <hr class="title" />
-            </div>*@
         <div class="container-fluid clearfix form-post-message">
             @{ Html.RenderPartial("_MemberSearch"); }
         </div>
@@ -46,6 +42,10 @@
                     @{ Html.RenderPartial("_PageSize"); }
                 </div>
             </div>
+        }
+        else
+        {
+            <p>&nbsp;</p>
         }
     </div>
     @if (ClassicConfig.GetIntValue("INTNEWLAYOUT", 0) == 1)
@@ -125,7 +125,7 @@
                             </dl>
                         </li>
                     </ul>
-                    <ul class="userlist topics">
+                    <ul class="userlist topics table-bordered">
                         @{ ViewBag.bg = "bg1"; }
                         @for (int i = 0; i < Model.Users.Count; i++)
                         {

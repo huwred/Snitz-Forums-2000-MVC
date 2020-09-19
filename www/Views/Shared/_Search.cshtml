@@ -1,15 +1,18 @@
 ﻿@using LangResources.Utility
 @{
+    TempData["SideBox"] = true;
+
     string placeholderText = "SearchForumPosts";
     if (Model.TopicId != null)
     { placeholderText = "SearchTopicPosts"; }
 }
-<form action="@Url.Action("Search","Topic",new{})" method="post">
+<form action="@Url.Action("Search", "Topic",new {})" method="post" class="search-side">
+    @Html.AntiForgeryToken()
     <div class="input-group">
-        <input type="hidden" id="Category" name="Category" value="@Model.Category" />
-        <input type="hidden" id="ForumId" name="ForumId" value="@Model.ForumId" />
-        <input type="hidden" id="TopicId" name="TopicId" value="@Model.TopicId" />
-        <input name="term" data-val="true" id="term" data-val-length-min="3" data-val-length="@string.Format(ResourceManager.GetLocalisedString("strMinLength", "ErrorMessage"), "", 3)" data-val-required="@string.Format(ResourceManager.GetLocalisedString("Validation_Required", "ErrorMessage"), "")" class="form-control" type="text" placeholder="@ResourceManager.GetLocalisedString(placeholderText, "Title")" value="">
+        <input type="hidden" @*id="Category"*@ name="SearchModel.Category" value="@Model.Category" />
+        <input type="hidden" @*id="ForumId"*@ name="SearchModel.ForumId" value="@Model.ForumId" />
+        <input type="hidden" @*id="TopicId"*@ name="SearchModel.TopicId" value="@Model.TopicId" />
+        <input name="SearchModel.Term" data-val="true" @*id="term"*@ data-val-length-min="3" data-val-length="@string.Format(ResourceManager.GetLocalisedString("strMinLength", "ErrorMessage"), "", 3)" data-val-required="@string.Format(ResourceManager.GetLocalisedString("Validation_Required", "ErrorMessage"), "")" class="form-control" type="text" placeholder="@ResourceManager.GetLocalisedString(placeholderText, "Title")" value="">
         <span class="input-group-btn">
             <button class="btn btn-info" type="submit"><i class="fa fa-search"></i></button>
         </span>

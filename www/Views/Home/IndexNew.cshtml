@@ -24,7 +24,7 @@
 }
 @section styles{
 
-    @Styles.Render("~/Content/bootstrapnews.css")
+    @Styles.Render("~/Content/css/bootstrapnews.min.css")
 
 }
 
@@ -66,7 +66,7 @@
     <div class="side-box">
         @{ Html.RenderPartial("_SearchForums", new ViewDataDictionary(this.ViewData) { { "Category", -1 }, { "ForumId", -1 }, { "langStr", "SearchAllPosts" } }); }
     </div>
-    @Html.Partial("_RightColumn", new ViewDataDictionary(this.ViewData) { { "show", new List<string>() { "online", "donate", "recent", "widget|PVOutput" } } })
+    @Html.Partial("_RightColumn", new ViewDataDictionary(this.ViewData) { { "show", new List<string>() { "online", "donate", "recent"@*, "widget|PVOutput"*@ } } })
 
 }
 @if (colLayout == "left")
@@ -106,7 +106,7 @@
             Html.RenderAction("ForumStats");
         }
     </div>
-    @if (ClassicConfig.GetIntValue("INTEMBEDED", 0) == 0)
+    @if (ClassicConfig.GetIntValue("INTEMBEDED", 0) == 0 && ClassicConfig.GetValue("STRMANAGEFILES") == "1")
     {
         <div class="chunk-main">
             <div class="panel panel-body">

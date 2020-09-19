@@ -29,48 +29,57 @@ namespace WWW.Controllers
         [Authorize]
         public virtual JsonResult Upload()
         {
-            string uploadPath = Path.Combine(Server.MapPath("~/" + Config.ContentFolder + "/Members/"), WebSecurity.CurrentUserId.ToString());
-
-            if (!Directory.Exists(uploadPath))
+            try
             {
-                Directory.CreateDirectory(uploadPath);
-            }
+                string uploadPath = Path.Combine(Server.MapPath("~/" + Config.ContentFolder + "/Members/"), WebSecurity.CurrentUserId.ToString());
 
-            string fileName = "";
-            string mimeType = "";
-            string filesize = "";
-            for (int i = 0; i < Request.Files.Count; i++)
-            {
-                HttpPostedFileBase file = Request.Files[i]; //Uploaded file                                       
-                if (file != null && file.ContentLength > Convert.ToInt32(ClassicConfig.GetValue("INTMAXFILESIZE"))*1024*1024)
+                if (!Directory.Exists(uploadPath))
                 {
-                    return Json("error|File too large");
+                    Directory.CreateDirectory(uploadPath);
                 }
-                if (file != null)
-                {
-                    mimeType = file.ContentType;
-                    filesize = "|" + file.ContentLength/1024 + " KB";
 
-                    var extension = Path.GetExtension(file.FileName);
-                    if (extension != null)
+                string fileName = "";
+                string mimeType = "";
+                string filesize = "";
+                for (int i = 0; i < Request.Files.Count; i++)
+                {
+                    HttpPostedFileBase file = Request.Files[i]; //Uploaded file                                       
+                    if (file != null && file.ContentLength > Convert.ToInt32(ClassicConfig.GetValue("INTMAXFILESIZE")) * 1024 * 1024)
                     {
-                        string fileExt = extension.ToLower();
-                        bool contains = false;
-                        foreach (string name in ClassicConfig.GetValue("STRFILETYPES").ToLower().Split(','))
-                            if (fileExt.Contains(name) || name==mimeType)
-                                contains = true;
-                        if (!contains)
-                        {
-                            return Json("error|Invalid File type");
-                        }
+                        return Json("error|File too large");
                     }
-                    fileName = Path.GetFileName(file.FileName);//Use the following properties to get file's name, size and MIMEType
-                    
-                    if (fileName != null)
-                        file.SaveAs(Path.Combine(uploadPath, fileName)); //File will be saved in users folder
+                    if (file != null)
+                    {
+                        mimeType = file.ContentType;
+                        filesize = "|" + file.ContentLength / 1024 + " KB";
+
+                        var extension = Path.GetExtension(file.FileName);
+                        if (extension != null)
+                        {
+                            string fileExt = extension.ToLower();
+                            bool contains = false;
+                            foreach (string name in ClassicConfig.GetValue("STRFILETYPES").ToLower().Split(','))
+                                if (fileExt.Contains(name) || name == mimeType)
+                                    contains = true;
+                            if (!contains)
+                            {
+                                return Json("error|Invalid File type");
+                            }
+                        }
+                        fileName = Path.GetFileName(file.FileName);//Use the following properties to get file's name, size and MIMEType
+
+                        if (fileName != null)
+                            file.SaveAs(Path.Combine(uploadPath, fileName)); //File will be saved in users folder
+                    }
                 }
+                return Json(Common.RootFolder + "/" + Config.ContentFolder + "/Members/" + WebSecurity.CurrentUserId + "/" + fileName + "|" + mimeType + "|" + filesize, JsonRequestBehavior.AllowGet);
             }
-            return Json(Common.RootFolder + "/" + Config.ContentFolder + "/Members/" + WebSecurity.CurrentUserId + "/" + fileName + "|" + mimeType + "|" + filesize, JsonRequestBehavior.AllowGet);
+            catch (Exception e)
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(e.Message, JsonRequestBehavior.AllowGet);
+
+            }
         }
 
         [DoNotLogActionFilter]

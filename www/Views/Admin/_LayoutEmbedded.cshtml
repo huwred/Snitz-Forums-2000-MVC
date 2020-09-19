@@ -43,11 +43,11 @@
     @Scripts.Render("~/bundles/corejs")
     @RenderSection("styles", required: false)
 
-    @Styles.Render("~/Content/jquery.ui.datepicker.min.css")
-    @Styles.Render("~/Content/stylesheet.min.css?v=" + versionstring)
+    @Styles.Render("~/Content/css/jquery.ui.datepicker.min.css")
+    @Styles.Render("~/Content/css/stylesheet.min.css?v=" + versionstring)
     @if (isRighToLeft)
     {
-        @Styles.Render("~/Content/stylesheetrtl.min.css?v=" + versionstring)
+        @Styles.Render("~/Content/css/stylesheetrtl.min.css?v=" + versionstring)
     }
     @Html.Raw(Config.ThemeCss("colours.min.css?v=" + versionstring))
     <style>

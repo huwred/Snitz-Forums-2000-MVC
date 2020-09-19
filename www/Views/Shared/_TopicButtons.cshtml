@@ -68,7 +68,7 @@
                             }
                             if (!buttons.Contains("merge"))
                             {
-                                <li>@Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("tipMergeTopic", "Tooltip"), "MergeTopic", "Topic", new { id = Model.Id }, "fa fa-1_5x fa-object-group")</li>
+                                <li>@Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("tipMergeTopic", "Tooltip"), "MergeTopic", "Topic", new { id = Model.Id, action="merge" }, "fa fa-1_5x fa-object-group")</li>
                             }
                             break;
                         case Enumerators.PostStatus.Closed:
@@ -86,7 +86,7 @@
                             }
                             if (!buttons.Contains("merge"))
                             {
-                                <li>@Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("tipMergeTopic", "Tooltip"), "MergeTopic", "Topic", new { id = Model.Id }, "fa fa-1_5x fa-object-group")</li>
+                                <li>@Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("tipMergeTopic", "Tooltip"), "MergeTopic", "Topic", new { id = Model.Id, action = "merge" }, "fa fa-1_5x fa-object-group")</li>
                             }
 
                             break;
@@ -104,14 +104,14 @@
             </ul>
             @if (selectedTopics != null)
             {
-            if (selectedTopics.Contains(Model.Id))
-            {
-            <input type="checkbox" value="@Model.Id" checked class="topic-select hidden-xs" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("chkTopicSelect","Admin")" />
-            }
-            else
-            {
-             <input type="checkbox" value="@Model.Id" class="topic-select hidden-xs" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("chkTopicSelect","Admin")" />
-            }
+                if (selectedTopics.Contains(Model.Id))
+                {
+                    <input type="checkbox" value="@Model.Id" checked class="topic-select hidden-xs" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("chkTopicSelect","Admin")" />
+                }
+                else
+                {
+                    <input type="checkbox" value="@Model.Id" class="topic-select hidden-xs" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("chkTopicSelect","Admin")" />
+                }
             }
             else
             {

@@ -25,16 +25,16 @@
     @if (isRighToLeft)
     {
         <!-- Load the default rtl css file -->
-        <link href="~/Content/bootstrap-rtl.min.css" rel="stylesheet">
+        <link href="~/Content/css/bootstrap-rtl.min.css" rel="stylesheet">
         @Html.Raw(Config.ThemeCss("snitz-rtl.min.css"))
     }
     @if (Config.TableExists("CAL_EVENTS") && ClassicConfig.GetIntValue("INTCALUPCOMINGEVENTS") == 1 && ClassicConfig.GetIntValue("INTCALPUBLIC") == 1)
     {
-        @Styles.Render("~/Content/fullcalendar.min.css")
-        @Html.Raw(Config.ThemeCss("fullcalendar.min.css"))
+        @Styles.Render("~/Content/plugincss/fullcalendar.min.css")
+        @Html.Raw(Config.ThemeCss("plugincss/fullcalendar.min.css"))
         if (isRighToLeft)
         {
-            @Styles.Render("~/Content/fullcalendar-rtl.css")
+            @Styles.Render("~/Content/plugincss/fullcalendar-rtl.min.css")
         }
     }
 
@@ -57,7 +57,7 @@
     @Scripts.Render("~/bundles/corejs")
     @RenderSection("styles", required: false)
 
-    @Styles.Render("~/Content/jquery.ui.datepicker.min.css")
+    @Styles.Render("~/Content/css/jquery.ui.datepicker.min.css")
     <style>
         .centered {
             position: fixed;

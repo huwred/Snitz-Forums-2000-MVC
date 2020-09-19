@@ -49,20 +49,28 @@ $.fn.extend({
     insertAtCaret: function (myValue) {
         var textComponent = $(this)[0];
         if (document.selection !== undefined) {
+            console.log('insert 1');
             this.focus();
             sel = document.selection.createRange();
+            console.log(sel.text);
             sel.text = myValue;
+            console.log('set focus');
             this.focus();
         } else if (textComponent.selectionStart != undefined) {
+            console.log('insert 2');
             var startPos = textComponent.selectionStart;
             var endPos = textComponent.selectionEnd;
-            var scrollTop = textComponent.scrollTop;
+            var scrollTop = textComponent.scrollIntoView.scrollTop;
             textComponent.value = textComponent.value.substring(0, startPos) + myValue + textComponent.value.substring(endPos, textComponent.value.length);
-            this.focus();
-            this.selectionStart = startPos + myValue.length;
-            this.selectionEnd = startPos + myValue.length;
-            this.scrollTop = scrollTop;
+
+            textComponent.selectionStart = startPos + myValue.length;
+            textComponent.selectionEnd = startPos + myValue.length;
+            textComponent.blur();
+            textComponent.focus();
+
+
         } else {
+            console.log('insert 3');
             this.val(this.val() + myValue);
             this.focus();
         }
@@ -96,8 +104,8 @@ $.fn.extend({
             }
             textComponent.selectionStart = startPos + myValue.length;
             textComponent.selectionEnd = startPos + myValue.length;
-            textComponent.scrollTop = scrollTop;
-
+            textComponent.blur();
+            textComponent.focus();
         }
         
 
@@ -129,9 +137,10 @@ $.fn.extend({
                 textComponent.value = textComponent.value.substring(0, startPos) + myValue + textComponent.value.substring(endPos, textComponent.value.length);
                 //textComponent.value += val1 + val2;
             }
-            textComponent.selectionStart = startPos;
+            textComponent.selectionStart = startPos + myValue.length;
             textComponent.selectionEnd = startPos + myValue.length;
-            textComponent.scrollTop = scrollTop;
+            textComponent.blur();
+            textComponent.focus();
 
         }
 
@@ -167,7 +176,8 @@ $.fn.extend({
             }
             textComponent.selectionStart = startPos + myValue.length;
             textComponent.selectionEnd = startPos + myValue.length;
-            textComponent.scrollTop = scrollTop;
+            textComponent.blur();
+            textComponent.focus();
 
         }
         return selectedText;
@@ -534,7 +544,7 @@ $(window).on("load", function(){
 
         if (storedOffset !== currentOffset) { // user may have changed the timezone
             $.cookie(timezoneCookie, new Date().getTimezoneOffset(),{path: window.SnitzVars.cookiePath, domain: window.SnitzVars.cookieDomain, expires:120});
-            console.log('timezone-reload 2');
+            //console.log('timezone-reload 2');
             location.reload();
         }
     }
@@ -545,7 +555,7 @@ $(window).on("load", function(){
     $("select[id='theme-change']").on('change',
         function () {
             $(this).tooltip('hide');
-            console.log('theme-reload');
+            //console.log('theme-reload');
             $.cookie(styleCookieName, encodeURIComponent(this.value), { expires: styleCookieDuration, path: '/' });
             
             location.reload(true);
@@ -700,12 +710,12 @@ $(window).on("load", function(){
         evt.preventDefault();
         var dilog = BootstrapDialog.show({
             title: 'Stop Forum Spam lookup',
-            message: '<img src="' + SnitzVars.baseUrl + 'content/images/link_loader.gif"/>'
+            message: '<img src="' + window.SnitzVars.baseUrl + 'content/images/link_loader.gif"/>'
         });
         var id = $(this).data('id');
         var ip = $(this).data('ip');
         var email = $(this).data('email');
-        $.get(SnitzVars.baseUrl + 'Admin/StopForumSpamCheck/' + id + "/?email=" + email + "&userip=" + ip, function(data) {
+        $.get(window.SnitzVars.baseUrl + 'Admin/StopForumSpamCheck/' + id + "/?email=" + email + "&userip=" + ip, function(data) {
             dilog.setMessage(data);
         });
         return false;
@@ -719,9 +729,14 @@ $(window).on("load", function(){
     });
     /*update the session topiclist if checkbox selected*/
     $('.topic-select').on('mouseup', function () {
+        if (window.console && window.console.log) {
+            console.log('toppic-select:' + $(this).val());
+            console.log('url:' + window.SnitzVars.baseUrl + "Topic/UpdateTopicList");
+        }
+        
         $.ajax({
             type: "POST",
-            url: window.SnitzVars.baseUrl + "Topic/UpdateTopicList",
+            url: window.SnitzVars.baseUrl + "Topic/UpdateTopicList/?id=" + $(this).val(),
             data: { topicid: $(this).val() },
             cache: false
         });
@@ -740,7 +755,7 @@ $(window).on("load", function(){
     /*remove the sidebox if it's empty*/
     if ($('.side-box').is(':empty') || $.trim($('.side-box').html()).length == 0) {
         $('#right-col').remove();
-        $('#main-content').removeClass('col-md-8');
+        $('#main-content').removeClass('col-md-9');
         $('#main-content').removeClass('col-lg-9');
 
     }
@@ -875,8 +890,8 @@ $(window).on("load", function(){
         });
     }
     /* Initialise popovers */
-    $('.topictitle').popover({
-        trigger: 'hover',
+    $('.topictitle-hint').popover({
+        trigger: 'click',
         container: 'body',
         html: true,
         placement: 'auto', //window.SnitzVars.forumlang === "fa" ? 'left' : 'right',
@@ -932,24 +947,24 @@ $(document).ajaxComplete(function () {
 });
 
 function setStyleFromCookie() {
-    console.log('set style');
+    //console.log('set style');
     var cssTitle = getCookie(styleCookieName);
-    console.log('cookie style' + cssTitle);
+    //console.log('cookie style' + cssTitle);
     if (typeof cssTitle !== "undefined" && cssTitle !== null && cssTitle.length > 0) {
-        console.log('switch 1');
+        //console.log('switch 1');
         switchStyle(cssTitle.toLowerCase());
         if ($("div.theme-changer").is(":visible"))
         {
-            console.log('switch 1 visible');
+            //console.log('switch 1 visible');
             $("div.theme-changer select").val(cssTitle);
         }
         
     } else {
-        console.log('switch 2');
+        //console.log('switch 2');
         switchStyle(window.SnitzVars.defaultTheme.toLowerCase());
         if ($("div.theme-changer").is(":visible"))
         {
-            console.log('switch 2 visible');
+            //console.log('switch 2 visible');
             $("div.theme-changer select").val(window.SnitzVars.defaultTheme.toLowerCase());
         }
         
@@ -958,10 +973,10 @@ function setStyleFromCookie() {
     function getCookie(cookieName) {
         if ($.cookie(cookieName) !== null) {
             var test = $.cookie(cookieName);
-            console.log('???? : ' + test);
+            //console.log('???? : ' + test);
             return test;
         }
-        console.log(cookieName + ' not found');
+        //console.log(cookieName + ' not found');
         return '';
     }
 }
@@ -1001,7 +1016,7 @@ function isTouchDevice() {
 }
 
 var PersianCheck = function() {
-    console.log('persian check');
+    //console.log('persian check');
         $(".numbers").addClass("persian");
         if (!persianRex.hasText.test($(".forum-description").val())) {
             $(".forum-description").attr("dir", "ltr");
@@ -1016,14 +1031,14 @@ var PersianCheck = function() {
             $(".topic-link").attr("dir", "rtl");
         }
         $('.message').each(function() {
-            console.log($(this).html());
-            console.log(persianRex.rtl.test($(this).html()));
-            console.log(persianRex.hasRtl.test($(this).html()));
+            //console.log($(this).html());
+            //console.log(persianRex.rtl.test($(this).html()));
+            //console.log(persianRex.hasRtl.test($(this).html()));
             if (!persianRex.hasRtl.test($(this).html())) {
-                console.log('use ltr');
+                //console.log('use ltr');
                 $(this).attr("dir", "ltr");
             } else {
-                console.log('use rtl');
+                //console.log('use rtl');
                 $(this).attr("dir", "rtl");
             }
         });
