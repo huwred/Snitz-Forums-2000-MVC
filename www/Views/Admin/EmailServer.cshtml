@@ -1,5 +1,5 @@
 ﻿@using LangResources.Utility
-@using SnitzCore.Extensions
+@using SnitzConfig
 @using WWW.Views.Helpers
 @using SnitzDataModel.Extensions
 @model WWW.ViewModels.AdminEmailServer
@@ -22,82 +22,162 @@
         @using (Html.BeginForm("EmailServer", "Admin", FormMethod.Post, new { @class = "form-horizontal" }))
         {
             <div class="col-sm-5 flip text-left">
-                <div class="form-group">
-                    <label for="EmailMode" class="control-label col-xs-8 col-sm-6">Email mode:</label>
-                    <div class="col-xs-4 col-sm-3">
-                        <input id="EmailMode" name="EmailMode" type="checkbox" class="yesno-checkbox" data-size="mini" checked="@(Model.EmailMode == "1")" />
-                        @Html.HelpLink("STREMAIL")
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="UseSpamFilter" class="control-label col-xs-8 col-sm-6">Filter known spam domains:</label>
-                    <div class="col-xs-4 col-sm-3">
-                        <input id="UseSpamFilter" name="UseSpamFilter" type="checkbox" class="yesno-checkbox" data-size="mini" checked="@(Model.UseSpamFilter == "1")" />
-                        @Html.HelpLink("STRFILTEREMAILADDRESSES")
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="control-label  col-xs-12 col-sm-6">Contact Email:</label>
-                    <div class="col-xs-12 col-sm-6">
-                        @Html.TextBoxFor(model => model.ContactEmail, new { @class = "form-control inline" })
-                        @Html.HelpLink("STRCONTACTEMAIL", "pull-right")
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-xs-12 col-sm-6">From Email:</label>
-                    <div class="col-xs-12 col-sm-6">
-                        <div class="input-group col-xs-12">
-                            <input type="text" class="form-control resource-edit" placeholder="Resource string" value="@Model.From" name="From" />
-                            <span class="input-group-btn">
-                                <button data-toggle="tooltip" type="button" class="btn btn-default send-email" title="Send test email" data-id="@SnitzMembership.WebSecurity.CurrentUserId"><i class="fa fa-envelope"></i></button>
-                            </span>
-                            <span class="input-group-addon" style="border:0;color:inherit;">@Html.HelpLink("STRFROMEMAIL")</span>
+                <fieldset>
+                    <legend>Email Server</legend>
+                    <div class="form-group">
+                        <label class="control-label col-xs-8 col-sm-6">Server address @Html.HelpLink("STRMAILSERVER")</label>
+                        <div class="col-xs-4 col-sm-6">
+                            @Html.TextBoxFor(model => model.Server, new { @class = "form-control" })
                         </div>
                     </div>
-                </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-8 col-sm-6">Server port @Html.HelpLink("STRMAILSERVERPORT")</label>
+                        <div class="col-xs-4 col-sm-6">
+                            @Html.TextBoxFor(model => model.Port, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-8 col-sm-6">Requires Authentication </label>
+                        <div class="col-xs-4 col-sm-3">
+                            @Html.CheckBoxFor(model => model.Auth, new { @class = "checkbox-inline", id = "checkbox-auth" })@Html.HelpLink("STRMAILAUTH")
+                        </div>
+                    </div>
+                    <div id="smtp-auth"
+                         @if (!Model.Auth) { @Html.Raw("style='display:none'")  }>
+                        <div class="form-group">
+                            <label class="control-label col-xs-8 col-sm-6">Use default credentials</label>
+                            <div class="col-xs-4 col-sm-3">
+                                @Html.CheckBoxFor(model => model.DefaultCred, new { @class = "checkbox-inline", id = "checkbox-cred" }) @Html.HelpLink("STRMAILAUTHDEF")
+                            </div>
+                        </div>
+                        <div class="form-group user-cred">
+                            <label class="control-label col-xs-8 col-sm-6">Username @Html.HelpLink("STRMAILUSER")</label>
+                            <div class="col-xs-4 col-sm-6">
+                                @Html.TextBoxFor(model => model.Username, new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="form-group user-cred">
+                            <label class="control-label col-xs-8 col-sm-6">Password @Html.HelpLink("STRMAILPWD")</label>
+                            <div class="col-xs-4 col-sm-6">
+                                @Html.TextBoxFor(model => model.Password, new { @class = "form-control", @type = "password" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-8 col-sm-6">Delivery method @Html.HelpLink("STRMAILDELIVER")</label>
+                        <div class="col-xs-4 col-sm-6">
+                            @Html.EnumDropDownListFor(model => model.DeliveryMethod, new { @class = "form-control", id = "delivery" }, "")
+                        </div>
+                    </div>
+                    <div class="form-group" id="pickup-folder">
+                        <label class="control-label col-xs-8 col-sm-6">Pickup Folder</label>
+                        <div class="col-xs-4 col-sm-6">
+                            @Html.TextBoxFor(model => model.PickUpFolder, new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <p>@Html.ValidationSummary(false, "", new { @class = "list-group-item-info" })</p>
+                        <div class="col-xs-10 col-xs-offset-1">
+                            <p>
+                                Which port should I use?<br />
+                                Use port 587 if you can, 465 if you can’t, 25 if you must.<br />
+                                <br />
+                                Port 587 is technically correct, the best kind of correct. However, many ESPs have adopted implicit TLS on port 465. While you can send email over port 25 and 2525, it’s much more secure to have the messages encrypted. This makes port 587 the preferred option for sending, with port 465 as a close second.
+                            </p>
+                        </div>
+                    </div>
+                </fieldset>
             </div>
             <div class="col-sm-1"></div>
             <div class="col-sm-5 flip text-left">
-                <div class="form-group">
-                    <label class="control-label">Mail Server @Html.HelpLink("STRMAILSERVER")</label>
-                    @Html.TextBoxFor(model => model.Server, new { @class = "form-control" })
-                </div>
-                <div class="form-group">
-                    <label class="control-label">Server port @Html.HelpLink("STRMAILSERVERPORT")</label>
-                    @Html.TextBoxFor(model => model.Port, new { @class = "form-control" })
-                </div>
-                <div class="form-group">
-                    <label class="control-label">Requires Authentication </label>
-                    @Html.CheckBoxFor(model => model.Auth, new { @class = "checkbox-inline", id = "checkbox-auth" })@Html.HelpLink("STRMAILAUTH")
-                </div>
-                <div id="smtp-auth" @if (!Model.Auth) { @Html.Raw("style='display:none'") }>
+                <fieldset>
+                    <legend>Forum email settings</legend>
                     <div class="form-group">
-                        <label class="control-label">Use default credentials</label>
-                        @Html.CheckBoxFor(model => model.DefaultCred, new { @class = "checkbox-inline", id = "checkbox-cred" }) @Html.HelpLink("STRMAILAUTHDEF")
+                        <label for="EmailMode" class="control-label col-xs-8 col-sm-6">Email mode:</label>
+                        <div class="col-xs-4 col-sm-3">
+                            <input id="EmailMode" name="EmailMode" type="checkbox" class="yesno-checkbox" data-size="mini" checked="@(Model.EmailMode == "1")" />
+                            @Html.HelpLink("STREMAIL")
+                        </div>
                     </div>
-                    <div class="form-group user-cred">
-                        <label class="control-label">Username @Html.HelpLink("STRMAILUSER")</label>
-                        @Html.TextBoxFor(model => model.Username, new { @class = "form-control" })
+                    @if (ClassicConfig.GetIntValue("STREMAIL") == 1)
+                    {
+                        <div class="form-group">
+                            <label for="emailval" class="control-label col-xs-8 col-sm-6">Email validation:</label>
+                            <div class="col-xs-4 col-sm-3">
+                                <input id="emailval" type="checkbox" class="yesno-checkbox" data-size="mini" name="emailval" checked="@(ClassicConfig.GetValue("STREMAILVAL") == "1")" />
+                                @Html.HelpLink("STREMAILVAL")
+                            </div>
+                        </div>
+
+                    }
+                    else
+                    {
+                        <input type="hidden" id="emailval" name="emailval" value="0" />
+                    }
+                    <div class="form-group">
+                        <label class="control-label  col-xs-12 col-sm-6">Contact Email:</label>
+                        <div class="col-xs-12 col-sm-6">
+                            @Html.TextBoxFor(model => model.ContactEmail, new { @class = "form-control inline" })
+                            @Html.HelpLink("STRCONTACTEMAIL", "pull-right")
+                        </div>
                     </div>
-                    <div class="form-group user-cred">
-                        <label class="control-label">Password @Html.HelpLink("STRMAILPWD")</label>
-                        @Html.TextBoxFor(model => model.Password, new { @class = "form-control", @type = "password" })
+                    <div class="form-group">
+                        <label class="control-label col-xs-12 col-sm-6">From Email:</label>
+                        <div class="col-xs-12 col-sm-5">
+                            <div class="input-group col-xs-12">
+                                <input type="text" class="form-control resource-edit" placeholder="Resource string" value="@Model.From" name="From" />
+                                <span class="input-group-btn">
+                                    <button data-toggle="tooltip" type="button" class="btn btn-default send-email" title="Send test email" data-id="@SnitzMembership.WebSecurity.CurrentUserId"><i class="fa fa-envelope"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                        @Html.HelpLink("STRFROMEMAIL")
                     </div>
-                </div>
-                <div class="form-group">
-                    <label class="control-label">Delivery method @Html.HelpLink("STRMAILDELIVER")</label>
-                    @Html.EnumDropDownListFor(model => model.DeliveryMethod, new { @class = "form-control", id = "delivery" }, "")
-                </div>
-                <div class="form-group" id="pickup-folder">
-                    <label class="control-label">Pickup Folder</label>
-                    @Html.TextBoxFor(model => model.PickUpFolder, new { @class = "form-control" })
-                </div>
-                <p>@Html.ValidationSummary(false, "", new { @class = "list-group-item-info" })</p>
+                    <div class="form-group">
+                        <label for="UseSpamFilter" class="control-label col-xs-8 col-sm-6">Filter known spam domains:</label>
+                        <div class="col-xs-4 col-sm-3">
+                            <input id="UseSpamFilter" name="UseSpamFilter" type="checkbox" class="yesno-checkbox" data-size="mini" checked="@(Model.UseSpamFilter == "1")" />
+                            @Html.HelpLink("STRFILTEREMAILADDRESSES")
+                        </div>
+                    </div>
+                    <legend>Member email settings</legend>
+                    <div class="form-group">
+                        <label for="uniqueemail" class="control-label  col-xs-8 col-sm-6">Require Unique Email:</label>
+                        <div class="col-xs-4 col-sm-3">
+                            <input id="uniqueemail" type="checkbox" class="yesno-checkbox" name="uniqemail" data-size="mini" checked="@(ClassicConfig.GetValue("STRUNIQUEEMAIL") == "1")" />
+                            @Html.HelpLink("STRUNIQUEEMAIL")
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="emaillogon" class="control-label col-xs-8 col-sm-6">Logon to send email:</label>
+                        <div class="col-xs-4 col-sm-3">
+                            <input id="emaillogon" type="checkbox" class="yesno-checkbox" data-size="mini" name="logonemail" checked="@(ClassicConfig.GetValue("STRLOGONFORMAIL") == "1")" />
+                            @Html.HelpLink("STRLOGONFORMAIL")
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="emailpostcount" class="control-label col-xs-8 col-sm-6">Number of posts to allow sending email:</label>
+                        <div class="col-xs-4 col-sm-6">
+                            <input id="emailpostcount" class="form-control inline" type="number" name="emailpostcount" value="@(ClassicConfig.GetIntValue("INTMAXPOSTSTOEMAIL"))" />
+                            @Html.HelpLink("INTMAXPOSTSTOEMAIL", "pull-right")
+                        </div>
+                        <input type="text" id="emailadmin" name="emailadmin" value="1" style="display: none;" />
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-8 col-sm-6"></div>
+                        <div class="col-xs-4 col-sm-6">
+                            <textarea id="emailpostcount-error" class="form-control" name="emailpostcount-message" rows="4">@(ClassicConfig.GetValue("STRNOMAXPOSTSTOEMAIL"))</textarea>
+                        </div>
+                    </div>
+                </fieldset>
             </div>
             <div class="row"></div>
             { Html.RenderPartial("_FormButtons"); }
         }
     </div>
+
     <div class="tab-pane" id="email-spam" role="tabpanel" aria-labelledby="spam-tab">
         @using (Html.BeginForm("DeleteSpamFilters", "Admin", FormMethod.Post, new { id = "delSpamForm" }))
         {

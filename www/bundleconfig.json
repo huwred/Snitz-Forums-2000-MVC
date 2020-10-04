@@ -136,14 +136,6 @@
     "sourceMapRootPath": null
   },
   {
-    "outputFileName": "Scripts/dropzone.min.js",
-    "inputFiles": [
-      "Scripts/dropzone.js"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
-  },
-  {
     "outputFileName": "Content/Themes/Enbiolog/snitz.min.css",
     "inputFiles": [
       "Content/Themes/Enbiolog/snitz.css"
@@ -251,14 +243,6 @@
     "outputFileName": "Content/Themes/snitz/star-rating.min.css",
     "inputFiles": [
       "Content/Themes/snitz/star-rating.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
-  },
-  {
-    "outputFileName": "Scripts/jquery.unobtrusive-ajax.min.js",
-    "inputFiles": [
-      "Scripts/jquery.unobtrusive-ajax.js"
     ],
     "sourceMap": false,
     "sourceMapRootPath": null

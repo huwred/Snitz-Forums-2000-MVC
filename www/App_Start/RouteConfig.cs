@@ -139,6 +139,15 @@ namespace WWW
                 }
             );
             routes.MapRoute(
+                name: "Privacy",
+                url: "{controller}/Privacy",
+                defaults: new
+                {
+                    controller = "Home",
+                    action = "Privacy"
+                }
+            );
+            routes.MapRoute(
                 name: "License",
                 url: "{controller}/License",
                 defaults: new

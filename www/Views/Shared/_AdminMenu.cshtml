@@ -5,9 +5,9 @@
 
 
 <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminMainConfig", "Menu"), "ForumConfig", "Admin", null, new { rel = "nofollow" })</li>
-<li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminFeature", "Menu"), "FeatureConfig", "Admin", null, new { rel = "nofollow" })</li>
-<li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminDate", "Menu"), "DateConfig", "Admin", null, new { rel = "nofollow" })</li>
 <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminEmail", "Menu"), "EmailServer", "Admin", null, new { rel = "nofollow" })</li>
+<li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminDate", "Menu"), "DateConfig", "Admin", null, new { rel = "nofollow" })</li>
+<li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminFeature", "Menu"), "FeatureConfig", "Admin", null, new { rel = "nofollow" })</li>
 <li class="divider"></li>
 <li class="dropdown-submenu">
     <a tabindex="-1" href="#">@ResourceManager.GetLocalisedString("mnuAdminForum", "Menu")</a>
@@ -32,7 +32,7 @@
     <a tabindex="-1" href="#">@ResourceManager.GetLocalisedString("mnuAdminMembership", "Menu")</a>
     <ul class="dropdown-menu">
         <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminMember", "Menu"), "MemberConfig", "Admin", null, new { rel = "nofollow" })</li>
-        @if (ClassicConfig.GetIntValue("STRPICTURE",0) == 1)
+        @if (ClassicConfig.GetIntValue("STRPICTURE", 0) == 1)
         {
             <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminAvatar", "Menu"), "ManageAvatars", "Admin", null, new { rel = "nofollow" })</li>
         }
@@ -56,16 +56,18 @@
         <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminLangResources", "Menu"), "Index", "LangResource", null, new { rel = "nofollow" })</li>
         <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminOnline", "Menu"), "Online", "Admin", null, new { rel = "nofollow" })</li>
         <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminTools", "Menu"), "Tools", "Admin", null, new { rel = "nofollow" })</li>
-        @if (Config.TableExists("FORUM_FILECOUNT")){
+        @if (Config.TableExists("FORUM_FILECOUNT"))
+        {
             <li>@Html.ActionLink("Manage Downloads", "Index", "Files", null, new { rel = "nofollow" })</li>
         }
-         <li class="dropdown-submenu">
+        <li class="dropdown-submenu">
             <a tabindex="-1" href="#">Site Manager</a>
             <ul class="dropdown-menu">
-                @if(Common.AssemblyLoaded("DbManage")){
+                @if (Common.AssemblyLoaded("DbManage"))
+                {
                     <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminDbManager", "Menu"), "Index", "DbManager", new { path = "", view = 0 }, new { rel = "nofollow" })</li>
 
-               }
+                }
                 <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuAdminExplorer", "Menu"), "Index", "WebFileManager", new { path = "", view = 0 }, new { rel = "nofollow" })</li>
                 <li>@Html.ActionLink("Paypal Setup", "Configuration", "PayPal", null, new { rel = "nofollow" })</li>
             </ul>
@@ -86,7 +88,7 @@
         }
         @if (Config.TableExists("CAL_EVENTS"))
         {
-            <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuCalendar", "Menu"), "ManagePlugin", "Admin", new{ controllername="Calendar"}, new { rel = "nofollow" })</li>
+            <li>@Html.ActionLink(ResourceManager.GetLocalisedString("mnuCalendar", "Menu"), "ManagePlugin", "Admin", new { controllername = "Calendar" }, new { rel = "nofollow" })</li>
         }
         @if (Config.TableExists(ConfigurationManager.AppSettings["memberTablePrefix"] + "USERFIELDS"))
         {

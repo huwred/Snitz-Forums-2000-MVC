@@ -54,10 +54,7 @@ namespace WWW.Controllers
                     return RedirectToAction("Setup");
                 }
             }
-
-
         }
-
 
         public ActionResult Upgrade()
         {
@@ -183,12 +180,6 @@ namespace WWW.Controllers
             ProcessTask processTask = (ProcessTask) result.AsyncState;
             string id = processTask.EndInvoke(result);
             _dbsProcessor.Remove(id);
-            //if (_dbsProcessor.Success)
-            //{
-            //    Config.RunSetup = false;
-            //    Config.Update();
-            //}
-
         }
 
         public void EndCreateProcess(IAsyncResult result)
@@ -196,12 +187,6 @@ namespace WWW.Controllers
             ProcessTask processTask = (ProcessTask) result.AsyncState;
             string id = processTask.EndInvoke(result);
             _dbsProcessor.Remove(id);
-            //if (_dbsProcessor.Success)
-            //{
-            //    Config.RunSetup = false;
-            //    Config.Update();
-            //}
-
         }
 
         public ContentResult GetCurrentProgress(string id)

@@ -15,11 +15,11 @@
         <div class="panel-heading padding-xs">
             <div class="btn-toolbar" role="toolbar">
                 <div class="btn-group btn-sm">
-                    <a class="btn btn-default pm-button" data-val="1" data-target="GetFolder" title="@ResourceManager.GetLocalisedString("Inbox", "PrivateMessage")" data-toggle="tooltip" href="#"><i class="fa fa-1_5x fa-sign-in fa-rotate-90"></i></a>
+                    <a class="btn btn-default pm-button" data-val="1" data-target="GetFolder" title="@ResourceManager.GetLocalisedString("Inbox", "PrivateMessage") @{ Html.RenderAction("InboxSizeString"); }" data-toggle="tooltip" href="#"><i class="fa fa-1_5x fa-sign-in fa-rotate-90"></i></a>
                     @if (Model.SaveSentItems)
                     {
-                        <a class="btn btn-default pm-button" data-val="0" data-target="GetFolder" title="@ResourceManager.GetLocalisedString("OutBox", "PrivateMessage")" data-toggle="tooltip" href="#"><i class="fa fa-1_5x fa-sign-out fa-rotate-270"></i></a>
                     }
+                <a class="btn btn-default pm-button" data-val="0" data-target="GetFolder" title="@ResourceManager.GetLocalisedString("OutBox", "PrivateMessage") @{ Html.RenderAction("OutboxSizeString"); }" data-toggle="tooltip" href="#"><i class="fa fa-1_5x fa-sign-out fa-rotate-270"></i></a>
 
                     <a class="btn btn-default pm-button" data-val="" data-target="NewMessage" title="@ResourceManager.GetLocalisedString("NewMessage", "PrivateMessage")" data-toggle="tooltip" href="#"><i class="fa fa-1_5x fa-envelope-o"></i></a>
                     <a class="btn btn-default pm-send" style="display: none;" title="@ResourceManager.GetLocalisedString("SendMessage", "PrivateMessage")" data-toggle="tooltip" href="#" data-target="SendPMsg"><i class="fa fa-1_5x fa-send-o"></i></a>

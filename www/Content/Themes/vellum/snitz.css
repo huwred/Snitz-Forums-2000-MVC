@@ -228,22 +228,20 @@ img.online {
     background-color: yellow
 }
 
-.featured {
+.announce {
     display: block;
-    background-color: #f0ad4e;
-    border-radius: 4px;
-    padding: 4px;
-    background-image: -webkit-linear-gradient(top, #f0ad4e 0%, #ffe88c 100%);
-    background-image: -o-linear-gradient(top, #f0ad4e 0%, #ffe88c 100%);
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#f0ad4e), to(#ffe88c));
-    background-image: linear-gradient(to bottom, #f0ad4e 0%, #ffe88c 100%);
-    background-repeat: repeat-x;
+    background-color: #fff;
+    border-radius: 1px;
+    padding: 12px;
+    padding-top: 1px;
     margin-bottom: 5px;
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
-.featured,.featured a {
-    color: darkred;
-}
+    .announce, .announce a {
+        color: darkred;
+    }
 
 .title hr {
     margin-top: 0px;
@@ -900,8 +898,9 @@ div.message-sig {
     max-height: 430px;
     height: auto;
 }
-
-/* Popover Arrow */
+.popover .arrow {
+    top: 25% !important;
+}
 .required-val {
 
     background-color: #bbb;

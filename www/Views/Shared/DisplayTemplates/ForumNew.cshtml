@@ -66,8 +66,8 @@
         <li class="row">
             <dl class="@postsclass">
                 <dt data-title="@ResourceManager.GetLocalisedString(postsclass, "icoTooltip")" class="col-xs-12 col-sm-9 col-md-6" data-toggle="tooltip">
-                    <span class="@postsclass"></span>
-                    <div class="list-inner">
+                    <span class="@postsclass hidden-xs"></span>
+                    <span class="list-inner">
                         @Html.ActionLink("" + Model.Subject, "Posts", "Forum", new { id = Model.GenerateSlug(), pagenum = 1 }, new { @class = "forumtitle" })
 
                         <br>@Html.FormatBbCode(Model.Description)<br />
@@ -84,10 +84,10 @@
                             }
                             <label class='small'>@ResourceManager.GetLocalisedString("lblModeration", "labels")</label>
                         }
-                        <div class="responsive-show" style="display: none;">
+                        <span class="responsive-show" style="display: none;">
                             @ResourceManager.GetLocalisedString("lblTopics", "labels"): <strong>@Model.TopicCount</strong>
-                        </div>
-                    </div>
+                        </span>
+                    </span>
                 </dt>
                 @if (Model.PrivateForums.In(Enumerators.ForumAuthType.AllowedMemberPassword, Enumerators.ForumAuthType.MembersPassword, Enumerators.ForumAuthType.PasswordProtected) && requireauth && (!User.IsAdministrator() || User.IsForumModerator(Model.Id)))
                 {
@@ -95,7 +95,7 @@
                 }
                 else
                 {
-            <dd class="lastpost col-xs-12 col-sm-3 col-lg-2">
+            <dd class="lastpost col-xs-12 col-sm-3">
                 <dfn>@ResourceManager.GetLocalisedString("lblLastPost", "labels")</dfn>
                 @if (Model.LastPostDate.HasValue && Model.LastPostAuthorName != null)
                 {
@@ -176,12 +176,12 @@
 
             <span class="ico_forum_link"></span>
 
-            <div class="list-inner">
+            <span class="list-inner">
 
                 <a class="forumtitle" href="@Model.Url" title="@Html.FormatBbCode(Model.Subject, false)" target="_blank">@Html.FormatBbCode(Model.Subject, false)</a>
                 <br>@Html.FormatBbCode(Model.Description)
 
-            </div>
+            </span>
         </dt>
  
         <dd>                    @if (User.IsAdministrator() || User.IsForumModerator(Model.Id))

@@ -144,7 +144,11 @@ namespace SnitzDataModel.Controllers
             // do whatever you need to get your model
             return PartialView("popLicense");
         }
-
+        [HttpGet]
+        public ActionResult Privacy()
+        {
+            return PartialView("popPrivacyPolicy");
+        }
         protected RouteData UrlToRouteValueDictionary(string path, string query)
         {
 

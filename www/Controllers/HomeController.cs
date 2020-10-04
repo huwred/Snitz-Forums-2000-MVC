@@ -18,7 +18,7 @@ using PrivateMessage = SnitzDataModel.Models.PrivateMessage;
 
 namespace WWW.Controllers
 {
-    [CookieConsent]
+    
     public class HomeController : CommonController
     {
         public HomeController()

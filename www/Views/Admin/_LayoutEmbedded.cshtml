@@ -21,7 +21,7 @@
     <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
     @Styles.Render("~/bundles/sitecss")
 
-    @Styles.Render("~/Content/stylesheet.min.css")
+    @Styles.Render("~/Content/css/stylesheet.min.css?v=" + versionstring)
     @Styles.Render("~" + Config.ThemeFolder() + "/snitz.min.css")
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -44,7 +44,7 @@
     @RenderSection("styles", required: false)
 
     @Styles.Render("~/Content/css/jquery.ui.datepicker.min.css")
-    @Styles.Render("~/Content/css/stylesheet.min.css?v=" + versionstring)
+
     @if (isRighToLeft)
     {
         @Styles.Render("~/Content/css/stylesheetrtl.min.css?v=" + versionstring)

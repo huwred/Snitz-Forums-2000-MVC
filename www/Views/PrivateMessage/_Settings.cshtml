@@ -13,10 +13,10 @@
             <label class="control-label col-xs-7" for="Notify">@ResourceManager.GetLocalisedString("NotifyPM", "PrivateMessage")</label>
             @Html.CheckBoxFor(x=>x.Notify,new{@class="yesno-checkbox", data_size="mini"})
         </div>
-        @*        <div class="form-group">
+        <div class="form-group">
             <label class="control-label col-xs-7" for="SentItems">@ResourceManager.GetLocalisedString("SaveSentPM", "PrivateMessage")</label>
             @Html.CheckBoxFor(x=>x.SentItems,new{@class="yesno-checkbox", data_size="mini"})
-        </div>*@
+        </div>
         <input type="hidden" value="True" name="SentItems"/>
 
         @{ Html.RenderPartial("_FormButtons"); }

@@ -11,7 +11,13 @@ body {
 }
 body > .container-fluid {
     padding-top: 60px;
-} 
+}
+li.astr:before {
+    content: "*";
+    position: relative;
+    left: -15px;
+    bottom: -3px;
+}
 div.avatar {
     display: inline-block;
 }
@@ -309,7 +315,7 @@ ul.nav li.dropdown:hover > ul.dropdown-menu {
     margin-left: 0;
 }
 
-.timeago:before, .timeago:after {
+.timeago:after {
     content: "\00a0";
 }
 .text-right .view-image img {

@@ -491,7 +491,9 @@ ul.filelist dl {
     font-size: 1.1em;
     line-height: 22px;
 }
-
+span.list-inner {
+    display: block;
+}
 ul.topiclist dl.icons dt{
 	margin-right: -100px;
 }
@@ -2047,12 +2049,16 @@ ul.glossary dd {
         padding-left: 3px;
     }
 
-    ul.topiclist.forums:not(.glossary) dt > span, ul.topiclist.topics:not(.glossary) dt > span {
+/*    ul.topiclist.forums:not(.glossary) dt > span, ul.topiclist.topics:not(.glossary) dt > span {
         display: none !important;
-    }
+    }*/
 
     ul.topiclist.forums:not(.glossary) dt .list-inner, ul.topiclist.topics:not(.glossary) dt .list-inner {
-        padding-left: 5px;
+        padding-left: 55px;
         padding-right: 0px;
     }
+    dd.lastpost {
+        padding-left: 59px;
+    }
 }
+

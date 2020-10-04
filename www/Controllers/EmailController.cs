@@ -279,8 +279,6 @@ namespace WWW.Controllers
 
         public static void SendMemberEmail(ControllerContext context,EmailModel model)
         {
-            //if (!ClassicConfig.AllowEmail)
-            //    return View("Error");
             //If there is a file then save it
             dynamic email = new Email("DefEmail");
             if (model.Attachment != null)

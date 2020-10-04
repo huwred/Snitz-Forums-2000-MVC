@@ -149,7 +149,7 @@
                                 @(Model.Forum.Status == Enumerators.PostStatus.Open ? Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfLockForum", "labels"), "Lock", "Forum", new {id = Model.Id, catid = Model.Forum.CatId, @lock = true}, "fa fa-lock fa-1_5x") : Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfUnlockForum", "labels"), "Lock", "Forum", new {id = Model.Id, catid = Model.Forum.CatId, @lock = false}, "fa fa-unlock-alt fa-1_5x"))
                                 if (User.IsAdministrator())
                                 {
-                                    @Html.ActionLink(" ", "CreateEdit", "Forum", new { id = Model.Id, catid = Model.Forum.CatId }, new { @class = "fa fa-edit fa-1_5x", title = ResourceManager.GetLocalisedString("tipEditForum", "Tooltip"), data_toggle = "tooltip" })
+                                    @Html.ActionLink(" ", "CreateEdit", "Forum", new { id = Model.Id, catid = Model.Forum.CatId }, new { @class = "fa fa-wrench fa-1_5x", title = ResourceManager.GetLocalisedString("tipEditForum", "Tooltip"), data_toggle = "tooltip" })
                                     @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfDeleteForum", "labels"), "Delete", "Forum", new { id = Model.Id, catid = Model.Forum.CatId }, "fa fa-trash-o fa-1_5x")
                                     if (ClassicConfig.GetValue("STRARCHIVESTATE") == "1")
                                     {

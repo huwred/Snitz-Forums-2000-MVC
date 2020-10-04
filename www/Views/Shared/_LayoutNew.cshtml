@@ -296,10 +296,14 @@
         <div id='aboutContainer' class="modal-dialog">
         </div>
     </div>
-    <div id='licenseModal' class='modal fade' data-url='@Url.Action("License")' dir="ltr">
-        <div id='licenseContainer' class="modal-dialog">
-        </div>
+<div id='licenseModal' class='modal fade' data-url='@Url.Action("License")' dir="ltr">
+    <div id='licenseContainer' class="modal-dialog">
     </div>
+</div>
+<div id='policyModal' class='modal fade' data-url='@Url.Action("Privacy")' dir="ltr">
+    <div id='policyContainer' class="modal-dialog">
+    </div>
+</div>
     <!-- Modal -->
     <input type="hidden" id="displayname" value="@HttpContext.Current.Session.SessionID" />
 

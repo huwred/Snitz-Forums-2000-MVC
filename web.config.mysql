@@ -35,7 +35,7 @@
     </DbProviderFactories>
   </system.data>
   <system.web>
-    <compilation targetFramework="4.7">
+    <compilation targetFramework="4.7.2">
       <assemblies>
         <add assembly="System.Configuration.Install, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
         <add assembly="System.Drawing.Design, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
@@ -49,6 +49,7 @@
         <add assembly="System.ServiceProcess, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
       </assemblies>
     </compilation>
+    <httpCookies sameSite="Strict" requireSSL="false" />
     <customErrors mode="On" defaultRedirect="~/Error" redirectMode="ResponseRewrite">
       <error statusCode="403" redirect="~/Error/Forbidden" />
       <error statusCode="404" redirect="~/Error/NotFound" />
@@ -56,13 +57,14 @@
       <error statusCode="500" redirect="~/500.aspx" />
       <!-- <error statusCode="404" redirect="~/Error/NotFound" />-->
     </customErrors>
-    <httpRuntime targetFramework="4.7" maxRequestLength="2147483647" executionTimeout="1100" relaxedUrlToFileSystemMapping="true" requestPathInvalidCharacters="&lt;,&gt;,*,%,:,\,?" />
+    <httpRuntime targetFramework="4.7.2" maxRequestLength="2147483647" executionTimeout="1100" relaxedUrlToFileSystemMapping="true" requestPathInvalidCharacters="&lt;,&gt;,*,%,:,\,?" />
     <authentication mode="Forms">
-      <forms loginUrl="~/Account/Login" timeout="2880" slidingExpiration="true" />
+      <forms loginUrl="~/Account/Login" timeout="2880" slidingExpiration="true" cookieSameSite="Lax" requireSSL="false" />
     </authentication>
     <httpModules>
       <add name="OnlineActiveUsers" type="SnitzMembership.OnlineUsersModule" />
-      <add type="WWW.Filters.IPBlackList" name="IPBlackList" />
+      <add name="TimingModule" type="WWW.Filters.TimingModule" />
+      <add name="IPBlackList" type="WWW.Filters.IPBlackList" />
     </httpModules>
     <pages>
       <namespaces>
@@ -75,7 +77,7 @@
         <add namespace="System.Web.WebPages" />
       </namespaces>
     </pages>
-    <roleManager enabled="true" defaultProvider="SnitzSimpleRoleProvider">
+    <roleManager enabled="true" defaultProvider="SnitzSimpleRoleProvider" cookieRequireSSL="false">
       <providers>
         <clear />
         <add name="SnitzSimpleRoleProvider" type="Snitz.WebMatrix.WebData.SnitzSimpleRoleProvider, SnitzMembership, Version=1.1.3.3, Culture=neutral" />
@@ -99,7 +101,7 @@
     <modules runAllManagedModulesForAllRequests="true">
       <add name="OnlineActiveUsers" type="SnitzMembership.OnlineUsersModule" />
       <add name="TimingModule" type="WWW.Filters.TimingModule" />
-      <add type="WWW.Filters.IPBlackList" name="IPBlackList" />
+      <add name="IPBlackList" type="WWW.Filters.IPBlackList" />
     </modules>
     <security>
       <requestFiltering allowDoubleEscaping="true">
@@ -154,8 +156,20 @@
         <bindingRedirect oldVersion="0.0.0.0-1.0.7.1" newVersion="1.0.7.1" />
       </dependentAssembly>
                   <dependentAssembly>
+        <assemblyIdentity name="System.Net.Http" publicKeyToken="b03f5f7f11d50a3a" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-4.1.1.3" newVersion="4.2.0.0" />
+      </dependentAssembly>
+      <dependentAssembly>
         <assemblyIdentity name="System.Net.Http.Formatting" publicKeyToken="31bf3856ad364e35" culture="neutral" />
         <bindingRedirect oldVersion="0.0.0.0-5.2.3.0" newVersion="5.2.3.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="System.Memory" publicKeyToken="cc7b13ffcd2ddd51" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-4.0.1.1" newVersion="4.0.1.1" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="System.Buffers" publicKeyToken="cc7b13ffcd2ddd51" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-4.0.3.0" newVersion="4.0.3.0" />
       </dependentAssembly>
     </assemblyBinding>
   </runtime>

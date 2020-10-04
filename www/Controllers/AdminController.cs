@@ -529,6 +529,7 @@ namespace WWW.Controllers
                 #endregion
                 #region member-regisration
 
+
                 ClassicConfig.ConfigDictionary["STRUNIQUEEMAIL"] = form.AllKeys.Contains("uniqemail") ? "1" : "0";
                 ClassicConfig.ConfigDictionary["STREMAILVAL"] = form.AllKeys.Contains("emailval") ? "1" : "0";
                 //ClassicConfig.ConfigDictionary["STRRESTRICTREG"] = form.AllKeys.Contains("restrictreg") ? "1" : "0";
@@ -545,6 +546,11 @@ namespace WWW.Controllers
                         "INTMAXPOSTSTOEMAIL",
                         "STRNOMAXPOSTSTOEMAIL"
                     });
+                if (form.AllKeys.Contains("emailadmin"))
+                {
+
+                    return RedirectToAction("EmailServer");
+                }
                 #endregion
                 #region private messages
 
@@ -963,6 +969,20 @@ namespace WWW.Controllers
                     configurationFile.Save();
                 }
             }
+            ClassicConfig.ConfigDictionary["STRUNIQUEEMAIL"] = Request.Form.AllKeys.Contains("uniqemail") ? "1" : "0";
+            ClassicConfig.ConfigDictionary["STREMAILVAL"] = Request.Form.AllKeys.Contains("emailval") ? "1" : "0";
+            ClassicConfig.ConfigDictionary["STRLOGONFORMAIL"] = Request.Form.AllKeys.Contains("logonemail") ? "1" : "0";
+            ClassicConfig.ConfigDictionary["INTMAXPOSTSTOEMAIL"] = Request.Form["emailpostcount"];
+            ClassicConfig.ConfigDictionary["STRNOMAXPOSTSTOEMAIL"] = Request.Form["emailpostcount-message"];
+            ClassicConfig.Update(
+                new[]
+                {
+                    "STRUNIQUEEMAIL",
+                    "STREMAILVAL",
+                    "STRLOGONFORMAIL",
+                    "INTMAXPOSTSTOEMAIL",
+                    "STRNOMAXPOSTSTOEMAIL"
+                });
             vm.EmailMode = ClassicConfig.GetValue("STREMAIL");
             vm.UseSpamFilter = ClassicConfig.GetValue("STRFILTEREMAILADDRESSES");
 

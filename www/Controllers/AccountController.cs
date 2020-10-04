@@ -132,6 +132,11 @@ namespace WWW.Controllers
                 //return View("Error");
                 decodedUrl = "";
             }
+
+            if (!String.IsNullOrWhiteSpace(decodedUrl))
+            {
+                decodedUrl = decodedUrl.ToLower();
+            }
             ViewData["LastVisitDateTime"] = LastVisitDate();
 
             if (model.IsConfirmed)
@@ -148,7 +153,7 @@ namespace WWW.Controllers
                             appUrl = "";
 
                         var landing = "Index"; //ConfigurationManager.AppSettings["LandingPage"];
-                        if (decodedUrl == appUrl || decodedUrl == appUrl + "/Home/Index" || decodedUrl == "")
+                        if (decodedUrl == appUrl.ToLower() || decodedUrl == appUrl.ToLower() + "/home/index" || decodedUrl == "" || decodedUrl == appUrl + "/account/login")
                         {
                             return landing != "Index"
                                 ? RedirectToLocal(appUrl + "/Home/" + landing)

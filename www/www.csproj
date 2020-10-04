@@ -359,18 +359,18 @@
     <Content Include="Content\css\stylesheetrtl.min.css">
       <DependentUpon>stylesheetrtl.css</DependentUpon>
     </Content>
-    <Content Include="Content\css\jquery.Jcrop.css" />
-    <Content Include="Content\css\jquery.ui.datepicker.css" />
+    <None Include="Content\css\jquery.Jcrop.css" />
+    <None Include="Content\css\jquery.ui.datepicker.css" />
     <Content Include="Content\css\jquery.ui.datepicker.min.css">
       <DependentUpon>jquery.ui.datepicker.css</DependentUpon>
     </Content>
-    <Content Include="Content\css\print.css" />
+    <None Include="Content\css\print.css" />
     <Content Include="Content\css\print.min.css">
       <DependentUpon>print.css</DependentUpon>
     </Content>
-    <Content Include="Content\css\snitz.avatar-rtl.css" />
-    <Content Include="Content\css\snitz.avatar.css" />
-    <Content Include="Content\css\stylesheetrtl.css" />
+    <None Include="Content\css\snitz.avatar-rtl.css" />
+    <None Include="Content\css\snitz.avatar.css" />
+    <None Include="Content\css\stylesheetrtl.css" />
     <None Include="Content\Themes\Enbiolog\colours.css" />
     <Content Include="Content\Themes\Enbiolog\colours.min.css">
       <DependentUpon>colours.css</DependentUpon>
@@ -416,20 +416,11 @@
       <DependentUpon>Chart.js</DependentUpon>
     </Content>
     <Content Include="Scripts\dataTables.bootstrap.min.js" />
-    <Content Include="Scripts\dropzone.min.js">
-      <DependentUpon>dropzone.js</DependentUpon>
-    </Content>
     <Content Include="Scripts\forum.details.min.js">
       <DependentUpon>forum.details.js</DependentUpon>
     </Content>
-    <Content Include="Scripts\jquery-ui-timepicker-addon.min.js">
-      <DependentUpon>jquery-ui-timepicker-addon.js</DependentUpon>
-    </Content>
     <Content Include="Scripts\jquery.twosidedmultiselect.min.js">
       <DependentUpon>jquery.twosidedmultiselect.js</DependentUpon>
-    </Content>
-    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js">
-      <DependentUpon>jquery.unobtrusive-ajax.js</DependentUpon>
     </Content>
     <Content Include="Scripts\langresource.min.js" />
     <Content Include="Scripts\lang\en-gb.js" />
@@ -437,11 +428,11 @@
     <Content Include="Scripts\lang\nb.js" />
     <Content Include="Scripts\lang\no.js" />
     <Content Include="Scripts\lang\ro.js" />
-    <Content Include="Scripts\moment-jalaali.js" />
+    <None Include="Scripts\moment-jalaali.js" />
     <Content Include="Scripts\moment-jalaali.min.js">
       <DependentUpon>moment-jalaali.js</DependentUpon>
     </Content>
-    <Content Include="Scripts\moment.js" />
+    <None Include="Scripts\moment.js" />
     <Content Include="Scripts\moment.min.js">
       <DependentUpon>moment.js</DependentUpon>
     </Content>
@@ -508,13 +499,13 @@
     <Content Include="Content\Themes\snitz\colours.min.css">
       <DependentUpon>colours.css</DependentUpon>
     </Content>
-    <Content Include="Content\Themes\snitz\snitz.css" />
+    <None Include="Content\Themes\snitz\snitz.css" />
     <Content Include="Content\Themes\snitz\snitz.min.css">
       <DependentUpon>snitz.css</DependentUpon>
     </Content>
     <Content Include="Content\Themes\snitz\tag_cloud.css" />
     <Content Include="Content\Themes\snitz\star-rating.min.css" />
-    <Content Include="Content\Themes\snitz\colours.css" />
+    <None Include="Content\Themes\snitz\colours.css" />
     <Content Include="Content\Themes\snitz\star-rating.css" />
     <Content Include="Content\Themes\snitz\highlight.min.css" />
     <Content Include="Content\Themes\snitz\images\archived.png" />
@@ -539,7 +530,7 @@
     <Content Include="Content\Themes\vellum\colours.min.css">
       <DependentUpon>colours.css</DependentUpon>
     </Content>
-    <Content Include="Content\Themes\vellum\snitz.css" />
+    <None Include="Content\Themes\vellum\snitz.css" />
     <Content Include="Content\Themes\vellum\snitz.min.css">
       <DependentUpon>snitz.css</DependentUpon>
     </Content>
@@ -658,7 +649,7 @@
     <Content Include="Content\rankimages\icon_star_silver.gif" />
     <Content Include="Content\rankimages\icon_star_bronze.gif" />
     <Content Include="Content\rankimages\icon_star_cyan.gif" />
-    <Content Include="Content\css\stylesheet.css" />
+    <None Include="Content\css\stylesheet.css" />
     <Content Include="Content\css\stylesheet.min.css">
       <DependentUpon>stylesheet.css</DependentUpon>
     </Content>
@@ -882,7 +873,7 @@
     <Content Include="Views\PrivateMessage\_Search.cshtml" />
     <Content Include="Views\PrivateMessage\Print.cshtml" />
     <Content Include="Views\PrivateMessage\_PrivateMessageView.cshtml" />
-    <Content Include="Scripts\Chart.js" />
+    <None Include="Scripts\Chart.js" />
     <Content Include="Views\Charts\RepliesByUser.cshtml" />
     <Content Include="Views\Admin\DbsFile.cshtml" />
     <Content Include="Views\PayPal\Donations.cshtml" />
@@ -899,7 +890,7 @@
     <Content Include="Views\PayPal\Index.cshtml" />
     <Content Include="Views\WebFileManager\Index.cshtml" />
     <Content Include="Views\WebFileManager\WriteFileRows.cshtml" />
-    <Content Include="Scripts\snitz.admin.js" />
+    <None Include="Scripts\snitz.admin.js" />
     <Content Include="Scripts\jquery.numeric.min.js" />
     <Content Include="connectionstrings.config" />
     <Content Include="Views\Emails\ApprovedEmail.cshtml" />
@@ -928,16 +919,17 @@
     <Content Include="Scripts\cshtml-razor.min.js" />
     <Content Include="Scripts\datatable-moment.min.js" />
     <Content Include="Scripts\find5.min.js" />
-    <Content Include="Scripts\forum.details.js" />
+    <None Include="Scripts\forum.details.js" />
     <Content Include="Scripts\highlight.pack.min.js" />
     <Content Include="Scripts\jquery.dataTables.min.js" />
-    <Content Include="Scripts\jquery.twosidedmultiselect.js" />
-    <Content Include="Scripts\snitz.pm.js" />
+    <None Include="Scripts\jquery.twosidedmultiselect.js" />
+    <None Include="Scripts\snitz.pm.js" />
     <Content Include="Scripts\star-rating.min.js" />
     <Content Include="mail.config" />
     <Content Include="Scripts\Datatable\fa.json" />
     <Content Include="Scripts\Datatable\no.json" />
     <Content Include="Scripts\Datatable\ro.json" />
+    <Content Include="Views\Shared\popPrivacyPolicy.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BbCodeFormatter\BbCodeFormatter.csproj">
@@ -966,21 +958,21 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App_Data\adrotator.xml" />
-    <None Include="App_Data\updatecountSPMySql.sql" />
-    <None Include="App_Data\stopwords-en.txt" />
-    <None Include="App_Data\countries.xml" />
-    <None Include="App_Data\Upgrade.xml" />
-    <None Include="App_Data\base.xml" />
-    <None Include="App_Data\updatecountSP.sql" />
-    <None Include="App_Data\stopwords-no.txt" />
-    <None Include="App_Data\emoticons.xml" />
-    <None Include="App_Data\faq.category.no.xml" />
-    <None Include="App_Data\faq.category.en.xml" />
-    <None Include="App_Data\robots.txt" />
-    <None Include="App_Data\faq.category.fa.xml" />
-    <None Include="App_Data\dbsTemplate.xml" />
-    <None Include="App_Data\dbsTemplate.xsd" />
+    <Content Include="App_Data\adrotator.xml" />
+    <Content Include="App_Data\updatecountSPMySql.sql" />
+    <Content Include="App_Data\stopwords-en.txt" />
+    <Content Include="App_Data\countries.xml" />
+    <Content Include="App_Data\Upgrade.xml" />
+    <Content Include="App_Data\base.xml" />
+    <Content Include="App_Data\updatecountSP.sql" />
+    <Content Include="App_Data\stopwords-no.txt" />
+    <Content Include="App_Data\emoticons.xml" />
+    <Content Include="App_Data\faq.category.no.xml" />
+    <Content Include="App_Data\faq.category.en.xml" />
+    <Content Include="App_Data\robots.txt" />
+    <Content Include="App_Data\faq.category.fa.xml" />
+    <Content Include="App_Data\dbsTemplate.xml" />
+    <Content Include="App_Data\dbsTemplate.xsd" />
     <None Include="App_Data\language_en.csv" />
     <Content Include="Content\css\fonts\fontawesome-webfont.woff2" />
     <None Include="LinqToDB.Templates\LinqToDB.MySql.Tools.ttinclude" />

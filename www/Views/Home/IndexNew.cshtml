@@ -30,9 +30,15 @@
 
 @if (ClassicConfig.GetIntValue("STRSHOWANNOUNCE") == 1)
 {
+    string title = ClassicConfig.GetValue("STRANNOUNCETITLE",null);
+    if (string.IsNullOrWhiteSpace(title))
+    {
+        title = ResourceManager.GetLocalisedString("lblAnnounce", "labels");
+    }
+
     @section featured {
-        <section class="featured">
-            <h3 class="text-warning">@ResourceManager.GetLocalisedString("lblAnnounce", "labels")</h3>
+        <section class="announce">
+            <h3 class="text-warning">@title</h3>
             @Html.FormatBbCode(ClassicConfig.GetValue("STRANNOUNCE"))
         </section>
     }

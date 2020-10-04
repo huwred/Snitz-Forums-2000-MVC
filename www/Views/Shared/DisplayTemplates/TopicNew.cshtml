@@ -150,7 +150,7 @@
         <dl class="icon @unmoderatedClass">
             <dt class="col-xs-12 col-sm-6">
                 <span class="@postsclass " data-title="@forumtitle" data-toggle="tooltip"></span>
-                <div class="list-inner">
+                <span class="list-inner">
                     <a href="@Url.Action("Posts", "Topic", new {id = Model.GenerateSlug(), pagenum = 1, archived = Model.Archived, terms = searchterms})" class="topictitle" data-lastpost="@Model.Id" data-original-title='@Html.FormatBbCode(Model.Subject, false)'>@Html.FormatBbCode(Model.Subject, false)</a><span class="hidden-sm hidden-md hidden-lg" title="replies"> (@replies)</span>
                     <span class="fa fa-search topictitle-hint faded" tooltip-title="click to preview post" data-toggle="popover" data-lastpost="@Model.Id" data-title="@Html.FormatBbCode(Model.Subject, false)"></span>
                     <br />
@@ -164,7 +164,7 @@
                     {
                         <input id="star-rating-demo" value="@Model.GetTopicRating()" type="number" class="rating" min=0 max=5 step=0.1 data-size="xs" />
                     }
-                </div>
+                </span>
             </dt>
             <dd class="lastpost col-xs-12 col-sm-3 col-lg-2">
                 <span>
@@ -172,16 +172,19 @@
                     @if (Model.LastPostReplyId > 0)
                     {
                         <span class="text-muted">@ResourceManager.GetLocalisedString("lblPostedBy", "labels")&nbsp;</span>@Html.ActionLink(Model.LastPostAuthorName, "UserProfile", "Account", new { id = Model.LastPostAuthorName }, new { data_title = ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip"), data_toggle = "tooltip", @class = rolecssLP })
+                    }
+                    <br class="hidden-xs" />@Html.Timeago(Model.LastPostDate)
+                    @if (Model.LastPostReplyId > 0)
+                    {
                         <span class="fa fa-search lastpost-hint faded" tooltip-title="click to preview last post" data-toggle="popover" data-lastpost="@Model.LastPostReplyId" data-title="@ResourceManager.GetLocalisedString("tipLastPostPreview", "Tooltip")"></span>
                     }
                     <a href="@Url.Action("Posts", "Topic", new {id = Model.GenerateSlug(), pagenum = -1, archived = Model.Archived})#@Model.LastPostReplyId" data-toggle="tooltip" class="lastpost-last" data-title="@ResourceManager.GetLocalisedString("tipLastPost", "Tooltip")"><i class="fa fa-1_5x fa-arrow-right"></i></a>
-                    <br class="hidden-xs" />@Html.Timeago(Model.LastPostDate)
                 </span>
 
             </dd>
             <dd class="posts hidden-xs hidden-sm col-md-1">@replies <dfn>Replies</dfn></dd>
             <dd class="posts hidden-xs hidden-sm col-md-1">@Model.ViewCount <dfn>Views</dfn></dd>
-            <dd class="mark hidden-xs topic-btns">
+            <dd class="mark topic-btns">
                 @{
                     Html.RenderPartial("_TopicButtons", Model, this.ViewData);
                 }

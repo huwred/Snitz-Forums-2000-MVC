@@ -62,7 +62,7 @@
                     <ul class="userlist topics">
                         <li class="bgheader ">
                             <dl class="icon ">
-                                <dt class="col-xs-2 col-md-1"><span class="avatar"></span><div class="list-inner">@Html.Avatar("", "", "img-circle small")</div></dt>
+                                <dt class="col-xs-2 col-md-1"><span class="avatar"></span><spn class="list-inner">@Html.Avatar("", "", "img-circle small")</spn></dt>
                                 <dd class="posts @colwidth">
                                     @Html.ActionLink(ResourceManager.GetLocalisedString("UserName", "General"), "Index", new { pagenum = ViewBag.Page, sortOrder = ViewBag.SortDir, sortCol = "user", initial = Model.Initial })
                                     @if (ViewBag.SortCol == "user")

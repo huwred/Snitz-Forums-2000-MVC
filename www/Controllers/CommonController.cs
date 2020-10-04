@@ -21,7 +21,7 @@ using PrivateMessage = SnitzDataModel.Models.PrivateMessage;
 namespace WWW.Controllers
 {
     //[RemoteRequireHttpsAttribute]
-
+    [CookieConsent]
     public class CommonController : BaseController 
     {
 

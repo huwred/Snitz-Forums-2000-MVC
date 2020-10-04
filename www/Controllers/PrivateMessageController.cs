@@ -63,7 +63,18 @@ namespace WWW.Controllers
 
             return Content(GetMailboxLimitString(mailboxsize), "text/html");
         }
+        public ContentResult InboxSizeString()
+        {
+            var mailboxsize = PrivateMessage.InboxSize(WebSecurity.CurrentUserId);
 
+            return Content("(" + mailboxsize + ")", "text/html");
+        }
+        public ContentResult OutboxSizeString()
+        {
+            var mailboxsize = PrivateMessage.OutboxSize(WebSecurity.CurrentUserId);
+
+            return Content("(" + mailboxsize + ")", "text/html");
+        }
         public ActionResult GetMessage(int id, string inbox)
         {
             if (ClassicConfig.GetValue("STRPMSTATUS") != "1")

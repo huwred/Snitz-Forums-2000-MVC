@@ -76,12 +76,18 @@ dd {
 .panel-primary > .panel-footer + .panel-collapse > .panel-body {
     border-bottom-color: #8199da;
 }
-
-.popover > .arrow {
-    border-width: 11px;
-    border-right-color: transparent !important;
+/* Popover */
+.popover {
+    /*border: 2px dotted #191970;*/
+    max-width: 400px;
+    max-height: 430px;
+    height: auto;
 }
+.popover .arrow {
+    top: 25% !important;
 
+}
+/*
 .popover.bottom > .arrow:after {
     content: " ";
     top: 1px;
@@ -90,7 +96,7 @@ dd {
     border-bottom-color: #ffffff;
     background-color: transparent;
 }
-
+*/
 a.administrator {
     color: darkred;
 }
@@ -214,20 +220,26 @@ img.online {
     background-color: yellow
 }
 
-.featured {
+.announce {
     display: block;
     background-color: #8199da;
     border-radius: 4px;
-    padding: 4px;
-    background-image: -webkit-linear-gradient(top, #8199da 0%, #c4e3f3 100%);
+    padding: 6px;
+/*    background-image: -webkit-linear-gradient(top, #8199da 0%, #c4e3f3 100%);
     background-image: -o-linear-gradient(top, #8199da 0%, #c4e3f3 100%);
     background-image: -webkit-gradient(linear, left top, left bottom, from(#8199da), to(#c4e3f3));
     background-image: linear-gradient(to bottom, #8199da 0%, #3366cc 100%);
-    background-repeat: repeat-x;
-    margin-bottom:5px;
+    background-repeat: repeat-x;*/
+    margin-bottom: 5px;
+    margin-top: 1px;
+    margin-left: 20px;
+    margin-right: 20px;
 }
-
-    .featured,.featured a {
+.announce h3 {
+    margin-top: 6px;
+    color: #191970;
+}
+    .announce, .announce a {
         color: white;
     }
 
@@ -898,21 +910,8 @@ div.message-sig {
     padding: 0 1em;
 }
 
-/* Popover */
-.popover {
-    border: 2px dotted #191970;
-    max-width: 400px;
-    max-height: 300px;
-    height: auto;
-}
-
-/* Popover Arrow */
-.arrow {
-    border-right-color: #191970 !important;
-}
-
 .required-val {
-    background-color: #F3D1DC !important;
+    background-color: #9acfea !important;
 }
 
 .btn-default,

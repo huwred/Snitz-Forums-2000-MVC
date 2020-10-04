@@ -35,10 +35,15 @@
             <h4 class="forum-title"><a href="@Url.Action("Index","Category", new {id=Model.Id})">@Model.Title</a></h4>
         </div>
         <div class="search-box">
-            <form id="forum-search">
+            <form>
                 <fieldset>
                     @if (User.IsAdministrator())
                     {
+
+                        @Html.ActionLink(" ", "CreateEdit", "Category", new { id = 0 }, new { @class = "fa fa-folder-open-o fa-1_5x modal-link", title = ResourceManager.GetLocalisedString("tipNewCategory", "Tooltip"), data_toggle = "tooltip", data_id = Model.Id })
+
+                        @Html.ActionLink(" ", "CreateEdit", "Category", new { id = Model.Id }, new { @class = "fa fa-wrench fa-1_5x modal-link", title = ResourceManager.GetLocalisedString("tipEditCategory", "Tooltip"), data_toggle = "tooltip", data_id = Model.Id })
+                        @Html.ActionLink(" ", "CreateEdit", "Forum", new { id = 0, catid = Model.Id }, new { @class = "fa fa-folder-o fa-1_5x", title = ResourceManager.GetLocalisedString("tipNewForum", "Tooltip"), data_toggle = "tooltip" })
                         if (Model.Status == Enumerators.Status.Open)
                         {
                             @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfLockCategory", "labels"), "Lock", "Category", new { id = Model.Id, @lock = true }, "fa fa-lock fa-1_5x")
@@ -46,12 +51,7 @@
                         else
                         {
                             @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfUnlockCategory", "labels"), "Lock", "Category", new { id = Model.Id, @lock = false }, "fa fa-unlock-alt fa-1_5x")
-                        }
-                        @Html.ActionLink(" ", "CreateEdit", "Category", new { id = 0 }, new { @class = "fa fa-folder-open-o fa-1_5x modal-link", title = ResourceManager.GetLocalisedString("tipNewCategory", "Tooltip"), data_toggle = "tooltip", data_id = Model.Id })
-
-                        @Html.ActionLink(" ", "CreateEdit", "Category", new { id = Model.Id }, new { @class = "fa fa-edit fa-1_5x modal-link", title = ResourceManager.GetLocalisedString("tipEditCategory", "Tooltip"), data_toggle = "tooltip", data_id = Model.Id })
-                        @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfDeleteCategory", "labels"), "Delete", "Category", new { id = Model.Id }, "fa fa-trash-o fa-1_5x")
-                        @Html.ActionLink(" ", "CreateEdit", "Forum", new { id = 0, catid = Model.Id }, new { @class = "fa fa-folder-o fa-1_5x", title = ResourceManager.GetLocalisedString("tipNewForum", "Tooltip"), data_toggle = "tooltip" })
+                        } @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfDeleteCategory", "labels"), "Delete", "Category", new { id = Model.Id }, "fa fa-trash-o fa-1_5x")
 
 
                     }
