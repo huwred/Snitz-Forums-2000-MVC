@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using Newtonsoft.Json;
 using SiteManage.Models;
 using SnitzConfig;
 using SnitzCore.Extensions;
 using SnitzDataModel.Controllers;
 using SnitzMembership;
+using WWW.Models;
 
 
 namespace SiteManage.Controllers
@@ -263,7 +266,22 @@ namespace SiteManage.Controllers
 
             return View(form);
         }
-
+        public HttpStatusCodeResult PayPalPaymentNotification(PayPalCheckoutInfo payPalCheckoutInfo)
+        {
+            PayPalListenerModel model = new PayPalListenerModel {_PayPalCheckoutInfo = payPalCheckoutInfo};
+            using (StreamWriter file = System.IO.File.AppendText(Server.MapPath("~/ProtectedContent/IPNLog.txt")))
+            {
+                file.WriteLine("----------------" + DateTime.UtcNow.ToShortDateString() + "----------------");
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Serialize(file, model._PayPalCheckoutInfo);
+            }
+            byte[] parameters = Request.BinaryRead(Request.ContentLength);
+            if (parameters != null)
+            {
+                model.GetStatus(parameters);
+            }
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+        }
         #endregion
     }
 }
