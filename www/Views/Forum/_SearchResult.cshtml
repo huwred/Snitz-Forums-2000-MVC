@@ -23,7 +23,7 @@
     </div>
     @if (Convert.ToInt32(Model.PageCount) > 1)
     {
-        <div class="row-fluid">
+        <div class="row">
             <div class="col-xs-10">@Html.Partial("_SearchPager", Model)</div>
             <div class="col-xs-2 pull-right flip padding-xs">
                 @{ Html.RenderPartial("_PageSize"); }
@@ -69,7 +69,7 @@
 
     @if (Convert.ToInt32(Model.PageCount) > 1)
     {
-        <div class="row-fluid">
+        <div class="row">
             <div class="col-xs-10">@Html.Partial("_SearchPager", Model)</div>
             <div class="col-xs-2 pull-right flip padding-xs">
                 @{ Html.RenderPartial("_PageSize"); }

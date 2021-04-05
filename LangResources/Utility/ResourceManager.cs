@@ -7,6 +7,7 @@ using System.Linq;
 using LangResources.Abstract;
 using LangResources.Concrete;
 using LangResources.Models;
+using Snitz.Base;
 
 namespace LangResources.Utility
 {
@@ -152,11 +153,11 @@ namespace LangResources.Utility
 
         public static string[] SupportLanguages()
         {
-            //var cacheService = new InMemoryCache() { DoNotExpire = true };
-            //return cacheService.GetOrSet("lang.cultures", () => provider.GetCultures().ToArray());
-            var cultures = provider.GetCultures().ToArray();
-            Array.Sort(cultures);
-            return cultures;
+            var cacheService = new InMemoryCache(60*24) { DoNotExpire = true };
+            return cacheService.GetOrSet("lang.cultures", () => provider.GetCultures().ToArray());
+            //var cultures = provider.GetCultures().ToArray();
+            //Array.Sort(cultures);
+            //return cultures;
         }
 
 

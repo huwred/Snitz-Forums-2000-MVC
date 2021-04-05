@@ -74,7 +74,7 @@
 
             <div class="message-reply">
                 <label>@ResourceManager.GetLocalisedString("lblReplyAuthor", "labels")</label> @item.Author.Username <br />
-                <label>@ResourceManager.GetLocalisedString("lblRepliedOn", "labels")</label> @item.Date.ToFormattedString() <br />
+                <label>@ResourceManager.GetLocalisedString("lblRepliedOn", "labels")</label> @item.Date.Value.ToFormattedString() <br />
                 <label>@ResourceManager.GetLocalisedString("Message", "General"):</label> <br /><br />
                 <div class="message">
                     @Html.FormatBbCode(item.Message)
@@ -83,6 +83,6 @@
             counter++;
         }
     </div>
-    <span class="small pull-right flip">&copy; @ClassicConfig.Copyright</span>
+    <span class="small pull-right flip">&copy; @Html.Raw(String.Format(ClassicConfig.Copyright, DateTime.UtcNow.Year))</span>
 </body>
 </html>

@@ -86,7 +86,7 @@ else
                                 @item.Author.Country
                         </dd>
                         <dd class="profile-posts"><span class="badge center-block numbers" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipPostCount", "Tooltip") @item.Author.PostCount">@item.Author.PostCount</span></dd>
-                        <dd class="profile-joined"><strong>Joined: </strong>@Html.Timeago(item.Author.CreatedDate)</dd>
+                        <dd class="profile-joined"><b>@ResourceManager.GetLocalisedString("ProfileDate", "General"): </b>@Html.Timeago(item.Author.CreatedDate)</dd>
                     </dl>
 
                     <div class="postbody col-xs-10">

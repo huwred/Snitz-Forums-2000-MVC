@@ -33,8 +33,8 @@
 }
 @section sidebox{
     <div class="side-box">
-        <i id="pagesearch" title="Search this page" data-toggle="tooltip" class="fa fa-search" style="cursor: pointer"></i> Search this page
-        
+        <i id="pagesearch" title="@ResourceManager.GetLocalisedString("sbSearchPage", "labels")" data-toggle="tooltip" class="fa fa-search" style="cursor: pointer"></i> @ResourceManager.GetLocalisedString("sbSearchPage", "labels")
+
     </div>
         @if (User.Identity.IsAuthenticated)
         {
@@ -115,13 +115,13 @@
             <div class="modal-content" style="width:150px !important;height: 160px;min-height:150px !important;">
             <div class="modal-header">
                 <button type="button" class="btn close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
-                <h4 class="modal-title" id="myModalLabel">Find on page</h4>
+                <h4 class="modal-title" id="myModalLabel">@ResourceManager.GetLocalisedString("srchTitle", "FAQ")</h4>
             </div>                
                 <div class="modal-body clearfix">
                     <form onsubmit="return false;" class="form-horizontal container-fluid">
-                        <div class="form-group"><input type="search" class="form-control" size="25" maxlength="25" id="fwtext" onchange="resettext();" placeholder="Enter text to find"></div>
-                        <div class="form-group"><div class="btn-group-sm"><input type="button" class="btn btn-sm btn-primary" value="Find Prev" onclick="findprev();">
-                        <input id="btn" type="button" class="btn btn-sm btn-primary" value="Find Next" onclick="this.blur(); findit();"><span id="find_msg"></span></div>
+                        <div class="form-group"><input type="search" class="form-control" size="25" maxlength="25" id="fwtext" onchange="resettext();" placeholder="@ResourceManager.GetLocalisedString("srchText", "FAQ")"></div>
+                        <div class="form-group"><div class="btn-group-sm"><input type="button" class="btn btn-sm btn-primary" value="@ResourceManager.GetLocalisedString("srchPrev", "FAQ")" onclick="findprev();">
+                        <input id="btn" type="button" class="btn btn-sm btn-primary" value="@ResourceManager.GetLocalisedString("srchNext", "FAQ")" onclick="this.blur(); findit();"><span id="find_msg"></span></div>
                         </div>
                     </form>                    
                 </div>

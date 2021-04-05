@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Tables title="Create Forum Tables" applied="false">
+<Tables title="Create Forum Tables" applied="true">
   <Create>
     <Table name="FORUM_A_TOPICS">
       <Column name="CAT_ID" type="int" allownulls="false" />

@@ -12,7 +12,7 @@ namespace WWW
             bundles.IgnoreList.Clear();
            
             bundles.Add(new ScriptBundle("~/bundles/corejs")
-                        .Include("~/Scripts/jquery-2.1.4.js")
+                        .Include("~/Scripts/jquery-3.5.1.js")
                         .Include("~/Scripts/jquery.cookie.js")
                         .Include("~/Scripts/jquery-ui.js")
                         .Include("~/Scripts/jquery.unobtrusive-ajax.js")

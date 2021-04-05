@@ -125,7 +125,7 @@
                         @Model.Author.Country
                     </dd>
                     <dd class="profile-posts"><span class="badge center-block numbers" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipPostCount", "Tooltip") @Model.Author.PostCount">@Model.Author.PostCount</span></dd>
-                    <dd class="profile-joined"><strong>Joined: </strong>@Html.Timeago(Model.Author.CreatedDate)</dd>
+                    <dd class="profile-joined"><b>@ResourceManager.GetLocalisedString("ProfileDate", "General"): </b>@Html.Timeago(Model.Author.CreatedDate)</dd>
                     <dd class="">
                         <ul class="list-unstyled list-inline padding-none profile-list" style="margin-bottom: 0px;">
                             @{
@@ -232,7 +232,7 @@ else
     <div class="post has-profile bg2 topic" id="@String.Format("p{0}",Model.Id)">
         <div class="inner equal forabg">
         <div class="col-xs-12 header">
-            <div class="col-xs-12 col-md-10 col-md-offset-2 author">
+            <div class="col-xs-12 col-md-10 col-md-offset-2 author hidden-phone">
                 <h3 class="first hidden-xs">
                     @Html.Partial("_MessageButtons", Model, new ViewDataDictionary(this.ViewData) { { "buttonsOnly", true } })
                 </h3>
@@ -282,7 +282,7 @@ else
                     @Model.Author.Country
                 </dd>
                 <dd class="profile-posts"><span class="badge center-block numbers" data-toggle="tooltip" title="@ResourceManager.GetLocalisedString("tipPostCount", "Tooltip") @Model.Author.PostCount">@Model.Author.PostCount</span></dd>
-                <dd class="profile-joined"><strong>Joined: </strong>@Html.Timeago(Model.Author.CreatedDate)</dd>
+                <dd class="profile-joined"><b>@ResourceManager.GetLocalisedString("ProfileDate", "General"): </b>@Html.Timeago(Model.Author.CreatedDate)</dd>
                 <dd class="">
                     <ul class="list-unstyled list-inline padding-none profile-list" style="margin-bottom: 0px;">
                         @{

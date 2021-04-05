@@ -1,0 +1,27 @@
+﻿@using LangResources.Utility
+@using SnitzConfig
+@using SnitzDataModel.Models
+
+@if (ClassicConfig.GetIntValue("STRGROUPCATEGORIES") > 0)
+{
+    List<Group> groups = Group.GetGroups();
+
+
+    if (groups != null)
+    {
+        <div class="form-group clearfix">
+            <div class="col-xs-8 col-md-5 padding-sm">
+                @ResourceManager.GetLocalisedString("CategoryGroups", "Controls")
+                <select class="form-control" name="GroupId" onchange="$(this).closest('form').submit();">
+                    @foreach (var group in groups)
+                    {
+                        <option value="@group.Id" @if (group.Id == ViewBag.GroupId) { @Html.Raw("selected") }>@group.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+    }
+
+}
+
+

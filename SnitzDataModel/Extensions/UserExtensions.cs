@@ -25,7 +25,10 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Principal;
 using System.Web;
+using System.Web.Caching;
+using System.Web.Mvc;
 using System.Web.Security;
+using System.Web.UI;
 using Snitz.Base;
 using SnitzConfig;
 using SnitzCore.Extensions;
@@ -221,31 +224,38 @@ namespace SnitzDataModel.Extensions
         /// Checks if user can has visibilty of a category
         /// </summary>
         /// <param name="user">user to check</param>
-        /// <param name="catid">Id of Category</param>
+        /// <param name="cat">Category</param>
         /// <param name="roles">extra role list for validation</param>
         /// <returns></returns>
-        public static bool CanViewCategory(this IPrincipal user, int catid, IEnumerable<string> roles)
+
+        public static bool CanViewCategory(this IPrincipal user, Category cat, IEnumerable<string> roles)
         {
-            if (user.IsAdministrator())
-                return true;
+            var key = user.Identity.Name + "_" + cat.Id;
+            if (HttpContext.Current.Cache.Get(key) == null)
+            {
+                CanViewCategoryCache(user, cat, roles);
+            }
+            return (bool)HttpContext.Current.Cache.Get(key);
+        }
+
+        public static void CanViewCategoryCache(this IPrincipal user, Category cat, IEnumerable<string> roles)
+        {
+            var key = user.Identity.Name + "_" + cat.Id;
+
+            bool canview = user.IsAdministrator() || cat.Forums.All(f => f.PrivateForums == Enumerators.ForumAuthType.All);
 
             var publicview = new[] { Enumerators.ForumAuthType.All, Enumerators.ForumAuthType.PasswordProtected };
             var hidden = new[] { Enumerators.ForumAuthType.MembersHidden, Enumerators.ForumAuthType.AllowedMembersHidden };
             var members = new[] { Enumerators.ForumAuthType.Members, Enumerators.ForumAuthType.MembersPassword, Enumerators.ForumAuthType.AllowedMembers, Enumerators.ForumAuthType.AllowedMemberPassword };
-            Models.Category cat = null;
-            using (SnitzDataContext db = new SnitzDataContext())
-            {
-                cat = db.FetchCategoryForumList(user).SingleOrDefault(c => c.Id == catid);
-            }
-            var canview = false;
 
-            foreach (var forum in cat.Forums)
+
+            foreach (var forum in cat.Forums.Where(f=>f.PrivateForums != Enumerators.ForumAuthType.All))
             {
                 if (forum.PrivateForums.In(publicview))
                 {
                     canview = true;
                 }
-                if (forum.PrivateForums.In(members))
+                else if (forum.PrivateForums.In(members))
                 {
                     canview = true;
                 }
@@ -272,12 +282,16 @@ namespace SnitzDataModel.Extensions
                     }
                 }
 
-
-
             }
 
-            return canview;
+            HttpContext.Current.Cache.Add(key, // cache key
+                canview, // cache value
+                null, // dependencies
+                System.Web.Caching.Cache.NoAbsoluteExpiration, // absolute expiration
+                TimeSpan.FromMinutes(30), CacheItemPriority.Normal,null); // sliding expiration
+            //return canview;
         }
+
         /// <summary>
         /// checks if a user has visibilty of a forum
         /// </summary>
@@ -287,36 +301,58 @@ namespace SnitzDataModel.Extensions
         /// <returns></returns>
         public static bool CanViewForum(this IPrincipal user, Models.Forum forum, IEnumerable<string> roles)
         {
-            if (user.IsAdministrator())
-                return true;
+            var key = user.Identity.Name + "_" + forum.Id;
+            if (HttpContext.Current.Cache.Get(key) == null)
+            {
+                CanViewForumCache(user, forum, roles);
+            }
+            return (bool)HttpContext.Current.Cache.Get(key);
+        }
+        public static void CanViewForumCache(this IPrincipal user, Models.Forum forum, IEnumerable<string> roles)
+        {
+            var key = user.Identity.Name + "_" + forum.Id;
 
-            var publicview = new[] { Enumerators.ForumAuthType.All, Enumerators.ForumAuthType.Members, Enumerators.ForumAuthType.PasswordProtected };
+            bool canview = false;
+
+            //var publicview = new[] { Enumerators.ForumAuthType.All, Enumerators.ForumAuthType.Members, Enumerators.ForumAuthType.PasswordProtected };
             var hidden = new[] { Enumerators.ForumAuthType.MembersHidden, Enumerators.ForumAuthType.AllowedMembersHidden };
-            var members = new[] { Enumerators.ForumAuthType.MembersPassword, Enumerators.ForumAuthType.AllowedMemberPassword };
+            //var members = new[] { Enumerators.ForumAuthType.MembersPassword, Enumerators.ForumAuthType.AllowedMemberPassword };
             if (forum.PrivateForums.In(hidden))
             {
-                return false;
+                canview = false;
             }
 
             switch (forum.PrivateForums)
             {
                 case Enumerators.ForumAuthType.All:
-                    return true;
+                    canview = true;
+                    break;
                 case Enumerators.ForumAuthType.AllowedMembers:
                 case Enumerators.ForumAuthType.AllowedMemberPassword:
                     if (user.IsInRole("Forum_" + forum.Id) || user.IsForumModerator(forum.Id))
                     {
-                        return true;
+                        canview = true;
                     }
                     break;
                 case Enumerators.ForumAuthType.Members:
                 case Enumerators.ForumAuthType.MembersPassword:
-                    return true;
                 case Enumerators.ForumAuthType.PasswordProtected:
-                    return true;
+                    canview = true;
+                    break;
             }
 
-            return false;
+            if (user.IsAdministrator())
+            {
+                canview = true;
+            }
+
+            HttpContext.Current.Cache.Add(key, // cache key
+                canview, // cache value
+                null, // dependencies
+                System.Web.Caching.Cache.NoAbsoluteExpiration, // absolute expiration
+                TimeSpan.FromMinutes(30), CacheItemPriority.Normal,null); // sliding expiration
+
+            //return false;
         }
 
         /// <summary>
@@ -328,40 +364,54 @@ namespace SnitzDataModel.Extensions
         /// <returns></returns>
         public static bool AllowedAccess(this IPrincipal user, Models.Forum forum, IEnumerable<string> roles)
         {
-            if (user.IsAdministrator())
-                return true;
-
-            var publicview = new[] { Enumerators.ForumAuthType.All, Enumerators.ForumAuthType.PasswordProtected };
-            var members = new[] { Enumerators.ForumAuthType.Members, Enumerators.ForumAuthType.MembersPassword, Enumerators.ForumAuthType.MembersHidden };
-            var rolebased = new[] { Enumerators.ForumAuthType.AllowedMembers, Enumerators.ForumAuthType.AllowedMemberPassword, Enumerators.ForumAuthType.AllowedMembersHidden };
-
-            if (forum.PrivateForums.In(publicview))
+            var key = user.Identity.Name + "_" + forum.Id;
+            if (HttpContext.Current.Cache.Get(key) == null)
             {
-                return true;
+                AllowedAccessCache(user, forum, roles);
             }
-            if (!user.Identity.IsAuthenticated) return false;
-            if (forum.PrivateForums.In(members))
-            {
-                return true;
-            }
-            if (forum.PrivateForums.In(rolebased) && (user.IsUserInRole("Forum_" + forum.Id) || user.AllowedForumIDs().Contains(forum.Id)))
-            {
-                return true;
-            }
+            return (bool)HttpContext.Current.Cache.Get(key);
+        }
+        public static bool AllowedAccessCache(this IPrincipal user, Models.Forum forum, IEnumerable<string> roles)
+        {
+            var key = user.Identity.Name + "_" + forum.Id;
 
-            if (roles != null)
+            bool canview = false;
+            if (user.Identity.IsAuthenticated)
             {
-                foreach (string role in roles)
+                var publicview = new[] { Enumerators.ForumAuthType.All, Enumerators.ForumAuthType.PasswordProtected };
+                var members = new[] { Enumerators.ForumAuthType.Members, Enumerators.ForumAuthType.MembersPassword, Enumerators.ForumAuthType.MembersHidden };
+                var rolebased = new[] { Enumerators.ForumAuthType.AllowedMembers, Enumerators.ForumAuthType.AllowedMemberPassword, Enumerators.ForumAuthType.AllowedMembersHidden };
+
+                if (forum.PrivateForums.In(publicview) || forum.PrivateForums.In(members))
                 {
-                    if (user.IsUserInRole(role))
+                    canview = true;
+                }
+
+                if (forum.PrivateForums.In(rolebased) && (user.IsUserInRole("Forum_" + forum.Id) || user.AllowedForumIDs().Contains(forum.Id)))
+                {
+                    canview =  true;
+                }
+
+                if (roles != null)
+                {
+                    foreach (string role in roles)
                     {
-                        return true;
+                        if (user.IsUserInRole(role))
+                        {
+                            canview =  true;
+                        }
                     }
                 }
+                canview = user.IsAdministrator();
             }
 
+            HttpContext.Current.Cache.Add(key, // cache key
+                canview, // cache value
+                null, // dependencies
+                System.Web.Caching.Cache.NoAbsoluteExpiration, // absolute expiration
+                TimeSpan.FromMinutes(30), CacheItemPriority.Normal,null); // sliding expiration
 
-            return false;
+            return canview;
         }
 
         /// <summary>

@@ -70,6 +70,7 @@ namespace SnitzDataModel.Models
             sql.From(repo.ForumTablePrefix + "PM ");
             sql.Where("M_READ>=0 ");
             sql.Where("(M_TO=@0 AND PM_DEL_TO=0)", memberid);
+            
             return repo.ExecuteScalar<int>(sql);
         }
         public static int OutboxSize(int memberid)
@@ -79,6 +80,7 @@ namespace SnitzDataModel.Models
             sql.From(repo.ForumTablePrefix + "PM ");
             sql.Where("M_READ>=0 ");
             sql.Where("(M_FROM=@0 AND M_OUTBOX=1)", memberid);
+            
             return repo.ExecuteScalar<int>(sql);
         }
         public static int Check(int memberid)

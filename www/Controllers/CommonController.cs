@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using log4net;
 using Newtonsoft.Json;
 using Snitz.Base;
 using SnitzConfig;
@@ -230,6 +231,8 @@ namespace WWW.Controllers
 
         protected override void OnException(ExceptionContext filterContext)
         {
+            var logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            logger.Error("Common.OnException",filterContext.Exception);
             if (filterContext.Exception is InvalidCastException)
             {
 

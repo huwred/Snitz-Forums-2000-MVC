@@ -23,7 +23,7 @@
         @foreach (Category cat in catList)
         {
             var catlink = "#c_" + cat.Id;
-            bool hasMatch = User.CanViewCategory(cat.Id, null);
+            bool hasMatch = User.CanViewCategory(cat, null);
             if (hasMatch)
             {
                 <div class="accordion">

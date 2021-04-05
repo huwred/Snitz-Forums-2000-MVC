@@ -25,15 +25,15 @@
                 {
                     OnSuccess = "refreshlazyload",
                     UpdateTargetId = "search-results"
-                }, new { id = "pagingForm" }))
+                }, new { @class = "pagingForm" }))
                 {
                     @Html.AntiForgeryToken()
                     <ul class="pager">
                         @if (page > 1)
                         {
 
-                            <li><span class=""><button class="btn-link btn-xs" type="submit" id="btnFirst" title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipFirstPage", "Tooltip")" data-toggle="tooltip" name="command" value="1"><<</button></span></li>
-                            <li><span class=""><button class="btn-link btn-xs" type="submit" id="btnPrev" title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipPreviousPage", "Tooltip")" data-toggle="tooltip" name="command" value="@(page - 1)"><</button></span></li>
+                            <li><span class=""><button class="btn-link btn-xs" type="submit"  title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipFirstPage", "Tooltip")" data-toggle="tooltip" name="command" value="1"><<</button></span></li>
+                            <li><span class=""><button class="btn-link btn-xs" type="submit"  title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipPreviousPage", "Tooltip")" data-toggle="tooltip" name="command" value="@(page - 1)"><</button></span></li>
                         }
 
 
@@ -41,43 +41,43 @@
                         {
                             if (i == page)
                             {
-                                <li><span class="pager-link-current"><button class="btn-link btn-xs" type="button" disabled id="@( "btn" + @i)" name="command" value="@i">@i</button></span></li>
+                                <li><span class="pager-link-current"><button class="btn-link btn-xs" type="button" disabled  name="command" value="@i">@i</button></span></li>
                             }
                             else
                             {
-                                <li><span class=""><button class="btn-link btn-xs" type="submit" id="@( "btn" + @i)" name="command" title="@String.Format(LangResources.Utility.ResourceManager.GetLocalisedString("tipGotoPage", "Tooltip"), i)" data-toggle="tooltip" value="@i">@i</button></span></li>
+                                <li><span class=""><button class="btn-link btn-xs" type="submit" name="command" title="@String.Format(LangResources.Utility.ResourceManager.GetLocalisedString("tipGotoPage", "Tooltip"), i)" data-toggle="tooltip" value="@i">@i</button></span></li>
                             }
                         }
                         @if (page < pagecount)
                         {
-                            <li><span class=""><button class="btn-link btn-xs" type="submit" id="btnNext" name="command" title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipNextPage", "Tooltip")" data-toggle="tooltip" value="@(page + 1)">></button></span></li>
-                            <li><span class=""><button class="btn-link btn-xs" type="submit" id="btnLast" name="command" title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipLastPage", "Tooltip")" data-toggle="tooltip" value="@(pagecount)">>></button></span></li>
+                            <li><span class=""><button class="btn-link btn-xs" type="submit"  name="command" title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipNextPage", "Tooltip")" data-toggle="tooltip" value="@(page + 1)">></button></span></li>
+                            <li><span class=""><button class="btn-link btn-xs" type="submit"  name="command" title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipLastPage", "Tooltip")" data-toggle="tooltip" value="@(pagecount)">>></button></span></li>
                         }
                         <span class="text-muted"> @String.Format(ResourceManager.GetLocalisedString("lblTotalPages", "labels"), pagecount)</span>
                     </ul>
 
-                    @Html.HiddenFor(model => model.FullParams.Term)
-                    @Html.HiddenFor(model => model.FullParams.PhraseType)
-                    @Html.HiddenFor(model => model.FullParams.FullTextType)
-                    @Html.HiddenFor(model => model.FullParams.ForumId)
-                    @Html.HiddenFor(model => model.FullParams.SearchIn)
-                    @Html.HiddenFor(model => model.FullParams.SearchByDays)
-                    @Html.HiddenFor(model => model.FullParams.MemberName)
-                    @Html.HiddenFor(model => model.FullParams.Archived)
+                    @Html.HiddenFor(model => model.FullParams.Term, new{id=""})
+                    @Html.HiddenFor(model => model.FullParams.PhraseType, new { id = "" })
+                    @Html.HiddenFor(model => model.FullParams.FullTextType, new { id = "" })
+                    @Html.HiddenFor(model => model.FullParams.ForumId, new { id = "" })
+                    @Html.HiddenFor(model => model.FullParams.SearchIn, new { id = "" })
+                    @Html.HiddenFor(model => model.FullParams.SearchByDays, new { id = "" })
+                    @Html.HiddenFor(model => model.FullParams.MemberName, new { id = "" })
+                    @Html.HiddenFor(model => model.FullParams.Archived, new { id = "" })
                 }
 
             }
             else
             {
-                using (Html.BeginForm("Search", controllerName, FormMethod.Post, new { id = "pagingForm" }))
+                using (Html.BeginForm("Search", controllerName, FormMethod.Post, new { @class = "pagingForm" }))
                 {
                     @Html.AntiForgeryToken()
                     <ul class="pager">
                         @if (page > 1)
                         {
 
-                            <li><span class=""><button class="btn-link" type="submit" id="btnFirst" title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipFirstPage", "Tooltip")" data-toggle="tooltip" name="command" value="1"><<</button></span></li>
-                            <li><span class=""><button class="btn-link" type="submit" id="btnPrev" title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipPreviousPage", "Tooltip")" data-toggle="tooltip" name="command" value="@(page - 1)"><</button></span></li>
+                            <li><span class=""><button class="btn-link" type="submit" title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipFirstPage", "Tooltip")" data-toggle="tooltip" name="command" value="1"><<</button></span></li>
+                            <li><span class=""><button class="btn-link" type="submit" title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipPreviousPage", "Tooltip")" data-toggle="tooltip" name="command" value="@(page - 1)"><</button></span></li>
                         }
 
 
@@ -85,29 +85,29 @@
                         {
                             if (i == page)
                             {
-                                <li><span class="pager-link-current"><button class="btn-link" type="button" disabled id="@( "btn" + @i)" name="command" value="@i">@i</button></span></li>
+                                <li><span class="pager-link-current"><button class="btn-link" type="button" disabled name="command" value="@i">@i</button></span></li>
                             }
                             else
                             {
-                                <li><span class=""><button class="btn-link" type="submit" id="@( "btn" + @i)" name="command" title="@String.Format(LangResources.Utility.ResourceManager.GetLocalisedString("tipGotoPage", "Tooltip"), i)" data-toggle="tooltip" value="@i">@i</button></span></li>
+                                <li><span class=""><button class="btn-link" type="submit" name="command" title="@String.Format(LangResources.Utility.ResourceManager.GetLocalisedString("tipGotoPage", "Tooltip"), i)" data-toggle="tooltip" value="@i">@i</button></span></li>
                             }
                         }
                         @if (page < pagecount)
                         {
-                            <li><span class=""><button class="btn-link" type="submit" id="btnNext" name="command" title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipNextPage", "Tooltip")" data-toggle="tooltip" value="@(page + 1)">></button></span></li>
-                            <li><span class=""><button class="btn-link" type="submit" id="btnLast" name="command" title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipLastPage", "Tooltip")" data-toggle="tooltip" value="@(pagecount)">>></button></span></li>
+                            <li><span class=""><button class="btn-link" type="submit"  name="command" title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipNextPage", "Tooltip")" data-toggle="tooltip" value="@(page + 1)">></button></span></li>
+                            <li><span class=""><button class="btn-link" type="submit"  name="command" title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipLastPage", "Tooltip")" data-toggle="tooltip" value="@(pagecount)">>></button></span></li>
                         }
                         <span class="text-muted"> @String.Format(ResourceManager.GetLocalisedString("lblTotalPages", "labels"), pagecount)</span>
                     </ul>
 
-                    @Html.HiddenFor(model => model.FullParams.Term)
-                    @Html.HiddenFor(model => model.FullParams.PhraseType)
-                    @Html.HiddenFor(model => model.FullParams.FullTextType)
-                    @Html.HiddenFor(model => model.FullParams.ForumId)
-                    @Html.HiddenFor(model => model.FullParams.SearchIn)
-                    @Html.HiddenFor(model => model.FullParams.SearchByDays)
-                    @Html.HiddenFor(model => model.FullParams.MemberName)
-                    @Html.HiddenFor(model => model.FullParams.Archived)
+                    @Html.HiddenFor(model => model.FullParams.Term, new { id = "" })
+                    @Html.HiddenFor(model => model.FullParams.PhraseType, new { id = "" })
+                    @Html.HiddenFor(model => model.FullParams.FullTextType, new { id = "" })
+                    @Html.HiddenFor(model => model.FullParams.ForumId, new { id = "" })
+                    @Html.HiddenFor(model => model.FullParams.SearchIn, new { id = "" })
+                    @Html.HiddenFor(model => model.FullParams.SearchByDays, new { id = "" })
+                    @Html.HiddenFor(model => model.FullParams.MemberName, new { id = "" })
+                    @Html.HiddenFor(model => model.FullParams.Archived, new { id = "" })
                 }
 
             }

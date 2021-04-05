@@ -653,7 +653,7 @@ namespace WWW.Controllers
             else
             {
                 forum = Forum.FetchForumWithCategory(id);
-                ViewBag.Title = ResourceManager.GetLocalisedString("forumProps", "Title") + ": " + forum.Subject ;
+                ViewBag.Title = ResourceManager.GetLocalisedString("forumProps", "Title") + ": <a href='~/Forum/'" + forum.Id + " >" + forum.Subject + "</a>";
 
             }
             ViewBag.AllModerators = ForumModerators.All();

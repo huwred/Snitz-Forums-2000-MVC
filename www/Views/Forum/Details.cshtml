@@ -276,6 +276,7 @@
                 //POST the MESSAGE FORM - use this to hook into the Form post
                 $('#btn-submit').on('click',
                     function(event) {
+
                         $("#ForumModerators").find("option").each(function() {
                             $(this).attr('selected', true);
                         });

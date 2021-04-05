@@ -85,7 +85,7 @@
                             <label class='small'>@ResourceManager.GetLocalisedString("lblModeration", "labels")</label>
                         }
                         <span class="responsive-show" style="display: none;">
-                            @ResourceManager.GetLocalisedString("lblTopics", "labels"): <strong>@Model.TopicCount</strong>
+                            @ResourceManager.GetLocalisedString("lblTopics", "labels"): <b>@Model.TopicCount</b>
                         </span>
                     </span>
                 </dt>
@@ -178,7 +178,7 @@
 
             <span class="list-inner">
 
-                <a class="forumtitle" href="@Model.Url" title="@Html.FormatBbCode(Model.Subject, false)" target="_blank">@Html.FormatBbCode(Model.Subject, false)</a>
+                <a class="forumtitle" rel="noopener noreferer nofollow" href="@Model.Url" title="@Html.FormatBbCode(Model.Subject, false)" target="_blank">@Html.FormatBbCode(Model.Subject, false)</a>
                 <br>@Html.FormatBbCode(Model.Description)
 
             </span>

@@ -62,7 +62,7 @@
             </div>
         </div>
     </div>
-    <span class="small pull-right flip">&copy; @ClassicConfig.Copyright</span>
+    <span class="small pull-right flip">&copy; @Html.Raw(String.Format(ClassicConfig.Copyright, DateTime.UtcNow.Year))</span>
 </body>
 </html>
 

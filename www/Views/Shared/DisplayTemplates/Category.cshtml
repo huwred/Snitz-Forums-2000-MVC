@@ -8,7 +8,7 @@
 @{
     Model.Forums = Model.Forums.OrderBy(f => f.Order).ThenBy(f => f.Subject).ToList();
 
-    bool hasMatch = User.CanViewCategory(Model.Id,null);
+    bool hasMatch = User.CanViewCategory(Model,null);
     string adminClass = "col-md-10";
     if (User.Identity.IsAuthenticated)
     {

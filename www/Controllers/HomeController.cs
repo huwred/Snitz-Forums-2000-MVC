@@ -60,7 +60,7 @@ namespace WWW.Controllers
 
         }
         
-        //[OutputCache(Duration = 120, VaryByParam = "groupId", Location = OutputCacheLocation.Server, NoStore = true)]
+        [OutputCache(Duration = 30, VaryByParam = "groupId", Location = OutputCacheLocation.Server, NoStore = true)]
         public ActionResult Index(int groupId = 0)
         {
             if (ClassicConfig.GetIntValue("STRGROUPCATEGORIES") == 1)

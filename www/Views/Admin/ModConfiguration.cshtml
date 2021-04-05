@@ -38,7 +38,11 @@
                     @Html.ConfigToggle("Widgets", "INTWIDGETS", "", "control-label col-xs-3")
                 </div>
             }
-            <hr class="title"/>
+            <div class="form-group">
+                @Html.ConfigToggle("Manage Files", "STRMANAGEFILES", "", "control-label col-xs-3")
+            </div>
+            
+            <hr class="title" />
             if (Config.TableExists("FORUM_IMAGES"))
             {
                 Html.RenderAction("Enable", "PhotoAlbum");

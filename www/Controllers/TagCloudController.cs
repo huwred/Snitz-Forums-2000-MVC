@@ -5,23 +5,24 @@ using System.Linq;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.Mvc;
+using System.Web.UI;
 using SnitzDataModel.Extensions;
 using SnitzDataModel.Models;
 using Sparc.TagCloud;
 
 namespace WWW.Controllers
 {
-    public class TagCloudController : Controller
+    public class TagCloudController : CommonController
     {
+        [OutputCache(Location = OutputCacheLocation.Server,Duration = 60,VaryByParam = "id")]
         public ActionResult Index(int id)
         {
-            TagCloudSetting setting = new TagCloudSetting();
-            setting.NumCategories = 20;
-            setting.MaxCloudSize = 50;
+            TagCloudSetting setting = new TagCloudSetting
+            {
+                NumCategories = 20, MaxCloudSize = 50, StopWords = LoadStopWords()
+            };
 
-            setting.StopWords = LoadStopWords();
-            List<string> phrases;
-            phrases = id == -1 ? Forum.GetTagStrings(User.ForumSubscriptions()) : Forum.GetTagStrings(id);
+            var phrases = id == -1 ? Forum.GetTagStrings(User.ForumSubscriptions()) : Forum.GetTagStrings(id);
             var tagfree = new List<string>();
 
             foreach (var phrase in phrases)

@@ -38,7 +38,7 @@ namespace LangResources.Concrete
         {
             using (var db = new Database(_connectionString))
             {
-                return db.Fetch<string>("SELECT DISTINCT Culture FROM LANGUAGE_RES");
+                return db.Fetch<string>("SELECT DISTINCT Culture FROM LANGUAGE_RES ORDER BY Culture");
             }
         }
 

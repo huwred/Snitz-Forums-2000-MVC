@@ -167,10 +167,10 @@
                 </span>
             </dt>
             <dd class="lastpost col-xs-12 col-sm-3 col-lg-2">
-                <span>
-                    <span class="text-muted">@ResourceManager.GetLocalisedString("lblLastPost", "labels")</span>
+                <span class="list-inner">
                     @if (Model.LastPostReplyId > 0)
                     {
+                    <span class="text-muted">@ResourceManager.GetLocalisedString("lblLastPost", "labels")</span>
                         <span class="text-muted">@ResourceManager.GetLocalisedString("lblPostedBy", "labels")&nbsp;</span>@Html.ActionLink(Model.LastPostAuthorName, "UserProfile", "Account", new { id = Model.LastPostAuthorName }, new { data_title = ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip"), data_toggle = "tooltip", @class = rolecssLP })
                     }
                     <br class="hidden-xs" />@Html.Timeago(Model.LastPostDate)

@@ -15,7 +15,7 @@
 <!-- Meta data for page -->
 @section pageMeta
 {
-    <meta name="title" content="@metaTitle.TruncateLongString(70)"/>
+    <meta name="title" content="@metaTitle.TruncateLongString(70)" />
     <meta name="description" content="@Config.ForumDescription.Replace("&amp;","&").TruncateLongString(149)">
     <meta name="author" content="@(Config.ForumTitle ?? ClassicConfig.ForumTitle)">
 
@@ -30,7 +30,7 @@
 
 @if (ClassicConfig.GetIntValue("STRSHOWANNOUNCE") == 1)
 {
-    string title = ClassicConfig.GetValue("STRANNOUNCETITLE",null);
+    string title = ClassicConfig.GetValue("STRANNOUNCETITLE", null);
     if (string.IsNullOrWhiteSpace(title))
     {
         title = ResourceManager.GetLocalisedString("lblAnnounce", "labels");
@@ -72,7 +72,7 @@
     <div class="side-box">
         @{ Html.RenderPartial("_SearchForums", new ViewDataDictionary(this.ViewData) { { "Category", -1 }, { "ForumId", -1 }, { "langStr", "SearchAllPosts" } }); }
     </div>
-    @Html.Partial("_RightColumn", new ViewDataDictionary(this.ViewData) { { "show", new List<string>() { "online", "donate", "recent"@*, "widget|PVOutput"*@ } } })
+    @Html.Partial("_RightColumn", new ViewDataDictionary(this.ViewData) { { "show", new List<string>() { "online",@*"donate",*@"recent"@*, "widget|PVOutput"*@} } })
 
 }
 @if (colLayout == "left")

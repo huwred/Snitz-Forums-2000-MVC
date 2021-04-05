@@ -93,13 +93,13 @@
             {
                 @Html.Raw(", ")
                 @Html.ActionLink(item.Key, "UserProfile", "Account", new { id = item.Key }, new { @title = ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip"), @class = cssusername, data_toggle = "tooltip" })
-                @Html.Raw(" (")@Html.Timeago(item.Value.ToDateTime())@Html.Raw(")")
+                @Html.Raw(" (")@Html.VisitTimeago(item.Value.ToDateTime())@Html.Raw(")")
             }
             else
             {
                 <span>@Html.Raw(ResourceManager.GetLocalisedString("lblRecent", "labels") + ": ")</span>
                 @Html.ActionLink(item.Key, "UserProfile", "Account", new { id = item.Key }, new { @title = ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip"), @class = cssusername, data_toggle = "tooltip" })
-                @Html.Raw(" (")@Html.Timeago(item.Value.ToDateTime())@Html.Raw(")")
+                @Html.Raw(" (")@Html.VisitTimeago(item.Value.ToDateTime())@Html.Raw(")")
             }
             first = false;
         }

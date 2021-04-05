@@ -147,6 +147,7 @@ namespace SnitzDataModel.Controllers
         [HttpGet]
         public ActionResult Privacy()
         {
+            // do whatever you need to get your model
             return PartialView("popPrivacyPolicy");
         }
         protected RouteData UrlToRouteValueDictionary(string path, string query)

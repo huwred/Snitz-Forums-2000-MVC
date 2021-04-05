@@ -19,7 +19,7 @@
         }<a href="#" title="@ResourceManager.GetLocalisedString("tipPMForward", "PrivateMessage")" data-toggle="tooltip" class="btn btn-sm btn-default pm-button" data-val="@ViewBag.MessageId" data-target="ForwardMessage"><i class="fa fa-mail-forward"></i></a>
         @if (ClassicConfig.GetIntValue("STRSHOWPRINTERFRIENDLY") == 1)
         {
-            <a title="@ResourceManager.GetLocalisedString("tipPrintPM", "Tooltip")" data-toggle="tooltip" href="@Url.Action("Print", "PrivateMessage", new { id = ViewBag.MessageId })" class="btn btn-sm btn-default" target="_blank">
+            <a title="@ResourceManager.GetLocalisedString("tipPrintPM", "Tooltip")" data-toggle="tooltip" href="@Url.Action("Print", "PrivateMessage", new { id = ViewBag.MessageId })" class="btn btn-sm btn-default" rel="noopener"target="_blank">
                 <i class="fa fa-print"></i>
             </a>
         }

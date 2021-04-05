@@ -19,6 +19,7 @@
 // #################################################################################################################### 
 // */
 
+using System;
 using System.ComponentModel.DataAnnotations;
 using LangResources.Utility;
 
@@ -39,7 +40,7 @@ namespace SnitzCore.Filters
             (object value, ValidationContext validationContext)
         {
             _displayName = validationContext.DisplayName;
-            if (value == null)
+            if (value == null || String.IsNullOrWhiteSpace(value.ToString()))
                 return ValidationResult.Success;
             return base.IsValid(value, validationContext);
         }

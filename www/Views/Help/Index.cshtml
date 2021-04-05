@@ -131,16 +131,7 @@
     @Html.BuildBreadcrumbNavigation()
 }
 @section sidebox{
-    @*<div class="side-box">
-                <i id="pagesearch" title="Search this page" data-toggle="tooltip" class="fa fa-search" style="cursor: pointer"></i> @ResourceManager.GetLocalisedString("sbSearchPage", "labels")
 
-            </div>
-        @if (User.Identity.IsAuthenticated)
-        {
-            <div class="side-box">
-                @{ Html.RenderPartial("_SearchForums"); }
-            </div>
-        }*@
     <div class="side-box">
         @Html.Partial("_RightColumn", new ViewDataDictionary(this.ViewData) { { "show", new List<string>() { "catlist" } } })
 
@@ -204,9 +195,9 @@
                     {
                         <div class="form-group">
                             <label for="Description">@ResourceManager.GetLocalisedString("faqAddCategory", "General")</label>
-                            <input type="text" class="form-control" id="Description" name="Description" placeholder="Category Name" required="required">
+                            <input type="text" class="form-control" id="Description" name="Description" placeholder="@ResourceManager.GetLocalisedString("catName", "Admin")" required="required">
                         </div>
-                        <div class="form-group"><button type="submit" class="btn btn-info">Save</button></div>
+                        <div class="form-group"><button type="submit" class="btn btn-info">@ResourceManager.GetLocalisedString("btnSave", "labels")</button></div>
                     }
 
                 }
@@ -267,15 +258,15 @@
         <div class="modal-content" style="width:150px !important;height: 160px;min-height:150px !important;">
             <div class="modal-header">
                 <button type="button" class="btn close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
-                <h4 class="modal-title" id="myModalLabel">Find on page</h4>
+                <h4 class="modal-title" id="myModalLabel">@ResourceManager.GetLocalisedString("sbSearchPage", "labels")</h4>
             </div>
             <div class="modal-body clearfix">
                 <form onsubmit="return false;" class="form-horizontal container-fluid">
-                    <div class="form-group"><input type="search" class="form-control" size="25" maxlength="25" id="fwtext" onchange="resettext();" placeholder="Enter text to find"></div>
+                    <div class="form-group"><input type="search" class="form-control" size="25" maxlength="25" id="fwtext" onchange="resettext();" placeholder="@ResourceManager.GetLocalisedString("findText", "labels")"></div>
                     <div class="form-group">
                         <div class="btn-group-sm">
-                            <input type="button" class="btn btn-sm btn-primary" value="Find Prev" onclick="findprev();">
-                            <input id="btn" type="button" class="btn btn-sm btn-primary" value="Find Next" onclick="this.blur(); findit();"><span id="find_msg"></span>
+                            <input type="button" class="btn btn-sm btn-primary" value="@ResourceManager.GetLocalisedString("findPrev", "labels")" onclick="findprev();">
+                            <input id="btn" type="button" class="btn btn-sm btn-primary" value="@ResourceManager.GetLocalisedString("findNext", "labels")" onclick="this.blur(); findit();"><span id="find_msg"></span>
                         </div>
                     </div>
                 </form>

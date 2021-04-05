@@ -27,7 +27,6 @@ namespace WWW.Controllers
         {
             if (Config.TableExists("FORUM_FILECOUNT",ControllerContext.HttpContext))
             {
-                var test = SortIQueryable<DownloadFile>(SnitzDataContext.GetDownloadFiles().AsQueryable(), sort, sortdir);
                 return View(SortIQueryable<DownloadFile>(SnitzDataContext.GetDownloadFiles().AsQueryable(), sort, sortdir.ToLower()).ToList());
             }
             return View();

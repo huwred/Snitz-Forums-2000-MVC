@@ -52,7 +52,7 @@
         {
             Html.RenderPartial("_BookmarkLink", Model.Id);
         }
-        if (((Enumerators.Subscription)ViewBag.Subscription).In(Enumerators.Subscription.TopicSubscription) && ClassicConfig.SubscriptionLevel != Enumerators.SubscriptionLevel.None)
+        if (ViewBag.Subscription == null || ((Enumerators.Subscription)ViewBag.Subscription).In(Enumerators.Subscription.TopicSubscription) && ClassicConfig.SubscriptionLevel != Enumerators.SubscriptionLevel.None)
         {
             if (!buttons.Contains("subs"))
             {
@@ -75,7 +75,7 @@
         {
             Html.RenderPartial("_BookmarkLink", Model.Id);
         }
-        if (((Enumerators.Subscription)ViewBag.Subscription).In(Enumerators.Subscription.TopicSubscription) && ClassicConfig.SubscriptionLevel != Enumerators.SubscriptionLevel.None)
+        if (ViewBag.Subscription == null || ((Enumerators.Subscription)ViewBag.Subscription).In(Enumerators.Subscription.TopicSubscription) && ClassicConfig.SubscriptionLevel != Enumerators.SubscriptionLevel.None)
         {
             if (!buttons.Contains("subs"))
             {

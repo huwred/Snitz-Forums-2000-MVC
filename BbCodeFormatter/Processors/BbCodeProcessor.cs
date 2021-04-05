@@ -60,7 +60,7 @@ public class BbCodeProcessor : IRequiresSessionState
         //Parse links not in [Url] tags
 
         _urlformatters.Add(new UrlFormatter(@"(?<rawurl>(?<=([^'""-=\]]|^))(?:(?:https?|ftp|file)://)[^\s]*[A-Z0-9+&@#/%=~_|$])", "<a href=\"${rawurl}\" target=\"_blank\" rel=\"nofollow\" title=\"${rawurl}\">${rawurl}</a>"));
-        _urlformatters.Add(new UrlFormatter(@"(?<=(\s|^))(?:(?:www|forum)\.)[^\s]*[A-Z0-9+&@#/%=~_|$]", "<a href=\"http://$&\" target=\"_blank\" rel=\"nofollow\" title=\"$&\">$&</a>"));
+        _urlformatters.Add(new UrlFormatter(@"(?<=(\s|^))(?:(?:www|forum)\.)[^\s|\[]*[A-Z0-9+&@#/%=~_|$]", "<a href=\"http://$&\" target=\"_blank\" rel=\"nofollow\" title=\"$&\">$&</a>"));
         //parse any [url] tags without http etc
         _urlformatters.Add((new UrlFormatter(@"(?<start>\[url(?:\s*)\])(?!(https?|ftp|file|/))(?<url>(.|\n)*?)(?<end>\[/url(?:\s*)\])", "[url=\"http://${url}\"]${url}[/url]")));
         _urlformatters.Add(new UrlFormatter(@"(?<start>\[url=)(?:['""])(?!(https?|ftp|file|/))(?<url>(?:.|\n)*?)(?:['""])*(?<end>(?:\s*)\](?<content>(?:.|\n)*?)\[/url(?:\s*)\])", "${start}\"http://${url}\"${end}"));

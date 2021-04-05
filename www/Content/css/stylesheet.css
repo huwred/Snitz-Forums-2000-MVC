@@ -2062,3 +2062,17 @@ ul.glossary dd {
     }
 }
 
+@media all and (max-width:425px) {
+    ul.topiclist.forums:not(.glossary) dt .list-inner, ul.topiclist.topics:not(.glossary) dt .list-inner, ul.topiclist.topics:not(.glossary) dd .list-inner {
+        padding-left: 15px;
+        padding-right: 0px;
+    }
+
+    dd.lastpost {
+        padding-left: 19px;
+    }
+
+    li.recent-topic dd.lastpost, li.recent-topic dt {
+        padding-left: 59px;
+    }
+}

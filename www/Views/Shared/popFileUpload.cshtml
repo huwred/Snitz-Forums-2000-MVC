@@ -69,6 +69,7 @@
 
                         submitButton.addEventListener("click",
                             function(e) {
+                                alert('upload');
                                 $.validator.unobtrusive.parse($("#frmUploadFile"));
 
                                 if ($("#frmUploadFile").valid()) {
@@ -83,6 +84,16 @@
                                 
                                 return file.previewElement.classList.add("dz-success");
                             });
+                        this.on("complete", function(data) {
+                            //File Upload response from the server
+                            var arr = data.xhr.responseText.split('|');
+                            if (arr[0].replace('"', '') === 'Error') {
+                                BootstrapDialog.warning(arr[1]);
+                            } else {
+                                $('#modal-container').modal('hide');
+                                location.reload();
+                            }
+                        });
                     },
                     dictDefaultMessage: "@ResourceManager.GetLocalisedString("UploadFile", "Dropzone")" //"Drop File here to upload"
                 });

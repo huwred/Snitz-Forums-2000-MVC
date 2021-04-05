@@ -1,9 +1,15 @@
-﻿@using System.Web.Mvc.Html
+﻿@using System.Globalization
+@using System.Text
+@using System.Web.Hosting
+@using System.Web.Mvc.Html
 @using LangResources.Utility
 @using Snitz.Base
 @using SnitzConfig
 @using SnitzCore.Extensions
 @using SnitzDataModel.Extensions
+@using SnitzDataModel.Models
+@using Sparc.TagCloud
+@using WWW.Controllers
 @using WWW.Views.Helpers
 @using Topic = SnitzDataModel.Models.Topic
 
@@ -31,7 +37,7 @@
 {
     <div class="panel-group">
         <div class="side-box">
-            @Html.Action("Index", "TagCloud", new { id = -1 })
+            @Html.Raw(ShowTagCloud(-1))
         </div>
         <div class="side-box">
             @{ Html.RenderPartial("_MyViewList"); }
@@ -78,6 +84,7 @@
             $('.tag-cloud').animate(animatedProperties, 500);
         });
         $(document).ready(function() {
+            $(document.body).on('touchmove', loadTopics);
             $(window).bind('scroll', loadTopics);
             
         });
@@ -85,7 +92,7 @@
             //console.log('loadTopics');
             //console.log($(window).scrollTop() + $(window).height());
             //console.log('doc height:' + $(document).height());
-            if ($(window).scrollTop() + $(window).height() >= $(document).height() - 40) {
+            if ($(window).scrollTop() + window.innerHeight >= document.body.scrollHeight - 40) {
                 $(window).unbind('scroll');
                 //console.log("page: " + page);
                 GetMyTopics();
@@ -119,4 +126,65 @@
             });
         }
     </script>
+}
+
+@functions
+{
+
+    public string ShowTagCloud(int id)
+    {
+        TagCloudSetting setting = new TagCloudSetting
+        {
+            NumCategories = 20, MaxCloudSize = 50, StopWords = LoadStopWords()
+        };
+
+        var phrases = id == -1 ? Forum.GetTagStrings(User.ForumSubscriptions()) : Forum.GetTagStrings(id);
+        var tagfree = new List<string>();
+
+        foreach (var phrase in phrases)
+        {
+            string newphrase = BbCodeFormatter.BbCodeProcessor.CleanCode(phrase);
+            newphrase = BbCodeFormatter.BbCodeProcessor.StripCodeContents(newphrase);
+            newphrase = BbCodeFormatter.BbCodeProcessor.StripTags(newphrase);
+            newphrase = BbCodeFormatter.BbCodeProcessor.RemoveHtmlTags(newphrase);
+            tagfree.Add(newphrase);
+
+        }
+        var model = new TagCloudAnalyzer(setting)
+            .ComputeTagCloud(tagfree)
+            .Shuffle();
+
+        return RenderRazorViewToString("~/Views/Shared/_TagCloud.cshtml", model); //PartialView("_TagCloud",model);
+    }
+    
+    public string RenderRazorViewToString(string viewName, object model)
+    {
+
+        var st = new StringWriter();
+        var context = new HttpContextWrapper(HttpContext.Current);
+        var routeData = new RouteData();
+        var controllerContext = new ControllerContext(new RequestContext(context, routeData), new TagCloudController());
+        var razor = new RazorView(controllerContext, viewName, null, false, null);
+        razor.Render(new ViewContext(controllerContext, razor, new ViewDataDictionary(model), new TempDataDictionary(), st), st);
+        return st.ToString();
+    }
+
+    public static  HashSet<string> LoadStopWords()
+    {
+        var culture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+        if (culture == "nn" || culture == "nb")
+        {
+            culture = "no";
+        }
+        var path = HostingEnvironment.MapPath("~/App_Data/stopwords-" + culture + ".txt");
+        string logFile = "";
+        if (System.IO.File.Exists(path))
+        {
+            logFile = System.IO.File.ReadAllText(path);
+                
+        }
+
+        var wordList = logFile.Split(new string[] { Environment.NewLine, "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
+        return new HashSet<string>(wordList, StringComparer.OrdinalIgnoreCase);
+    }
 }

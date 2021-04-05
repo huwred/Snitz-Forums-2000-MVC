@@ -6,9 +6,9 @@
 @model SnitzDataModel.Models.Category
 
 @{
-    Model.Forums = Model.Forums.OrderBy(f => f.Order).ThenBy(f => f.Subject).ToList();
+    //Model.Forums = Model.Forums.OrderBy(f => f.Order).ThenBy(f => f.Subject).ToList();
 
-    bool hasMatch = User.CanViewCategory(Model.Id, null);
+    bool hasMatch = User.CanViewCategory(Model, null);
 
 }
 @if (hasMatch)
@@ -18,14 +18,18 @@
             <ul class="topiclist">
                 <li class="header">
                     <dl class="icon">
-                        <dt><div class="list-inner"><i class="fa fa-minus-square" data-val="@Model.Id"></i> @Html.ActionLink(Model.Title, "Index", "Category", new { id = Model.GenerateSlug() }, null)</div></dt>
+                        <dt><span class="list-inner"><i class="fa fa-minus-square" data-val="@Model.Id"></i> @Html.ActionLink(Model.Title, "Index", "Category", new { id = Model.Id @*GenerateSlug()*@ }, null)</span></dt>
                     </dl>
                 </li>
             </ul>
             <ul class="topiclist forums" id="@Model.Id">
                 @for (int i = 0; i < Model.Forums.Count; i++)
                 {
-                    var id = Model.Forums[i].Id;
+                    if (User.CanViewForum(Model.Forums[i], null))
+                    {
+                        @Html.DisplayFor(x => x.Forums[i], "ForumNew")
+                    }
+                    @*var id = Model.Forums[i].Id;
                     switch (Model.Forums[i].PrivateForums)
                     {
                         case Enumerators.ForumAuthType.All:
@@ -45,7 +49,7 @@
                         case Enumerators.ForumAuthType.PasswordProtected:
                             @Html.DisplayFor(x => x.Forums[i], "ForumNew")
                             break;
-                    }
+                    }*@
 
 
                 }

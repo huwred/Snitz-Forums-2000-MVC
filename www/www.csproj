@@ -339,16 +339,11 @@
     <Content Include="404.aspx" />
     <Content Include="404.html" />
     <Content Include="500.aspx" />
+    <Content Include="App_Data\2.0.0.0.xml" />
+    <Content Include="App_Data\dbsFileCounter.xml" />
+    <Content Include="App_Data\dbsFileCounterUpdate.xml" />
     <Content Include="App_Data\dbsUpdate.xml" />
     <Content Include="Content\Avatar\default.gif" />
-    <Content Include="Content\bootstrap-theme.css" />
-    <Content Include="Content\bootstrap-theme.min.css" />
-    <Content Include="Content\bootstrap.css" />
-    <Content Include="Content\bootstrap.min.css" />
-    <Content Include="Content\bootstrap.min.css.map" />
-    <Content Include="Content\bootstrap.css.map" />
-    <Content Include="Content\bootstrap-theme.min.css.map" />
-    <Content Include="Content\bootstrap-theme.css.map" />
     <None Include="Content\css\bootstrapnews.css" />
     <None Include="Content\css\bootstrap-rtl.css" />
     <Content Include="Content\css\bootstrap-rtl.min.css" />
@@ -392,9 +387,6 @@
     <Content Include="Content\images\ui-icons_777777_256x240.png" />
     <Content Include="Content\images\ui-icons_cc0000_256x240.png" />
     <Content Include="Content\images\ui-icons_ffffff_256x240.png" />
-    <None Include="Content\jquery-ui.css" />
-    <None Include="Content\jquery-ui.structure.css" />
-    <None Include="Content\jquery-ui.theme.css" />
     <Content Include="Content\Themes\Enbiolog\colours.min.css">
       <DependentUpon>colours.css</DependentUpon>
     </Content>

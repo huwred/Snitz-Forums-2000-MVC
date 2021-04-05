@@ -125,5 +125,13 @@ namespace SnitzDataModel.Models
             return Title;
         }
 
+        public static List<string> GetTagStrings()
+        {
+            Sql sql = new Sql();
+
+            sql.Append("SELECT F_DESCRIPTION FROM " + repo.ForumTablePrefix + "CATEGORY C JOIN " + repo.ForumTablePrefix + "FORUM F ON F.CAT_ID = C.CAT_ID WHERE CAT_STATUS=1 AND F_STATUS=1 AND F_PRIVATEFORUMS = 0");
+
+            return repo.Fetch<string>(sql);
+        }
     }
 }

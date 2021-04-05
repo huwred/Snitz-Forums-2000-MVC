@@ -1,13 +1,14 @@
-﻿@using SnitzConfig
+﻿@using LangResources.Utility
+@using SnitzConfig
 @{
     string forumTitle = Uri.EscapeDataString(Config.ForumTitle ?? ClassicConfig.ForumTitle);
     string pageUrl = Uri.EscapeDataString(Request.Url.AbsoluteUri);
 }
 
 <ul class="list-inline social-media" >
-    <li><a data-toggle="tooltip" data-title="Share with Facebook" class="btn-link fa fa-2x fa-facebook-square" target="_blank" href="http://www.facebook.com/share.php?u=@pageUrl&amp;title=@forumTitle"></a></li>
-    <li><a data-toggle="tooltip" data-title="Share with Twitter" class="btn-link fa fa-2x fa-twitter-square" target="_blank" href="http://twitter.com/home?status=@forumTitle+@pageUrl"></a></li>
-    <li><a data-toggle="tooltip" data-title="Share with Reddit" class="btn-link fa fa-2x fa-reddit-square" target="_blank" href="http://reddit.com/submit?url=@pageUrl&amp;title=@forumTitle"></a></li>
-    <li><a data-toggle="tooltip" data-title="Share with Stumble" class="btn-link fa fa-2x fa-stumbleupon-circle" target="_blank" href="http://www.stumbleupon.com/submit?url=@pageUrl&amp;title=@forumTitle"></a></li>
-    <li><a data-toggle="tooltip" data-title="Share with Digg" class="btn-link fa fa-2x fa-digg" target="_blank" href="http://digg.com/submit?url=@pageUrl&amp;title=@forumTitle"></a></li>
+    <li><a data-toggle="tooltip" data-title="@ResourceManager.GetLocalisedString("FacebookShare", "SocialMedia")" class="btn-link fa fa-2x fa-facebook-square" rel="noopener nofollow" target="_blank" href="http://www.facebook.com/share.php?u=@pageUrl&amp;title=@forumTitle"></a></li>
+    <li><a data-toggle="tooltip" data-title="@ResourceManager.GetLocalisedString("TwitterShare", "SocialMedia")" class="btn-link fa fa-2x fa-twitter-square" rel="noopener nofollow" target="_blank" href="http://twitter.com/home?status=@forumTitle+@pageUrl"></a></li>
+    <li><a data-toggle="tooltip" data-title="@ResourceManager.GetLocalisedString("RedditShare", "SocialMedia")" class="btn-link fa fa-2x fa-reddit-square" rel="noopener nofollow" target="_blank" href="http://reddit.com/submit?url=@pageUrl&amp;title=@forumTitle"></a></li>
+    <li><a data-toggle="tooltip" data-title="@ResourceManager.GetLocalisedString("StumbleShare", "SocialMedia")" class="btn-link fa fa-2x fa-stumbleupon-circle" rel="noopener nofollow" target="_blank" href="http://www.stumbleupon.com/submit?url=@pageUrl&amp;title=@forumTitle"></a></li>
+    <li><a data-toggle="tooltip" data-title="@ResourceManager.GetLocalisedString("DiggShare", "SocialMedia")" class="btn-link fa fa-2x fa-digg" target="_blank" rel="noopener nofollow" href="http://digg.com/submit?url=@pageUrl&amp;title=@forumTitle"></a></li>
 </ul>

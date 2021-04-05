@@ -11,7 +11,7 @@
 
 <div id="online-users">
     <h5>
-        @Html.Raw(String.Format(ResourceManager.GetLocalisedString("lblOnlineUsersDesc", "labels"), SnitzMembership.OnlineUsersInstance.OnlineUsers.UsersCount, SnitzMembership.OnlineUsersInstance.OnlineUsers.RegisteredUsersCount, SnitzMembership.OnlineUsersInstance.OnlineUsers.HiddenUsersCount, SnitzMembership.OnlineUsersInstance.OnlineUsers.GuestUsersCount, ClassicConfig.GetIntValue("INTACTIVETOTAL"), Html.Timeago(ClassicConfig.GetValue("STRACTIVETOTAL").ToDateTime())))
+        @Html.Raw(String.Format(ResourceManager.GetLocalisedString("lblOnlineUsersDesc", "labels"), SnitzMembership.OnlineUsersInstance.OnlineUsers.UsersCount, SnitzMembership.OnlineUsersInstance.OnlineUsers.RegisteredUsersCount, SnitzMembership.OnlineUsersInstance.OnlineUsers.HiddenUsersCount, SnitzMembership.OnlineUsersInstance.OnlineUsers.GuestUsersCount, ClassicConfig.GetIntValue("INTACTIVETOTAL"), Html.VisitTimeago(ClassicConfig.GetValue("STRACTIVETOTAL").ToDateTime())))
 
     </h5>
 
@@ -92,13 +92,13 @@
         {
              @Html.Raw("<br/>")
              @Html.ActionLink(item.Key, "UserProfile", "Account", new {id = item.Key}, new {@title = ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip"),@class=cssusername, data_toggle="tooltip"})
-             @Html.Raw(" (")@Html.Timeago(item.Value.ToDateTime())@Html.Raw(")")
+             @Html.Raw(" (")@Html.VisitTimeago(item.Value.ToDateTime())@Html.Raw(")")
         }
         else
         {
              @Html.Raw(ResourceManager.GetLocalisedString("lblRecent", "labels") + ": <br/>")
              @Html.ActionLink(item.Key, "UserProfile", "Account", new {id = item.Key}, new {@title = ResourceManager.GetLocalisedString("tipViewProfile", "Tooltip"),@class=cssusername, data_toggle = "tooltip" })
-             @Html.Raw(" (")@Html.Timeago(item.Value.ToDateTime())@Html.Raw(")")
+             @Html.Raw(" (")@Html.VisitTimeago(item.Value.ToDateTime())@Html.Raw(")")
         }
         first = false;
     }

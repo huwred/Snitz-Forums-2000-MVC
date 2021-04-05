@@ -25,10 +25,8 @@
         {
             <fieldset class=" col-xs-9 clearfix">
                 <legend>
-                    Manage Downloads
+                    Manage Downloads &nbsp;
                     <span class="pull-right flip">
-                        @*@Html.ConfigToggle(" ", "STRMANAGEFILES", "", "control-label col-xs-8 col-sm-4")*@
-
                         <input id="strmanagefiles" name="strmanagefiles" type="checkbox" value="1" class="yesno-checkbox" data-size="mini" checked="@(ClassicConfig.GetValue("STRMANAGEFILES") == "1")" />
                         <input name="strmanagefiles" type="hidden" value="0" />
                     </span>
@@ -122,7 +120,7 @@ else
         });
 
         //Edit event handler.
-        $("body").on("click", "#WebGrid TBODY .Edit", function () {
+        $("#WebGrid").on("click", ".Edit", function () {
             var row = $(this).closest("tr");
             $("td", row).each(function () {
                 $(this).find("div.spinedit").show();
@@ -144,7 +142,7 @@ else
         });
 
         //Update event handler.
-        $("body").on("click", "#WebGrid TBODY .Update", function () {
+        $("#WebGrid").on("click", ".Update", function () {
             var row = $(this).closest("tr");
             $("td", row).each(function () {
                 $(this).find("div.spinedit").remove();
@@ -201,7 +199,7 @@ else
         });
 
         //Cancel event handler.
-        $("body").on("click", "#WebGrid TBODY .Cancel", function () {
+        $("#WebGrid").on("click", ".Cancel", function () {
             var row = $(this).closest("tr");
             $("td", row).each(function () {
                 if ($(this).find(".text").length > 0) {
@@ -220,7 +218,8 @@ else
         });
 
         //Delete event handler.
-        $("body").on("click", "#WebGrid TBODY .Delete", function () {
+        $("#WebGrid").on("click", ".Delete", function () {
+            alert('delete');
             var row = $(this).closest("tr");
             var FileId = row.find(".Id").find(".control-label").html();
 

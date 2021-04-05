@@ -61,7 +61,29 @@ namespace WWW.Views.Helpers
 
             return MvcHtmlString.Create(tag.ToString());
         }
+        public static MvcHtmlString VisitTimeago(this HtmlHelper helper, DateTime? date)
+        {
+            UrlHelper urlHelper = new UrlHelper(helper.ViewContext.RequestContext);
+            CultureInfo ci = SessionData.Get<CultureInfo>("Culture");
+            string clang = ci.TwoLetterISOLanguageName;
 
+            var tag = new TagBuilder("time");
+            if (clang == "fa")
+            {
+                tag.Attributes.Add("dir", "rtl");
+            }
+            tag.AddCssClass("timeago");
+            //tag.AddCssClass("numbers");
+            tag.Attributes.Add("data-toggle", "tooltip");
+            if (date != null)
+            {
+                tag.Attributes.Add("datetime", date.Value.ToString("o") + "Z");
+                
+                tag.SetInnerText(date.ToClientTime().ToFormattedString());
+            }
+
+            return MvcHtmlString.Create(tag.ToString());
+        }
         /// <summary>
         /// Renders Topic page numbers
         /// </summary>
@@ -1207,11 +1229,10 @@ namespace WWW.Views.Helpers
         {
             TagCloudSetting setting = new TagCloudSetting
             {
-                NumCategories = 20, MaxCloudSize = 50, StopWords = TagCloudController.LoadStopWords()
+                NumCategories = 10, MaxCloudSize = 20, StopWords = TagCloudController.LoadStopWords()
             };
 
-            List<string> phrases;
-            phrases = id == -1 ? Forum.GetTagStrings(user.AllowedForumIDs()) : Forum.GetTagStrings(id);
+            var phrases = id == -1 ? Category.GetTagStrings() : Forum.GetTagStrings(id);
             var tagfree = new List<string>();
             foreach (var phrase in phrases)
             {
