@@ -780,7 +780,7 @@ $(window).on("load", function(){
     });
     $('#show-policy').click(function () {
         var url = $('#policyModal').data('url');
-
+        alert(url);
         $.get(url, function (data) {
             $('#policyContainer').html(data);
 

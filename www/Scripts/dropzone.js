@@ -3423,7 +3423,7 @@ Dropzone.isValidFile = function (file, acceptedFiles) {
     return true;
   } // If there are no accepted mime types, it's OK
 
-
+  console.log('acceptedFiles');  console.log(acceptedFiles);
   acceptedFiles = acceptedFiles.split(",");
   var mimeType = file.type;
   var baseMimeType = mimeType.replace(/\/.*$/, "");
