@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Data.SqlClient;
 using System.Web.Mvc;
 using SnitzConfig;
 using SnitzCore.Filters;
@@ -24,6 +25,13 @@ namespace WWW.Controllers
 
         public ActionResult Index()
         {
+            if (!IsServerConnected())
+            {
+                ViewBag.Title = "Setup Error";
+                ViewBag.Message = "There was aproblem connecting to the database, please check your connection strings in connectionstrings.config file.";
+                return View();
+            }
+
             if (!Config.RunSetup)
             {
                 return RedirectPermanent("~/");
@@ -55,7 +63,22 @@ namespace WWW.Controllers
                 }
             }
         }
-
+        public bool IsServerConnected()
+        {
+            using (var l_oConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["SnitzConnectionString"].ConnectionString))
+            {
+                try
+                {
+                    l_oConnection.Open();
+                    l_oConnection.Close();
+                    return true;
+                }
+                catch (SqlException ex)
+                {
+                    return false;
+                }
+            }
+        }
         public ActionResult Upgrade()
         {
             if (!Config.RunSetup)

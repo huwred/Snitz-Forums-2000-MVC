@@ -133,7 +133,7 @@
                     <input type="hidden" name="AdminPwd" id="AdminPwd" value="@Model.AdminPwd" />
                     <input type="hidden" name="AdminEmail" id="AdminEmail" value="@Model.AdminEmail" />
                     <input type="hidden" name="AdminPwdConfirm" id="AdminPwdConfirm" value="@Model.AdminPwdConfirm" />
-                    <button class="btn btn-primary" id="startProcess" type="button">Create tables</button>
+                    <button class="btn btn-primary" id="startProcess" data-loading-text="Running Setup..."  type="button">Create tables</button>
                    
                 </div>
             }
@@ -184,8 +184,8 @@
             $('#AdminPwd').pwstrength(options);
             
             $('#startProcess').on('click', function (e) {
-                $(this).hide();
-                this.disabled = true;
+                $(this).button('loading');
+                //this.disabled = true;
                 e.preventDefault();
                 $.post(window.SnitzVars.baseUrl + "Setup/StartCreate", {
                     id: uniqueId,
@@ -247,6 +247,7 @@
         function PasswordChanged(txt) {
             $(txt).prev().val($(txt).val());
         }
+
     </script>
 </body>
 </html>

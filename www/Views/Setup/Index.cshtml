@@ -8,11 +8,17 @@
 
 <html>
     <head>
-        <title>title</title>
+        <title>Setup Error</title>
+        @Styles.Render("~/bundles/sitecss")
+        @Styles.Render("~/Content/stylesheet.min.css")
+        @Styles.Render("~/Content/Themes/Snitz/snitz.min.css")
     </head>
-    <body>
-        <div>
-              
-        </div>
-    </body>
+<body>
+    <div class="container text-center">
+        <h3>@ViewBag.Title</h3>
+    </div>
+    <div class="container text-center">
+        <h5>@ViewBag.Message</h5>
+    </div>
+</body>
 </html>

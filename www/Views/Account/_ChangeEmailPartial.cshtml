@@ -60,9 +60,12 @@
         $("#changeEmailForm").submit(function (e) {
             e.preventDefault();
             if ($(this).valid()) {
-
+                alert('submit');
                 $.post(SnitzVars.baseUrl + 'Account/ChangeEmail', $(this).serialize(), function (data) {
+
+                    console.log(data);
                     if (data != null && data.success) {
+
                         $('#modal-container').modal('hide');
                         BootstrapDialog.show({
                             type: BootstrapDialog.TYPE_INFO,

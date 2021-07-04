@@ -56,36 +56,34 @@
                     .removeData("validator") /* added by the raw jquery.validate plugin */
                     .removeData("unobtrusiveValidation");  /* added by the jquery unobtrusive plugin */
         setRequiredFields();
-        
+    });
+    $("#changeEmailForm").submit(function (e) {
+        e.preventDefault();
+        $.validator.unobtrusive.parse($("#changeEmailForm"));
+        $('input[type="submit"]').attr('disabled', 'disabled');
+        if ($("#changeEmailForm").valid()) {
+            $.post(window.SnitzVars.baseUrl + 'Account/ChangeEmail', $(this).serialize(), function (data) {
 
-        $("#changeEmailForm").submit(function (e) {
-            e.preventDefault();
-            $.validator.unobtrusive.parse($("#changeEmailForm"));
-            $('input[type="submit"]').attr('disabled', 'disabled');
-            if ($("#changeEmailForm").valid()) {
-
-                $.post(SnitzVars.baseUrl + 'Account/ChangeEmail', $(this).serialize(), function (data) {
-                    if (data != null && data.success) {
-                        $('#modal-container').modal('hide');
-                        BootstrapDialog.show({
-                            type: BootstrapDialog.TYPE_INFO,
-                            title: '@LangResources.Utility.ResourceManager.GetLocalisedString("ProfileChangeEmailTitle", "General")',
-                            message: data.responseText
-                        });
-                    } else {
-                        BootstrapDialog.show({
-                            type: BootstrapDialog.TYPE_WARNING,
-                            title: 'Change Email Error',
-                            message: data.responseText
-                        });
-                    }
+                if (data !== 'undefined' && data.success ) {
+                        
+                    BootstrapDialog.show({
+                        type: BootstrapDialog.TYPE_INFO,
+                        title: '@LangResources.Utility.ResourceManager.GetLocalisedString("ProfileChangeEmailTitle", "General")',
+                        message: data.responseText
+                    });
+                    $('#modal-container').modal('hide');
+                } else {
+                    BootstrapDialog.show({
+                        type: BootstrapDialog.TYPE_WARNING,
+                        title: 'Change Email Error',
+                        message: data.responseText
+                    });
+                }
                     
-                });
+            });
 
-            } else {
-                $('input[type="submit"]').removeAttr('disabled');
-            }
-        });
-
+        } else {
+            $('input[type="submit"]').removeAttr('disabled');
+        }
     });
 </script>   

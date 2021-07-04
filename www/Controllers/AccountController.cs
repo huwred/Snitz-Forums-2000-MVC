@@ -274,7 +274,7 @@ namespace WWW.Controllers
                 ViewBag.Change = false;
                 ViewBag.Message = ResourceManager.GetLocalisedString("PasswordResetMsg", "General");
             }
-            return View();
+            return View(new LocalPasswordModel());
         }
 
         /// <summary>
@@ -361,9 +361,9 @@ namespace WWW.Controllers
                 result = string.Join("; ", ModelState.Values
                     .SelectMany(x => x.Errors)
                     .Select(x => x.ErrorMessage));
-                return Json(new {success = false, responseText = result});
+                return Json(new{success=false,responseText=result}, JsonRequestBehavior.AllowGet);
             }
-            return Json(new {success = true, responseText = result});
+            return Json(new{success=true,responseText=result}, JsonRequestBehavior.AllowGet);;
             //return Redirect(Url.RouteUrl(new { controller = "Account", action = "UserProfile", id = WebSecurity.CurrentUserName }) + "#changeemail");
         }
 

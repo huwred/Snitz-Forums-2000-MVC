@@ -51,7 +51,7 @@
         $("#changeUsernameForm").submit(function (e) {
             e.preventDefault();
             if ($(this).valid()) {
-                
+
                 $.post(SnitzVars.baseUrl + 'Account/ChangeUsername', $(this).serialize(), function (data) {
                     if (data != null && data.success) {
                         $('#modal-container').modal('hide');

@@ -175,10 +175,14 @@ namespace SnitzDataModel
                         Log(id, "Adding language strings");
                         try
                         {
-                            var langfiles = Directory.GetFiles(appDataPath, "language_*.csv");
+                            var langfiles =  //Directory.GetFiles(appDataPath, "language_*.csv");
+                            Directory
+                                .GetFiles(appDataPath, "language_*.csv", SearchOption.AllDirectories)
+                                .Select(Path.GetFileName);
+
                             foreach (string langfile in langfiles)
                             {
-                                SnitzDataContext.ImportLangResCSV(Path.Combine(appDataPath, "language_en.csv"), true);
+                                SnitzDataContext.ImportLangResCSV(Path.Combine(appDataPath, langfile), true);
                             }
 
                         }
@@ -228,7 +232,7 @@ namespace SnitzDataModel
             {
                 logdata = logdata + "<br />";
             }
-            ProcessStatus[id] = ProcessStatus[id] + logdata;
+            ProcessStatus[id] = ProcessStatus[id].Insert(0,logdata); // = ProcessStatus[id] + logdata;
 
         }
 
@@ -277,11 +281,20 @@ namespace SnitzDataModel
 
         public void ExecuteSQLScript(string filename)
         {
-            if (File.Exists(filename))
+            try
             {
-                string filecontent = File.ReadAllText(filename);
-                dal.Execute(filecontent);
+                if (File.Exists(filename))
+                {
+                    string filecontent = File.ReadAllText(filename);
+                    dal.Execute(filecontent);
+                }
             }
+            catch (Exception )
+            {
+                //supress error incase already exists
+
+            }
+
         }
 
         private void InitDatabase(string id)
