@@ -429,6 +429,7 @@
     <None Include="LinqToDB.Templates\CopyMe.MySql.tt.txt" />
     <Content Include="gpl-3.0.htm" />
     <Content Include="Scripts\bootstrap.js" />
+    <Content Include="log4net.config" />
     <None Include="Scripts\bootstrapnews.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\bootstrapnews.min.js">
@@ -1048,6 +1049,9 @@
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+  </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <ProjectExtensions>
@@ -1076,8 +1080,8 @@
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
   <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(TargetDir)snitz*.dll" "$(SolutionDir)dependency\"
-copy /Y "$(TargetDir)bbcode*.dll" "$(SolutionDir)dependency\"
-copy /Y "$(TargetDir)langRes*.dll" "$(SolutionDir)dependency\"</PostBuildEvent>
+    <PostBuildEvent>copy /Y "$(TargetDir)snitz*.dll" "E:\GitHub\dependency\"
+copy /Y "$(TargetDir)bbcode*.dll" "E:\GitHub\dependency\"
+copy /Y "$(TargetDir)langRes*.dll" "E:\GitHub\dependency\"</PostBuildEvent>
   </PropertyGroup>
 </Project>
