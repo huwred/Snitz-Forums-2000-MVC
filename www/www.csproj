@@ -429,7 +429,6 @@
     <None Include="LinqToDB.Templates\CopyMe.MySql.tt.txt" />
     <Content Include="gpl-3.0.htm" />
     <Content Include="Scripts\bootstrap.js" />
-    <Content Include="log4net.config" />
     <None Include="Scripts\bootstrapnews.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\bootstrapnews.min.js">
