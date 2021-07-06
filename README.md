@@ -32,3 +32,6 @@ In the www folder open the mail.config file in your prefered editor.
 
 Fill in all the details required.
 For the port, you can use 25, 587 or 465 select the one that your mail server host recommends.
+
+# [Snitz MVC Plugins](https://github.com/huwred/Snitz-MVC-Plugins)
+A collection of plugins for Snitz MVC Forum
