@@ -1956,6 +1956,7 @@ ul.pager {
 
 .lastpost-hint {
     cursor: help;
+    padding-right: 0.8em;
 }
 .faded {
     opacity: .5;
