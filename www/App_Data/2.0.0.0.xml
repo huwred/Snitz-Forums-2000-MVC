@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Tables title="Forum 2.0.0.0 Update" applied="true">
+  <Alter>
+    <Table name="FORUM_RANKING">
+      <Column action="ADD" name="R_LANGRES" type="varchar" size="40" allownulls="true" />
+    </Table>
+  </Alter>
+</Tables>

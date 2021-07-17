@@ -340,9 +340,6 @@
     <Content Include="404.html" />
     <Content Include="500.aspx" />
     <Content Include="App_Data\2.0.0.0.xml" />
-    <Content Include="App_Data\dbsFileCounter.xml" />
-    <Content Include="App_Data\dbsFileCounterUpdate.xml" />
-    <Content Include="App_Data\dbsUpdate.xml" />
     <Content Include="Content\Avatar\default.gif" />
     <None Include="Content\css\bootstrapnews.css" />
     <None Include="Content\css\bootstrap-rtl.css" />
@@ -380,52 +377,8 @@
     <None Include="Content\css\snitz.avatar-rtl.css" />
     <None Include="Content\css\snitz.avatar.css" />
     <None Include="Content\css\stylesheetrtl.css" />
-    <None Include="Content\Themes\Enbiolog\colours.css" />
-    <Content Include="Content\images\ui-icons_444444_256x240.png" />
-    <Content Include="Content\images\ui-icons_555555_256x240.png" />
-    <Content Include="Content\images\ui-icons_777620_256x240.png" />
-    <Content Include="Content\images\ui-icons_777777_256x240.png" />
-    <Content Include="Content\images\ui-icons_cc0000_256x240.png" />
-    <Content Include="Content\images\ui-icons_ffffff_256x240.png" />
-    <Content Include="Content\Themes\Enbiolog\colours.min.css">
-      <DependentUpon>colours.css</DependentUpon>
-    </Content>
-    <None Include="Content\Themes\Enbiolog\highlight.css" />
-    <Content Include="Content\Themes\Enbiolog\highlight.min.css" />
-    <Content Include="Content\Themes\Enbiolog\images\archived.png" />
-    <Content Include="Content\Themes\Enbiolog\images\biobanner_02.jpg" />
-    <Content Include="Content\Themes\Enbiolog\images\biologo3.gif" />
-    <Content Include="Content\Themes\Enbiolog\images\blank.png" />
-    <Content Include="Content\Themes\Enbiolog\images\flags\en.png" />
-    <Content Include="Content\Themes\Enbiolog\images\flags\no.png" />
-    <Content Include="Content\Themes\Enbiolog\images\flags\ro.png" />
-    <Content Include="Content\Themes\Enbiolog\images\Forum\bug.png" />
-    <Content Include="Content\Themes\Enbiolog\images\Forum\default.png" />
-    <Content Include="Content\Themes\Enbiolog\images\hot.gif" />
-    <Content Include="Content\Themes\Enbiolog\images\link_loader.gif" />
-    <Content Include="Content\Themes\Enbiolog\images\lock.png" />
-    <Content Include="Content\Themes\Enbiolog\images\logo.png" />
-    <Content Include="Content\Themes\Enbiolog\images\logo_web.png" />
-    <Content Include="Content\Themes\Enbiolog\images\new.png" />
-    <Content Include="Content\Themes\Enbiolog\images\onhold.png" />
-    <Content Include="Content\Themes\Enbiolog\images\stick.png" />
-    <Content Include="Content\Themes\Enbiolog\images\warning.png" />
-    <Content Include="Content\Themes\Enbiolog\snitz-rtl.css" />
-    <Content Include="Content\Themes\Enbiolog\snitz-rtl.min.css" />
-    <None Include="Content\Themes\Enbiolog\snitz.css" />
-    <Content Include="Content\Themes\Enbiolog\snitz.min.css">
-      <DependentUpon>snitz.css</DependentUpon>
-    </Content>
-    <None Include="Content\Themes\Enbiolog\star-rating.css" />
-    <Content Include="Content\Themes\Enbiolog\star-rating.min.css" />
-    <Content Include="Content\Themes\Enbiolog\tag_cloud.css" />
     <Content Include="favicon.ico" />
     <None Include="bundleconfig.json" />
-    <Content Include="fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <None Include="LinqToDB.Templates\CopyMe.MySql.tt.txt" />
     <Content Include="gpl-3.0.htm" />
     <Content Include="Scripts\bootstrap.js" />
