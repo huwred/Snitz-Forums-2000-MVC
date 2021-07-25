@@ -7,6 +7,7 @@
       <Column name="R_IMAGE" type="varchar" size="50" allownulls="false" />
       <Column name="R_POSTS" type="int" allownulls="true" />
       <Column name="R_IMG_REPEAT" type="int" allownulls="false" default="1" />
+      <Column name="R_LANGRES" type="varchar" size="40" allownulls="true" />
     </Table>
     <Table name="FORUM_PM" idfield="M_ID" droprename="rename">
       <Column name="M_SUBJECT" type="nvarchar" size="100" allownulls="false" />
@@ -115,6 +116,8 @@
     <Table name="FORUM_FORUM">
       <Column action="ADD" name="F_POLLS" type="int" default="0" allownulls="false" />
       <Column action="ADD" name="F_RATING" type="smallint" default="0" allownulls="false" />
+      <Column action="ADD" name="F_POSTAUTH" type="int" default="0" allownulls="false" />
+      <Column action="ADD" name="F_REPLYAUTH" type="int" default="0" allownulls="false" />
     </Table>
     <Table name="FORUM_TOPICS">
       <Column action="ALTER" name="T_MESSAGE" type="memo" allownulls="false" />
@@ -122,6 +125,9 @@
       <Column action="ADD" name="T_LAST_POSTER" type="int" allownulls="true" />
       <Column action="ADD" name="T_ISPOLL" type="smallint" default="0" allownulls="false" />
       <Column action="ADD" name="T_POLLSTATUS" type="smallint" default="0" allownulls="false" />
+      <Column action="ADD" name="T_RATING_TOTAL_COUNT" type="int" default="0" allownulls="false" />
+      <Column action="ADD" name="T_RATING_TOTAL" type="int" default="0" allownulls="false" />
+      <Column action="ADD" name="T_ALLOW_RATING" type="int" default="0" allownulls="false" />
     </Table>
     <Table name="FORUM_A_REPLY">
       <Column action="ADD" name="R_RATING" type="int" default="0" allownulls="false" />
@@ -131,6 +137,9 @@
       <Column action="ALTER" name="T_MESSAGE" type="memo" allownulls="false" />
       <Column action="ADD" name="T_ISPOLL" type="smallint" default="0" allownulls="false" />
       <Column action="ADD" name="T_POLLSTATUS" type="smallint" default="0" allownulls="false" />
+      <Column action="ADD" name="T_RATING_TOTAL_COUNT" type="int" default="0" allownulls="false" />
+      <Column action="ADD" name="T_RATING_TOTAL" type="int" default="0" allownulls="false" />
+      <Column action="ADD" name="T_ALLOW_RATING" type="int" default="0" allownulls="false" />
     </Table>
   </Alter>
   <Insert>

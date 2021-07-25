@@ -1,6 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Tables title="Forum 2.0.0.0 Update" applied="true">
   <Alter>
+    <Table name="FORUM_TOPICS">
+      <Column action="ADD" name="T_RATING_TOTAL_COUNT" type="int" default="0" allownulls="false" />
+      <Column action="ADD" name="T_RATING_TOTAL" type="int" default="0" allownulls="false" />
+      <Column action="ADD" name="T_ALLOW_RATING" type="int" default="0" allownulls="false" />
+    </Table>
+    <Table name="FORUM_FORUM">
+      <Column action="ADD" name="F_POSTAUTH" type="int" default="0" allownulls="false" />
+      <Column action="ADD" name="F_REPLYAUTH" type="int" default="0" allownulls="false" />
+     </Table>
+    <Table name="FORUM_A_TOPICS">
+      <Column action="ADD" name="T_RATING_TOTAL_COUNT" type="int" default="0" allownulls="false" />
+      <Column action="ADD" name="T_RATING_TOTAL" type="int" default="0" allownulls="false" />
+      <Column action="ADD" name="T_ALLOW_RATING" type="int" default="0" allownulls="false" />
+    </Table>
     <Table name="FORUM_RANKING">
       <Column action="ADD" name="R_LANGRES" type="varchar" size="40" allownulls="true" />
     </Table>
