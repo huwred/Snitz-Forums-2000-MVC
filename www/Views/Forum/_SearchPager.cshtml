@@ -37,34 +37,36 @@
                         }
 
 
-                        @for (int i = intLow; i < intHigh + 1; i++)
+                    @for (int i = intLow; i < intHigh + 1; i++)
+                    {
+                        if (i == page)
                         {
-                            if (i == page)
-                            {
-                                <li><span class="pager-link-current"><button class="btn-link btn-xs" type="button" disabled  name="command" value="@i">@i</button></span></li>
-                            }
-                            else
-                            {
-                                <li><span class=""><button class="btn-link btn-xs" type="submit" name="command" title="@String.Format(LangResources.Utility.ResourceManager.GetLocalisedString("tipGotoPage", "Tooltip"), i)" data-toggle="tooltip" value="@i">@i</button></span></li>
-                            }
+                            <li><span class="pager-link-current"><button class="btn-link btn-xs" type="button" disabled name="command" value="@i">@i</button></span></li>
                         }
-                        @if (page < pagecount)
+                        else
                         {
-                            <li><span class=""><button class="btn-link btn-xs" type="submit"  name="command" title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipNextPage", "Tooltip")" data-toggle="tooltip" value="@(page + 1)">></button></span></li>
-                            <li><span class=""><button class="btn-link btn-xs" type="submit"  name="command" title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipLastPage", "Tooltip")" data-toggle="tooltip" value="@(pagecount)">>></button></span></li>
+                            <li><span class=""><button class="btn-link btn-xs" type="submit" name="command" title="@String.Format(LangResources.Utility.ResourceManager.GetLocalisedString("tipGotoPage", "Tooltip"), i)" data-toggle="tooltip" value="@i">@i</button></span></li>
                         }
-                        <span class="text-muted"> @String.Format(ResourceManager.GetLocalisedString("lblTotalPages", "labels"), pagecount)</span>
-                    </ul>
+                    }
+                    @if (page < pagecount)
+                    {
+                        <li><span class=""><button class="btn-link btn-xs" type="submit" name="command" title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipNextPage", "Tooltip")" data-toggle="tooltip" value="@(page + 1)">></button></span></li>
+                        <li><span class=""><button class="btn-link btn-xs" type="submit" name="command" title="@LangResources.Utility.ResourceManager.GetLocalisedString("tipLastPage", "Tooltip")" data-toggle="tooltip" value="@(pagecount)">>></button></span></li>
+                    }
+                    <li class="text-muted"> @String.Format(ResourceManager.GetLocalisedString("lblTotalPages", "labels"), pagecount)</li>
+                </ul>
 
-                    @Html.HiddenFor(model => model.FullParams.Term, new{id=""})
-                    @Html.HiddenFor(model => model.FullParams.PhraseType, new { id = "" })
-                    @Html.HiddenFor(model => model.FullParams.FullTextType, new { id = "" })
-                    @Html.HiddenFor(model => model.FullParams.ForumId, new { id = "" })
-                    @Html.HiddenFor(model => model.FullParams.SearchIn, new { id = "" })
-                    @Html.HiddenFor(model => model.FullParams.SearchByDays, new { id = "" })
-                    @Html.HiddenFor(model => model.FullParams.MemberName, new { id = "" })
-                    @Html.HiddenFor(model => model.FullParams.Archived, new { id = "" })
-                }
+                @Html.HiddenFor(model => model.FullParams.Term, new { id = "" })
+                @Html.HiddenFor(model => model.FullParams.PhraseType, new { id = "" })
+                @Html.HiddenFor(model => model.FullParams.FullTextType, new { id = "" })
+                @Html.HiddenFor(model => model.FullParams.ForumId, new { id = "" })
+                @Html.HiddenFor(model => model.FullParams.SearchIn, new { id = "" })
+                @Html.HiddenFor(model => model.FullParams.SearchByDays, new { id = "" })
+                @Html.HiddenFor(model => model.FullParams.MemberName, new { id = "" })
+                @Html.HiddenFor(model => model.FullParams.Archived, new { id = "" })
+                @Html.HiddenFor(model => model.FullParams.OrderBy, new { id = "" })
+                @Html.HiddenFor(model => model.FullParams.SortDir, new { id = "" })
+            }
 
             }
             else
@@ -100,15 +102,17 @@
                         <span class="text-muted"> @String.Format(ResourceManager.GetLocalisedString("lblTotalPages", "labels"), pagecount)</span>
                     </ul>
 
-                    @Html.HiddenFor(model => model.FullParams.Term, new { id = "" })
-                    @Html.HiddenFor(model => model.FullParams.PhraseType, new { id = "" })
-                    @Html.HiddenFor(model => model.FullParams.FullTextType, new { id = "" })
-                    @Html.HiddenFor(model => model.FullParams.ForumId, new { id = "" })
-                    @Html.HiddenFor(model => model.FullParams.SearchIn, new { id = "" })
-                    @Html.HiddenFor(model => model.FullParams.SearchByDays, new { id = "" })
-                    @Html.HiddenFor(model => model.FullParams.MemberName, new { id = "" })
-                    @Html.HiddenFor(model => model.FullParams.Archived, new { id = "" })
-                }
+                @Html.HiddenFor(model => model.FullParams.Term, new { id = "" })
+                @Html.HiddenFor(model => model.FullParams.PhraseType, new { id = "" })
+                @Html.HiddenFor(model => model.FullParams.FullTextType, new { id = "" })
+                @Html.HiddenFor(model => model.FullParams.ForumId, new { id = "" })
+                @Html.HiddenFor(model => model.FullParams.SearchIn, new { id = "" })
+                @Html.HiddenFor(model => model.FullParams.SearchByDays, new { id = "" })
+                @Html.HiddenFor(model => model.FullParams.MemberName, new { id = "" })
+                @Html.HiddenFor(model => model.FullParams.Archived, new { id = "" })
+                @Html.HiddenFor(model => model.FullParams.OrderBy, new { id = "" })
+                @Html.HiddenFor(model => model.FullParams.SortDir, new { id = "" })
+            }
 
             }
         }

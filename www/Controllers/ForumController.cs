@@ -311,8 +311,8 @@ namespace WWW.Controllers
                 MemberName =
                     form["SearchModel.MemberName"] ??
                     form["FullParams.MemberName"],
-                OrderBy = form["OrderBy"],
-                SortDir = form["SortDir"]
+                OrderBy = form["OrderBy"] ?? form["FullParams.OrderBy"],
+                SortDir = form["SortDir"] ?? form["FullParams.SortDir"]
                 
             };
             if (form.AllKeys.Contains("SearchModel.Archived") || form.AllKeys.Contains("FullParams.Archived"))
@@ -401,7 +401,7 @@ namespace WWW.Controllers
             bool sidebox = false;
             if (TempData["SideBox"] != null)
             {
-                sidebox = (bool) TempData["SideBox"];
+                sidebox = (bool)TempData["SideBox"];
 
             }
             if (sidebox)

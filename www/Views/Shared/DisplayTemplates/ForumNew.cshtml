@@ -100,7 +100,7 @@
                 @if (Model.LastPostDate.HasValue && Model.LastPostAuthorName != null)
                 {
                     var topic = Topic.FetchTopic(Model.LastPostTopicId.Value);
-                    <b>&nbsp;@ResourceManager.GetLocalisedString("lblLastPost", "labels")</b>
+                    <b>@ResourceManager.GetLocalisedString("lblLastPost", "labels")</b>
                     <a class="lastsubject" href="@Url.Action("Posts", "Topic", new {id = topic.GenerateSlug(), pagenum = -1, archived = 0})#@Model.LastPostReplyId" data-toggle="tooltip" data-title="@Html.FormatBbCodeTitle(Model.LastTopicSubject,false)">@Html.FormatBbCode(Model.LastTopicSubject, false)</a>
                     <br class="hidden-xs" />
 
@@ -170,27 +170,28 @@
     }
     else
     {
-<li class="row">
-    <dl class="ico_forum_link">
-        <dt title="@ResourceManager.GetLocalisedString("ico_forum_link", "labels")" class="col-xs-10">
+        <li class="row">
+            <dl class="ico_forum_link">
+                <dt title="@ResourceManager.GetLocalisedString("ico_forum_link", "labels")" class="col-xs-12 col-md-10">
 
-            <span class="ico_forum_link"></span>
+                    <span class="ico_forum_link hidden-xs"></span>
 
-            <span class="list-inner">
+                    <span class="list-inner">
 
-                <a class="forumtitle" rel="noopener noreferer nofollow" href="@Model.Url" title="@Html.FormatBbCode(Model.Subject, false)" target="_blank">@Html.FormatBbCode(Model.Subject, false)</a>
-                <br>@Html.FormatBbCode(Model.Description)
+                        <a class="forumtitle" rel="noopener noreferer nofollow" href="@Model.Url" title="@Html.FormatBbCode(Model.Subject, false)" target="_blank">@Html.FormatBbCode(Model.Subject, false)</a>
+                        <br>@Html.FormatBbCode(Model.Description)
 
-            </span>
-        </dt>
- 
-        <dd>                    @if (User.IsAdministrator() || User.IsForumModerator(Model.Id))
-                                {
-                                    @Html.ActionLink(" ", "CreateEdit", "Forum", new { id = Model.Id, catid = Model.CatId }, new { @class = "fa fa-edit fa-1_5x", title = ResourceManager.GetLocalisedString("tipEditWeblink", "Tooltip"), data_toggle = "tooltip" })
-                                    @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfDeleteWeblink", "labels"), "Delete", "Forum", new { id = Model.Id, catid = Model.CatId }, "fa fa-trash-o fa-1_5x")
-                                }
-        </dd>
-    </dl>
-</li>
+                    </span>
+                </dt>
+         
+                <dd class="mark hidden-xs hidden-sm admin-btns">                    
+                    @if (User.IsAdministrator() || User.IsForumModerator(Model.Id))
+                    {
+                        @Html.ActionLink(" ", "CreateEdit", "Forum", new { id = Model.Id, catid = Model.CatId }, new { @class = "fa fa-edit fa-1_5x", title = ResourceManager.GetLocalisedString("tipEditWeblink", "Tooltip"), data_toggle = "tooltip" })
+                        @Html.ActionLinkConfirm(ResourceManager.GetLocalisedString("cnfDeleteWeblink", "labels"), "Delete", "Forum", new { id = Model.Id, catid = Model.CatId }, "fa fa-trash-o fa-1_5x")
+                    }
+                </dd>
+            </dl>
+        </li>
     }
 }

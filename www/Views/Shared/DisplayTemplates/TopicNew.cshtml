@@ -176,9 +176,9 @@
                     <br class="hidden-xs" />@Html.Timeago(Model.LastPostDate)
                     @if (Model.LastPostReplyId > 0)
                     {
-                        <span class="fa fa-search lastpost-hint faded" tooltip-title="click to preview last post" data-toggle="popover" data-lastpost="@Model.LastPostReplyId" data-title="@ResourceManager.GetLocalisedString("tipLastPostPreview", "Tooltip")"></span>
+                        <span class="fa fa-search lastpost-hint faded"  tooltip-title="click to preview last post" data-toggle="popover" data-lastpost="@Model.LastPostReplyId" data-title="@ResourceManager.GetLocalisedString("tipLastPostPreview", "Tooltip")"></span>
                     }
-                    <a href="@Url.Action("Posts", "Topic", new {id = Model.GenerateSlug(), pagenum = -1, archived = Model.Archived})#@Model.LastPostReplyId" data-toggle="tooltip" class="lastpost-last" data-title="@ResourceManager.GetLocalisedString("tipLastPost", "Tooltip")"><i class="fa fa-1_5x fa-arrow-right"></i></a>
+                    <a href="@Url.Action("Posts", "Topic", new {id = Model.GenerateSlug(), pagenum = -1, archived = Model.Archived})#@Model.LastPostReplyId" data-toggle="tooltip" class="lastpost-last" data-title="@ResourceManager.GetLocalisedString("tipLastPost", "Tooltip")"><span class="fa fa-1_5x fa-arrow-right"></span></a>
                 </span>
 
             </dd>

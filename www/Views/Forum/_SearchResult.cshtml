@@ -43,7 +43,6 @@
                     <ul class="topiclist topics">
                         @foreach (var topic in Model.Topics)
                         {
-
                             @Html.DisplayFor(m => topic, "TopicNew", new { Terms = terms })
                         }
                     </ul>
@@ -57,7 +56,6 @@
                     <ul class="topiclist topics">
                         @foreach (var topic in Model.Topics)
                         {
-
                             @Html.DisplayFor(m => topic, "TopicNew", new { Terms = terms })
                         }
                     </ul>
@@ -84,7 +82,7 @@
                 <script type="text/javascript">
         $(document)
             .ready(function() {
-                var termsArray = [@Html.Raw(terms)];
+                var termsArray = [@Html.Raw(String.Join(",", Model.FullParams.Terms.Select(i => "'" + i + "'")))];
                 for (var i = 0; i < termsArray.length; i++) {
                     $('span a.topic-link').highlight(termsArray[i]);
                 }

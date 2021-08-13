@@ -29,13 +29,13 @@
         {
             if (ClassicConfig.GetIntValue("INTNEWLAYOUT", 0) == 1)
             {
-                <div id="search-results forumbg">
-                    @{ Html.RenderPartial("_SearchResult"); }
+                <div id="search-results">
+                    @{ Html.RenderPartial("_SearchResult",Model); }
                 </div>
             }
             else
             {
-                <div id="search-results forumbg">
+                <div id="search-results">
                     <h5>@ViewBag.Title <small> @(String.IsNullOrWhiteSpace(Model.Params.MemberName) ? Model.Params.Term : Model.Params.Term + " " + ResourceManager.GetLocalisedString("lblPostedBy", "labels") + " " + Model.Params.MemberName)</small></h5>
                     @if (Convert.ToInt32(Model.PageCount) > 1)
                     {

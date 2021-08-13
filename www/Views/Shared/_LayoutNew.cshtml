@@ -338,9 +338,9 @@
     SnitzVars.errMsg = '@ViewBag.Error';
     SnitzVars.successMsg = '@ViewBag.Success';
     tempScrollTop = sessionStorage.getItem('scrollTop');
-    function refreshlazyload(){
-
-        lazyload();
+    function refreshlazyload() {
+        $('.tooltip').hide();
+        window.lazyload();
     };
 
     $(document).ready(function () {

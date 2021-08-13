@@ -1955,8 +1955,8 @@ ul.pager {
 }
 
 .lastpost-hint {
+    /*margin-right: 1em;*/ 
     cursor: help;
-    padding-right: 0.8em;
 }
 .faded {
     opacity: .5;
