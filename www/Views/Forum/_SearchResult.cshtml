@@ -79,7 +79,7 @@
 
             @using (Html.BeginScripts())
             {
-                <script type="text/javascript">
+<script type="text/javascript">
         $(document)
             .ready(function() {
                 var termsArray = [@Html.Raw(String.Join(",", Model.FullParams.Terms.Select(i => "'" + i + "'")))];
@@ -95,5 +95,5 @@
                 });
             });
 
-                </script>
+</script>
             }

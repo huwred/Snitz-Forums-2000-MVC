@@ -2065,12 +2065,13 @@ ul.glossary dd {
 
 @media all and (max-width:425px) {
     ul.topiclist.forums:not(.glossary) dt .list-inner, ul.topiclist.topics:not(.glossary) dt .list-inner, ul.topiclist.topics:not(.glossary) dd .list-inner {
-        padding-left: 15px;
+        padding-left: 5px;
         padding-right: 0px;
     }
 
     dd.lastpost {
-        padding-left: 19px;
+        padding-top: 4px;
+        padding-left: 10px;
     }
 
     li.recent-topic dd.lastpost, li.recent-topic dt {
