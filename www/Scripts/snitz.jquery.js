@@ -860,31 +860,7 @@ $(window).on("load", function(){
             });
         }, 1000 * 60 * 3); // 3 min
     }
-    //only enable featured image timer if the
-    //featured image div is on the page
-    if ($("#fimage").length > 0) {
 
-        $("#featured-img").one("load", function () {
-            // do stuff
-            $('#featured-img').css('visibility', 'visible').show();
-        }).each(function () {
-            if (this.complete) $(this).load();
-        });
-        
-        var f = setInterval(function () {
-            
-            $.ajax({
-                url: window.SnitzVars.baseUrl + "PhotoAlbum/FeaturedImage",
-                cache: false,
-                dataType: "html",
-                success: function (data) {
-                    $('#featured-img').fadeOut('slow');
-                    $("#fimage").html(data);
-                    $('#featured-img').fadeIn('slow');
-                }
-            });
-        }, 1000 * 2 * 6); // 2 min 1000 * 2 * 60
-    }
 
     /*updates the lastactivity date for members*/
     if (window.SnitzVars.isUserAuthenticated.toLowerCase() === 'true') {
@@ -908,12 +884,21 @@ $(window).on("load", function(){
             return getPostMessage($(this).data('lastpost'), div_id);
         }
     }); //.on('click', function (e) { e.preventDefault(); $(this).popover('show'); });
-    $('.lastpost-hint').popover({ trigger: 'click', container: 'body', html: true, placement: 'auto',
-        "content": function(){
+    var popOverSettings = {
+        placement: 'auto',
+        trigger: 'click',
+        container: 'body',
+        html: true,
+        selector: '.lastpost-hint', //Sepcify the selector here
+        content: function () {
             var div_id =  "tmp-id-" + $.now();
             return getLastPost($(this).data('lastpost'), div_id);
         }
-    });
+    }
+
+    $('body').popover(popOverSettings);
+
+
     $('.topictitle').on('shown.bs.popover',
         function(e) {
             $(".popover-title").attr("lang", window.SnitzVars.forumlang);
@@ -947,6 +932,32 @@ $(window).on("load", function(){
         }
     });
     setInterval(function(){ tick () }, 5000);
+
+    //only enable featured image timer if the
+    //featured image div is on the page
+    if ($("#fimage").length > 0) {
+
+        $("#featured-img").one("load", function () {
+            // do stuff
+            $('#featured-img').css('visibility', 'visible').show();
+        }).each(function () {
+            if (this.complete) $(this).load();
+        });
+        
+        var f = setInterval(function () {
+            
+            $.ajax({
+                url: window.SnitzVars.baseUrl + "PhotoAlbum/FeaturedImage",
+                cache: false,
+                dataType: "html",
+                success: function (data) {
+                    $('#featured-img').fadeOut('slow');
+                    $("#fimage").html(data);
+                    $('#featured-img').fadeIn('slow');
+                }
+            });
+        }, 1000 * 2 * 6); // 2 min 1000 * 2 * 60
+    }
 });
 
 $(document).ajaxComplete(function () {
