@@ -1,0 +1,42 @@
+﻿@using WWW.Views.Helpers
+
+@{
+    Layout=null;
+    var charttype = ViewData["type"];
+}
+<canvas id="chart_@charttype" width="400" height="200"></canvas>
+
+@using(Html.BeginScripts()){
+    <script type="text/javascript" src="/Scripts/snitz.charts.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var chartType = "@charttype";
+            var currYear = new Date().getFullYear();
+
+            switch (chartType) {
+                case "topic":
+                    GetTopicsByUser();
+                    break;
+                case "reply":
+                    GetReplyData();
+                    break;
+                case "months":
+                    GetPostsByMonth(currYear);
+                    break;
+                case "years":
+                    GetPostsByYear();
+                    break;
+                default:
+                    GetPostsByUser();
+            }
+
+            $("#year-select").on("change",function () {
+                GetPostsByMonth(this.value);
+            });
+        });
+
+    </script>
+}
+
+
+        

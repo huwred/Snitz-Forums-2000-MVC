@@ -3,280 +3,216 @@
     "outputFileName": "Content/stylesheet.min.css",
     "inputFiles": [
       "Content/stylesheet.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Content/jquery-ui-timepicker-addon.min.css",
     "inputFiles": [
       "Content/jquery-ui-timepicker-addon.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Content/jquery.ui.datepicker.min.css",
     "inputFiles": [
       "Content/jquery.ui.datepicker.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Scripts/moment-jalaali.min.js",
     "inputFiles": [
       "Scripts/moment-jalaali.js"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Scripts/moment.min.js",
     "inputFiles": [
       "Scripts/moment.js"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Scripts/snitz.admin.min.js",
     "inputFiles": [
       "Scripts/snitz.admin.js"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Scripts/snitz.pm.min.js",
     "inputFiles": [
       "Scripts/snitz.pm.js"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Scripts/snitz.sitemanage.min.js",
     "inputFiles": [
       "Scripts/snitz.sitemanage.js"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Scripts/jquery.twosidedmultiselect.min.js",
     "inputFiles": [
       "Scripts/jquery.twosidedmultiselect.js"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Scripts/forum.details.min.js",
     "inputFiles": [
       "Scripts/forum.details.js"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Scripts/Chart.min.js",
     "inputFiles": [
       "Scripts/Chart.js"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Content/print.min.css",
     "inputFiles": [
       "Content/print.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Content/css/stylesheetrtl.min.css",
     "inputFiles": [
       "Content/css/stylesheetrtl.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Content/css/snitz.avatar-rtl.min.css",
     "inputFiles": [
       "Content/css/snitz.avatar-rtl.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Content/css/snitz.avatar.min.css",
     "inputFiles": [
       "Content/css/snitz.avatar.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Content/css/jquery.Jcrop.min.css",
     "inputFiles": [
       "Content/css/jquery.Jcrop.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Content/css/stylesheet.min.css",
     "inputFiles": [
       "Content/css/stylesheet.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Content/Themes/Enbiolog/snitz.min.css",
     "inputFiles": [
       "Content/Themes/Enbiolog/snitz.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Content/Themes/Enbiolog/star-rating.min.css",
     "inputFiles": [
       "Content/Themes/Enbiolog/star-rating.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Content/Themes/Enbiolog/highlight.min.css",
     "inputFiles": [
       "Content/Themes/Enbiolog/highlight.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Content/Themes/Enbiolog/colours.min.css",
     "inputFiles": [
       "Content/Themes/Enbiolog/colours.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Content/Themes/vellum/colours.min.css",
     "inputFiles": [
       "Content/Themes/vellum/colours.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Content/Themes/vellum/highlight.min.css",
     "inputFiles": [
       "Content/Themes/vellum/highlight.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Content/Themes/vellum/snitz-rtl.min.css",
     "inputFiles": [
       "Content/Themes/vellum/snitz-rtl.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Content/Themes/vellum/snitz.min.css",
     "inputFiles": [
       "Content/Themes/vellum/snitz.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Content/Themes/vellum/star-rating.min.css",
     "inputFiles": [
       "Content/Themes/vellum/star-rating.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Content/Themes/snitz/colours.min.css",
     "inputFiles": [
       "Content/Themes/snitz/colours.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Content/Themes/snitz/highlight.min.css",
     "inputFiles": [
       "Content/Themes/snitz/highlight.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Content/Themes/snitz/snitz-rtl.min.css",
     "inputFiles": [
       "Content/Themes/snitz/snitz-rtl.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Content/Themes/snitz/snitz.min.css",
     "inputFiles": [
       "Content/Themes/snitz/snitz.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Content/Themes/snitz/star-rating.min.css",
     "inputFiles": [
       "Content/Themes/snitz/star-rating.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Content/Themes/Enbiolog/snitz-rtl.min.css",
     "inputFiles": [
       "Content/Themes/Enbiolog/snitz-rtl.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Scripts/bootstrapnews.min.js",
     "inputFiles": [
       "Scripts/bootstrapnews.js"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Content/css/bootstrapnews.min.css",
     "inputFiles": [
       "Content/css/bootstrapnews.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
   },
   {
     "outputFileName": "Content/css/bootstrap-rtl.min.css",
     "inputFiles": [
       "Content/css/bootstrap-rtl.css"
-    ],
-    "sourceMap": false,
-    "sourceMapRootPath": null
+    ]
+  },
+  {
+    "outputFileName": "Scripts/snitz.charts.min.js",
+    "inputFiles": [
+      "Scripts/snitz.charts.js"
+    ]
   }
 ]

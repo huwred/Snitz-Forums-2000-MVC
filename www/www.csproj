@@ -428,6 +428,10 @@
     <Content Include="Scripts\snitz.admin.min.js">
       <DependentUpon>snitz.admin.js</DependentUpon>
     </Content>
+    <Content Include="Scripts\snitz.charts.js" />
+    <Content Include="Scripts\snitz.charts.min.js">
+      <DependentUpon>snitz.charts.js</DependentUpon>
+    </Content>
     <Content Include="Scripts\snitz.extendedprofile.js" />
     <Content Include="Scripts\snitz.pm.min.js">
       <DependentUpon>snitz.pm.js</DependentUpon>
@@ -808,9 +812,7 @@
     <Content Include="Views\Category\IndexNew.cshtml" />
     <Content Include="Views\Category\Categories.cshtml" />
     <Content Include="Views\Charts\Index.cshtml" />
-    <Content Include="Views\Charts\PostsByUser.cshtml" />
-    <Content Include="Views\Charts\PostsByYear.cshtml" />
-    <Content Include="Views\Charts\PostsByMonth.cshtml" />
+    <Content Include="Views\Charts\_Chart.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Shared\_LayoutAdmin.cshtml" />
     <Content Include="Views\Shared\_LayoutEmbeded.cshtml" />
@@ -858,7 +860,6 @@
     <Content Include="Views\PrivateMessage\Print.cshtml" />
     <Content Include="Views\PrivateMessage\_PrivateMessageView.cshtml" />
     <None Include="Scripts\Chart.js" />
-    <Content Include="Views\Charts\RepliesByUser.cshtml" />
     <Content Include="Views\Admin\DbsFile.cshtml" />
     <Content Include="Views\PayPal\Donations.cshtml" />
     <Content Include="Views\PayPal\DonateNow.cshtml" />
