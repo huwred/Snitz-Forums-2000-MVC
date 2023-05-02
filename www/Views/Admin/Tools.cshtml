@@ -9,7 +9,7 @@
 @section styles
 {
     <style type='text/css'>
-        fieldset {border-radius: 5px;padding: 8px;margin-top: 12px;padding-top: 0px;}
+        fieldset {border-radius: 5px;padding: 8px;margin-top: 12px;padding-top: 0px;color: white;}
         legend {font-size: 16px;margin-bottom: 6px;padding-top: 8px;
             -webkit-padding-before: 28px;
         }
@@ -21,7 +21,7 @@
 
     <div class="row-fluid">
         <div class="col-sm-5 flip text-left">
-            <fieldset class="btn-warning">
+            <fieldset class="btn-danger">
                 <legend>Reload Forum Application  </legend>
                 use this to reset the AppPool to reload settings, language resources etc
                 @Html.ActionLink("Reset Application", "Reset", null, new { @class = "btn btn-danger btn-sm pull-right flip" })
@@ -89,7 +89,7 @@
             }
             @using (Html.BeginForm("UpdatePostCount", "Admin", FormMethod.Post, new { @class = "form-horizontal" }))
             {
-                <fieldset class="btn-info">
+                <fieldset class="btn-danger">
                     <legend>Update Forum Post Counts &nbsp;&nbsp; </legend>
                     <a href="#" title="Update post counts?" data-toggle="tooltip" onclick="BootstrapDialog.confirm('Are you sure you want to update the postcount?', function(ok) { if (ok) {$('#loading').show(); $('#count-forum-@Model.ForumId').click();} }) " rel="nofollow" class="btn btn-primary btn-sm pull-right flip">Update</a>
                     <div class="form-group">
@@ -99,7 +99,7 @@
             }
             @using (Html.BeginForm("EnableDebug", "Admin", FormMethod.Post, new { @class = "form-horizontal" }))
             {
-                <fieldset class="btn-info">
+                <fieldset class="btn-danger">
                     <legend>
                         @if (ClassicConfig.ShowDebug)
                         {

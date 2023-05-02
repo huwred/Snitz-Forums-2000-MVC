@@ -30,23 +30,24 @@ namespace WWW.Controllers
         {
 
             var postsByYear =
-                            @"
+                            $@"
             SELECT 
-            (SELECT COUNT(*) FROM {0}REPLY WHERE  SUBSTRING(R_DATE, 1, 4) = SUBSTRING(A.T_DATE, 1, 4)) + 
-            (SELECT COUNT(*) FROM {0}A_REPLY WHERE  SUBSTRING(R_DATE, 1, 4) = SUBSTRING(A.T_DATE, 1, 4)) + 
-            (SELECT COUNT(*) FROM {0}TOPICS WHERE  SUBSTRING(T_DATE, 1, 4) = SUBSTRING(A.T_DATE, 1, 4)) + 
-            (SELECT COUNT(*) FROM {0}A_TOPICS WHERE  SUBSTRING(T_DATE, 1, 4) = SUBSTRING(A.T_DATE, 1, 4)) AS 'Value',
+            (SELECT COUNT(*) FROM {Dbcontext.ForumTablePrefix}REPLY WHERE  SUBSTRING(R_DATE, 1, 4) = SUBSTRING(A.T_DATE, 1, 4)) + 
+            (SELECT COUNT(*) FROM {Dbcontext.ForumTablePrefix}A_REPLY WHERE  SUBSTRING(R_DATE, 1, 4) = SUBSTRING(A.T_DATE, 1, 4)) + 
+            (SELECT COUNT(*) FROM {Dbcontext.ForumTablePrefix}TOPICS WHERE  SUBSTRING(T_DATE, 1, 4) = SUBSTRING(A.T_DATE, 1, 4)) + 
+            (SELECT COUNT(*) FROM {Dbcontext.ForumTablePrefix}A_TOPICS WHERE  SUBSTRING(T_DATE, 1, 4) = SUBSTRING(A.T_DATE, 1, 4)) AS 'Value',
             SUBSTRING(A.T_DATE, 1, 4) AS 'Key'
-            FROM {0}TOPICS A
+            FROM {Dbcontext.ForumTablePrefix}TOPICS A
             GROUP BY SUBSTRING(A.T_DATE, 1, 4)
             ORDER BY SUBSTRING(A.T_DATE, 1, 4)
             ";
 
 
-            var data = Dbcontext.Fetch<Pair<string, Int32>>(String.Format(postsByYear,Dbcontext.ForumTablePrefix));
-            List<object> iData = new List<object>();
-            iData.Add(data.Select(m => m.Key).ToList());
-            iData.Add(data.Select(m => m.Value).ToList());
+            var data = Dbcontext.Fetch<Pair<string, Int32>>(postsByYear);
+            List<object> iData = new List<object>
+            {
+                data.Select(m => m.Key).ToList(), data.Select(m => m.Value).ToList()
+            };
 
             return Json(iData, JsonRequestBehavior.AllowGet);
         }
@@ -54,23 +55,25 @@ namespace WWW.Controllers
         public JsonResult PostsByMonth(int id, int? page)
         {
             var postsbyMonth =
-                @"
+                $@"
             SELECT 
-            (SELECT COUNT(*) FROM {0}REPLY WHERE  SUBSTRING(R_DATE, 1, 6) = SUBSTRING(A.T_DATE, 1, 6)) + 
-            (SELECT COUNT(*) FROM {0}A_REPLY WHERE  SUBSTRING(R_DATE, 1, 6) = SUBSTRING(A.T_DATE, 1, 6)) + 
-            (SELECT COUNT(*) FROM {0}TOPICS WHERE  SUBSTRING(T_DATE, 1, 6) = SUBSTRING(A.T_DATE, 1, 6)) + 
-            (SELECT COUNT(*) FROM {0}A_TOPICS WHERE  SUBSTRING(T_DATE, 1, 6) = SUBSTRING(A.T_DATE, 1, 6)) AS 'Value',
+            (SELECT COUNT(*) FROM {Dbcontext.ForumTablePrefix}REPLY WHERE  SUBSTRING(R_DATE, 1, 6) = SUBSTRING(A.T_DATE, 1, 6)) + 
+            (SELECT COUNT(*) FROM {Dbcontext.ForumTablePrefix}A_REPLY WHERE  SUBSTRING(R_DATE, 1, 6) = SUBSTRING(A.T_DATE, 1, 6)) + 
+            (SELECT COUNT(*) FROM {Dbcontext.ForumTablePrefix}TOPICS WHERE  SUBSTRING(T_DATE, 1, 6) = SUBSTRING(A.T_DATE, 1, 6)) + 
+            (SELECT COUNT(*) FROM {Dbcontext.ForumTablePrefix}A_TOPICS WHERE  SUBSTRING(T_DATE, 1, 6) = SUBSTRING(A.T_DATE, 1, 6)) AS 'Value',
             SUBSTRING(A.T_DATE, 5, 2) AS 'Key'
-            FROM {0}TOPICS A
-            WHERE  SUBSTRING(A.T_DATE, 1, 4) = {1}
+            FROM {Dbcontext.ForumTablePrefix}TOPICS A
+            WHERE  SUBSTRING(A.T_DATE, 1, 4) = {id}
             GROUP BY SUBSTRING(A.T_DATE, 1, 6), SUBSTRING(A.T_DATE, 5, 2)
             ORDER BY SUBSTRING(A.T_DATE, 1, 6), SUBSTRING(A.T_DATE, 5, 2)
             ";
 
-            var data = Dbcontext.Fetch<Pair<string, int>>(String.Format(postsbyMonth,Dbcontext.ForumTablePrefix,id));
-            List<object> iData = new List<object>();
-            iData.Add(data.Select(m => m.Key).ToList());
-            iData.Add(data.Select(m => m.Value).ToList());
+            var data = Dbcontext.Fetch<Pair<string, int>>(postsbyMonth);
+            List<object> iData = new List<object>
+            {
+                data.Select(m => m.Key).ToList(), 
+                data.Select(m => m.Value).ToList()
+            };
             try
             {
                 return Json(iData, JsonRequestBehavior.AllowGet);
@@ -84,7 +87,7 @@ namespace WWW.Controllers
         }
 
         //[HttpPost]
-        public JsonResult PostsByUser()
+        public JsonResult TopicsByUser()
         {
             var sqlTop = "";
             if (Dbcontext.dbtype == "mssql")
@@ -92,30 +95,30 @@ namespace WWW.Controllers
                 sqlTop = "TOP 10";
             }
 
-            var postsbyMember = @"select [TOP] poster  as 'Key', CAST(sum(postcount) as INT) as 'Value' 
+            var postsbyMember = $@"select {sqlTop} poster  as 'Key', CAST(sum(postcount) as INT) as 'Value' 
                   from (
                     select M.M_NAME AS poster, count(*) as postcount
-                      from {0}TOPICS
-	                                  JOIN {1}MEMBERS M ON T_AUTHOR = M.MEMBER_ID
-                                GROUP BY M.M_NAME
-                                
+                      from {Dbcontext.ForumTablePrefix}TOPICS
+	                  JOIN {Dbcontext.MemberTablePrefix}MEMBERS M ON T_AUTHOR = M.MEMBER_ID
+                      GROUP BY M.M_NAME
                     union all
                     select M.M_NAME AS poster, count(*) as postcount
-                      from {0}A_TOPICS
-	                                  JOIN {1}MEMBERS M ON T_AUTHOR = M.MEMBER_ID
+                      from {Dbcontext.ForumTablePrefix}A_TOPICS
+	                                  JOIN {Dbcontext.MemberTablePrefix}MEMBERS M ON T_AUTHOR = M.MEMBER_ID
                                 GROUP BY M.M_NAME
                                 
                        ) as u GROUP BY u.poster ORDER BY 'Value' Desc";
-            postsbyMember = postsbyMember.Replace("[TOP]", sqlTop);
+
             if (Dbcontext.dbtype == "mysql")
             {
                 postsbyMember = postsbyMember + " LIMIT 10";
             }
-            var data = Dbcontext.Fetch<Pair<string, Int32>>(String.Format(postsbyMember,Dbcontext.ForumTablePrefix,Dbcontext.MemberTablePrefix));
+            var data = Dbcontext.Fetch<Pair<string, Int32>>(postsbyMember);
 
-            List<object> iData = new List<object>();
-            iData.Add(data.Select(m => m.Key).ToList());
-            iData.Add(data.Select(m => m.Value).ToList());
+            List<object> iData = new List<object>
+            {
+                data.Select(m => m.Key).ToList(), data.Select(m => m.Value).ToList()
+            };
 
             return Json(iData,JsonRequestBehavior.AllowGet);
         }
@@ -127,29 +130,73 @@ namespace WWW.Controllers
             {
                 sqlTop = "TOP 10";
             }
-            var postsbyMember = @"select [TOP] poster as 'Key', CAST(sum(postcount) as INT) as 'Value' 
+            var postsbyMember = $@"select {sqlTop} poster as 'Key', CAST(sum(postcount) as INT) as 'Value' 
                               from (
                                 select M.M_NAME AS poster,  count(*) as postcount
-                                  from {0}REPLY
-	                                              JOIN {1}MEMBERS M ON R_AUTHOR = M.MEMBER_ID
-                                            GROUP BY M.M_NAME
-                                            
+                                  from {Dbcontext.ForumTablePrefix}REPLY
+	                                JOIN {Dbcontext.MemberTablePrefix}MEMBERS M ON R_AUTHOR = M.MEMBER_ID
+                                    GROUP BY M.M_NAME
                                 union all
                                 select M.M_NAME AS poster, count(*) as postcount
-                                  from {0}A_REPLY
-	                                              JOIN {1}MEMBERS M ON R_AUTHOR = M.MEMBER_ID
+                                  from {Dbcontext.ForumTablePrefix}A_REPLY
+	                                              JOIN {Dbcontext.MemberTablePrefix}MEMBERS M ON R_AUTHOR = M.MEMBER_ID
                                             GROUP BY M.M_NAME
                                             
                                    ) as u GROUP BY u.poster ORDER BY 'Value' Desc";
-            postsbyMember = postsbyMember.Replace("[TOP]", sqlTop);
+
             if (Dbcontext.dbtype == "mysql")
             {
                 postsbyMember = postsbyMember + " LIMIT 10";
             }
             var data = Dbcontext.Fetch<Pair<string, Int32>>(String.Format(postsbyMember,Dbcontext.ForumTablePrefix,Dbcontext.MemberTablePrefix));
-            List<object> iData = new List<object>();
-            iData.Add(data.Select(m => m.Key).ToList());
-            iData.Add(data.Select(m => m.Value).ToList());
+            List<object> iData = new List<object>
+            {
+                data.Select(m => m.Key).ToList(), data.Select(m => m.Value).ToList()
+            };
+
+            return Json(iData, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult PostsByUser()
+        {
+            var sqlTop = "";
+            if (Dbcontext.dbtype == "mssql")
+            {
+                sqlTop = "TOP 10";
+            }
+            var postsbyMember = $@"select {sqlTop} poster as 'Key', CAST(sum(postcount) as INT) as 'Value' 
+                              from (
+                                select M.M_NAME AS poster,  count(REPLY_ID) as postcount
+                                  from {Dbcontext.ForumTablePrefix}REPLY
+	                                JOIN {Dbcontext.MemberTablePrefix}MEMBERS M ON R_AUTHOR = M.MEMBER_ID
+                                    GROUP BY M.M_NAME
+                                union all
+                                select M.M_NAME AS poster, count(REPLY_ID) as postcount
+                                  from {Dbcontext.ForumTablePrefix}A_REPLY
+	                                              JOIN {Dbcontext.MemberTablePrefix}MEMBERS M ON R_AUTHOR = M.MEMBER_ID
+                                            GROUP BY M.M_NAME
+union all
+select M.M_NAME AS poster, count(TOPIC_ID) as postcount
+                      from {Dbcontext.ForumTablePrefix}TOPICS
+	                  JOIN {Dbcontext.MemberTablePrefix}MEMBERS M ON T_AUTHOR = M.MEMBER_ID
+                      GROUP BY M.M_NAME
+                    union all
+                    select M.M_NAME AS poster, count(TOPIC_ID) as postcount
+                      from {Dbcontext.ForumTablePrefix}A_TOPICS
+	                                  JOIN {Dbcontext.MemberTablePrefix}MEMBERS M ON T_AUTHOR = M.MEMBER_ID
+                                GROUP BY M.M_NAME
+                                            
+                                   ) as u GROUP BY u.poster ORDER BY 'Value' Desc";
+
+            if (Dbcontext.dbtype == "mysql")
+            {
+                postsbyMember = postsbyMember + " LIMIT 10";
+            }
+            var data = Dbcontext.Fetch<Pair<string, Int32>>(String.Format(postsbyMember,Dbcontext.ForumTablePrefix,Dbcontext.MemberTablePrefix));
+            List<object> iData = new List<object>
+            {
+                data.Select(m => m.Key).ToList(), data.Select(m => m.Value).ToList()
+            };
 
             return Json(iData, JsonRequestBehavior.AllowGet);
         }

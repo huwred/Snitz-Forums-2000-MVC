@@ -85,6 +85,15 @@
 }
 
 <script type="text/javascript">
+        // Insert Emoticon    
+    $("#editorDiv").on('click', '.emote', function (event) {
+        var emotiText = $(event.target).attr("rel");
+        //get the id of the textarea
+        var parentDiv = $(this).closest("[id^=editorDiv]");
+        var textId = parentDiv.find(".bbc-code-editor")[0].id;
+        $("#" + textId).insertAtCaret(emotiText);
+    });
+
     $('.pm-send').removeAttr('disabled');
     $.validator.unobtrusive.parse("#message-form");
     $('#message-form').validate();
@@ -100,14 +109,8 @@
         $("#ToUser").focus();
     }
     $(window).on("load", function(){
-        // Insert Emoticon
-        $(".emote").on('click', function (event) {
-            var emotiText = $(event.target).attr("rel");
-            //get the id of the textarea
-            var parentDiv = $(this).closest("[id^=editorDiv]");
-            var textId = parentDiv.find(".bbc-code-editor")[0].id;
-            $("#" + textId).insertAtCaret(emotiText);
-        });
+
+
         $('#allmembers').change(function () {
             if (this.checked) {
                 $('#ToUser').val('All Members');
@@ -119,4 +122,5 @@
             
         });
     });
+
 </script>

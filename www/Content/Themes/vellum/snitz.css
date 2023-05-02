@@ -65,6 +65,19 @@ dt a:hover {
         border-radius:3px;
     width:auto;
     padding:2px;
+    color: white;
+}
+.btn-danger legend {
+    background-image: -webkit-linear-gradient(top, #666 0%, #333 100%);
+    background-image: -o-linear-gradient(top, #666 0%, #333 100%);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#666), to(#333));
+    background-image: linear-gradient(to bottom, #666 0%, #333 100%);
+    background-repeat: repeat-x;
+    border-color: gold;
+    border-radius: 3px;
+    width: auto;
+    padding: 2px;
+    color: gold;
 }
 .panel-primary {
     border-color: #111;
