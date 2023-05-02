@@ -7,7 +7,7 @@
 <canvas id="chart_@charttype" width="400" height="200"></canvas>
 
 @using(Html.BeginScripts()){
-    <script type="text/javascript" src="/Scripts/snitz.charts.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/snitz.charts.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
             var chartType = "@charttype";
@@ -15,23 +15,23 @@
 
             switch (chartType) {
                 case "topic":
-                    GetTopicsByUser();
+                    SnitzCharts.GetTopicsByUser();
                     break;
                 case "reply":
-                    GetReplyData();
+                    SnitzCharts.GetReplyData();
                     break;
                 case "months":
-                    GetPostsByMonth(currYear);
+                    SnitzCharts.GetPostsByMonth(currYear);
                     break;
                 case "years":
-                    GetPostsByYear();
+                    SnitzCharts.GetPostsByYear();
                     break;
                 default:
-                    GetPostsByUser();
+                    SnitzCharts.GetPostsByUser();
             }
 
             $("#year-select").on("change",function () {
-                GetPostsByMonth(this.value);
+                SnitzCharts.GetPostsByMonth(this.value);
             });
         });
 
